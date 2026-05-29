@@ -1,0 +1,269 @@
+--- MicroJava.pdf ---
+Appendix A. The MicroJava Language 
+This section describes the MicroJava language th at is used in the pr actical part of the 
+compiler construction module. MicroJava is similar to Java but much simpler. 
+A.1 General Characteristics  
+ A MicroJava program consists of a single prog ram file with static fields and static 
+methods. There are no external classes but only inner classes that can be used as da-
+ta types. 
+ The main method of a MicroJav a program is always called main(). When a Micro-
+Java program is called this method is executed. 
+ There are 
+ - Constants of type int (e.g. 3) and char (e.g. 'x') but no string constants. 
+ - Variables: all variables of the program are static. 
+ - Primitive types: int, char (Ascii) 
+ -  R e f e r e n c e  t y p e s :  o n e - d i m e n s i o n a l  a r r a y s  l i k e  in Java as well as classes with fields  
+  but without methods. 
+ - Static methods in the main class. 
+ There is no garbage collector (allocated objects are only deallocated when the pro-
+gram ends). 
+ Predeclared procedures are ord, chr, len. 
+Sample program 
+program P  
+  final int size = 10; 
+ 
+  class Table { 
+    int[] pos; 
+    int[] neg; 
+  } 
+ 
+  Table val; 
+ 
+{  
+  void main()  
+    int x, i; 
+  { //---------- Initialize val ------------ 
+    val = new Table; 
+    val.pos = new int[size]; 
+    val.neg = new int[size]; 
+    i = 0; 
+    while (i < size) { 
+      val.pos[i] = 0; val.neg[i] = 0; 
+      i = i + 1; 
+    } 
+    //------------ Read values ------------- 
+    read(x); 
+    while (x != 0) { 
+      if (x >= 0) { 
+        val.pos[x] = val.pos[x] + 1; 
+      } else if (x < 0) { 
+        val.neg[-x] = val.neg[-x] + 1; 
+      } 
+      read(x); 
+    } 
+  } 
+} 
+A.2 Syntax 
+Program  = "program" ident {ConstDecl | VarDecl | ClassDecl}  
+  "{" {MethodDecl} "}". 
+ConstDecl = "final" Type ident "=" (number | charConst) ";". 
+VarDecl = Type ident {"," ident } ";". 
+ClassDecl = "class" ident "{" {VarDecl} "}". 
+MethodDecl = (Type | "void") ident "(" [FormPars] ")" {VarDecl} Block. 
+FormPars = Type ident  {"," Type ident}. 
+Type = ident ["[" "]"]. 
+Block = "{" {Statement} "}". 
+Statement = Designator ("=" Expr | ActPars) ";" 
+ | "if" "(" Condition ")" Statement ["else" Statement] 
+ | "while" "(" Condition ")" Statement 
+ | "return" [Expr] ";" 
+ | "read" "(" Designator ")" ";" 
+ | "print" "(" Expr ["," number] ")" ";" 
+ | Block 
+ | ";". 
+ActPars = "(" [ Expr {"," Expr} ] ")". 
+Condition = Expr Relop Expr. 
+Relop = "==" | "!=" | ">" | ">=" | "<" | "<=". 
+Expr = ["-"] Term {Addop Term}. 
+Term = Factor {Mulop Factor}. 
+Factor = Designator [ActPars] 
+ | number 
+ | charConst 
+ | "new" ident ["[" Expr "]"] 
+ | "(" Expr ")". 
+Designator = ident {"." ident | "[" Expr "]"}. 
+Addop = "+" | "-". 
+Mulop = "*" | "/" | "%".  
+Lexical structure 
+Character classes: letter     = 'a'..'z' | 'A'..'Z'. 
+ digit      = '0'..'9'. 
+ whiteSpace = ' ' | '\t' | '\r' | '\n'.  
+Terminal classes:  ident      = letter {letter | digit}. 
+ number     = digit {digit}. 
+ charConst  = "'" char "'".  // including '\r', '\t', '\n'  
+Keywords:  program class 
+ if else while read print return 
+ void final new  
+Operators:  + - * / % 
+ == != > >= < <= 
+ ( ) [ ] { }  
+ = ; , .  
+Comments:  // to the end of line 
+A.3 Semantics 
+All terms in this document that have a de finition are underlined to emphasize their 
+special meaning. The definitions of these terms are given here. 
+Reference type 
+Arrays and classes are called reference types. 
+Type of a constant 
+ The type of an integer constant (e.g. 17) is int. 
+ The type of a character constant (e.g. 'x') is char. 
+Same type 
+Two types are the same 
+ if they are denoted by the same type name, or 
+ if both types are arrays and their element types are the same. 
+Type compatibility 
+Two types are compatible 
+ if they are the same, or 
+ if one of them is a reference type and the other is the type of null. 
+Assignment compatibility 
+A type src is assignment compatible with a type dst 
+ if src and dst are the same, or 
+ if dst is a reference type and src is the type of null. 
+Predeclared names 
+int the type of all integer values 
+char t h e  t y p e  o f  a l l  c h a r a c t e r  v a l u e s  
+null t h e  n u l l  v a l u e  o f  a  c l a s s  o r  a r r a y  v ariable, meaning "pointing to no value" 
+chr standard method; chr(i) converts the int expression i into a char value 
+ord standard method; ord(ch) converts the char value ch into an int value 
+len standard method; len(a) returns the number of elements of the array a 
+Scope 
+A scope is the textual range of  a method or a class. It exte nds from the point after the 
+declaring method or class name to the clos ing curly bracket of the method or class 
+declaration. A scope excludes ot her scopes that are nested w ithin it. We assume that 
+there is an (artificial) outermost scope (called the universe), to which the main class is 
+local and which contains all predeclared names. The declaration of a name in an inner 
+scope hides the declarations of the same name in outer scopes. 
+Note 
+ Indirectly recursive methods are not allo wed, since every name must be declared 
+before it is used. This would not be possible if indirect recursion were allowed. 
+ A predeclared name (e.g. int or char) can be redeclared in an inner scope (but this is 
+not recommended). 
+A.4 Context Conditions 
+General context conditions 
+ Every name must be declared before it is used. 
+ A name must not be declared twice in the same scope. 
+ A program must contain a method named main. It must be declared as a void 
+method and must not have parameters. 
+Context conditions for standard methods 
+chr(e) e must be an expression of type int. 
+ord(c) c must be of type char. 
+len(a) a must be an array. 
+Context conditions for the MicroJava productions 
+Program  = "program" ident {ConstDecl | VarDecl | ClassDecl} "{" {MethodDecl} "}". 
+ 
+ConstDecl = "final" Type ident "=" (number | charConst) ";". 
+ The type of number or charConst must be the same as the type of Type. 
+ 
+VarDecl = Type ident {"," ident } ";". 
+ 
+ClassDecl = "class" ident "{" {VarDecl} "}". 
+ 
+MethodDecl = (Type | "void") ident "(" [For mPars] ")" {VarDecl} "{" {Statement} "}". 
+ If a method is a function it must be left via a return statement (this is checked at run 
+time). 
+ 
+FormPars = Type ident {"," Type ident}. 
+ 
+Type = ident ["[" "]"]. 
+ ident must denote a type. 
+ 
+Statement = Designator "=" Expr ";". 
+ Designator must denote a variable, an array element or an object field. 
+ The type of Expr must be assignment compatible with the type of Designator. 
+ 
+Statement = Designator ActPars ";". 
+ Designator must denote a method. 
+ 
+Statement = "read" "(" Designator ")" ";". 
+ Designator must denote a variable, an array element or an object field. 
+ Designator must be of type int or char. 
+ 
+Statement = "print" "(" Expr ["," number] ")" ";". 
+ Expr must be of type int or char. 
+ 
+Statement = "return" [Expr] . 
+ The type of Expr must be assignment compatible  with the function type of the cur-
+rent method. 
+ If Expr is missing the current method must be declared as void. 
+ 
+Statement =  "if" "(" Condition ")" Statement ["else" Statement] 
+ |  " w h i l e "  " ( "  C o n d i t i o n  " ) "  S t a t e m e n t  
+ |  " { "  { S t a t e m e n t }  " } "  
+ |   " ; " .  
+ 
+ActPars = "(" [ Expr {"," Expr} ] ")". 
+ The numbers of actual and formal parameters must match. 
+ The type of every actual parameter must be assignment compatible with the type of 
+every formal parameter at corresponding positions. 
+ 
+Condition = Expr Relop Expr. 
+ The types of both expressions must be compatible. 
+ Classes and arrays can only be checked for equality or inequality. 
+ 
+Expr = Term. 
+ 
+Expr = "-"Term. 
+ Term must be of type int. 
+ 
+Expr = Expr Addop Term. 
+ Expr and Term must be of type int. 
+ 
+Term = Factor. 
+ 
+Term = Term Mulop Factor. 
+ Term and Factor must be of type int. 
+ 
+Factor = Designator | number | charConst| "(" Expr ")". 
+ 
+Factor = Designator ActPars. 
+ Designator must denote a method. 
+ 
+Factor = "new" Type . 
+ Type must denote a class. 
+ 
+Factor = "new" Type "[" Expr "]". 
+ The type of Expr must be int. 
+ 
+Designator  = Designator "." ident . 
+ The type of Designator must be a class. 
+ ident must be a field of Designator. 
+ 
+Designator = Designator "[" Expr "]". 
+ The type of Designator must be an array. 
+ The type of Expr must be int. 
+ 
+Relop = "==" | "!=" | ">" | ">=" | "<" | "<=". 
+ 
+Addop = "+" | "-". 
+ 
+Mulop = "*" | "/" | "%". 
+A.5 Implementation Restrictions  
+ There must not be more than 127 local variables. 
+ There must not be more than 32767 global variables. 
+ A class must not have more than 32767 fields. 
+
+--- MiniCompilerProject.pdf ---
+CS-471L Compiler Construction Lab  
+Page 1 of 5 
+CS-471L: Compiler Construction Lab Mini Compiler Project (Integrated Lab Modules) Spring 2026 University of Engineering and Technology, Lahore Department of Computer Science Instructor: aliya.farooq@uet.edu.pk Reference Book: Compilers, Principles, Techniques, and Tools (Aho, Lam, Sethi, Ullman) 1. Project Overview This document describes the final lab project for the Compiler Construction course. In this project, every group will combine all the lab modules that were built during the semester into one working mini compiler. The lab tasks that have been uploaded on Google Classroom form the base of this project and must be reused. Three more topics are to be added to the mini compiler: LR Parser, Symbol Table Manager, and Error Handling. The LR Parser and the Symbol Table Manager are required modules. The Error Handler is a bonus task and carries extra marks. Each group will work with the language subset and the CFG grammar that was assigned to them during the lab tasks. The same grammar must be used in every module of the mini compiler so that the lexer, parsers, symbol table, and error handler all agree on the same source language. 2. Group Formation • Minimum group size: 2 students. • Maximum group size: 3 students. • Each group must register its members at the start of the project and pick one member as the group lead. • The modules must be divided fairly among the members. • Every member must attend the demo and must be able to explain the module they built. • Marks may differ within a group based on the individual viva. 3. Language Subset and Grammar Each group will use the language subset and the BNF grammar that was assigned to them during the lab sessions. Different groups have different grammars (for example a subset of Pascal, MicroJava, Decaf Language). The chosen grammar must be used consistently across the lexical analyzer, the parsers, the symbol table, and the error handler. The grammar must be supplied in BNF form. If the grammar contains left recursion or is not left factored, it must be transformed before being used with the recursive descent and the predictive parsers. The original (left-recursive) grammar may be used with the LR parser. 4. Compiler Modules The mini compiler must contain the following modules, all linked together into one program. 
+CS-471L Compiler Construction Lab  
+Page 2 of 5 
+4.1 Lexical Analyzer (Lab 3) • Read the source program character by character using double buffering (from Lab 2). • Produce a token stream as a sequence of (token, attribute) pairs. • Track the line number and column number of every token. • Skip whitespace and comments. • Recognize identifiers, keywords, numbers, character constants, operators, and punctuation as defined by the assigned grammar. • Pass one token at a time to the parser when the parser asks for it. 4.2 Recursive Descent Parser (Lab 4) • One parsing routine per non-terminal of the grammar. • Each routine calls the lexical analyzer to read the next token. • A syntax error is reported when the input does not match the expected grammar rule. • The grammar used here must be free of left recursion and must be left factored. 4.3 Non-Recursive Predictive Parser (Lab 5) • Use an LL(1) parsing table built from the FIRST and FOLLOW sets of the grammar. • Use an explicit stack instead of recursive function calls. • Should produce the same parse result as the recursive descent parser for the same input. • Print the parsing table and the FIRST and FOLLOW sets in the project report. 4.4 LR Parser (New Module) • Construct the LR parsing table for the assigned grammar. • Any of LR(0), SLR(1), LALR(1), or canonical LR(1) may be used. The choice must be justified in the report. • Implement the standard shift-reduce algorithm with a stack of states and a stack of grammar symbols. • Print the action table and the goto table in the project report. • For at least one sample input, show a trace with the stack contents, the remaining input, and the action taken at each step. 4.5 Symbol Table Manager (Lab 7, Extended) • Use a hash-based table for fast lookup. • Support insert, lookup, and delete operations. • Store the name, kind (variable / constant / function / array / class), type, scope level, and source line number for each entry. • Handle nested scopes using a stack of symbol tables or a linked scope chain. • The parser must call the symbol table at every declaration and at every use of a name. • The contents of the symbol table must be printable at any point for debugging. 4.6 Error Handler (Bonus Task) • Detect and report lexical, syntactic, and semantic errors. 
+CS-471L Compiler Construction Lab  
+Page 3 of 5 
+• Print the line number, column number, and a short message for every error. • Use panic-mode recovery so that the parser does not stop at the first error. • For the LR parser, use the error entries in the parsing table to invoke the recovery routine. • For the predictive parser, use synchronization sets based on FOLLOW sets to skip tokens after an error. • Print a summary of all detected errors at the end of compilation. • Extra marks are given for phrase-level recovery and for clear, helpful error messages. 5. Deliverables (Updated) The deliverables for the mini compiler project are different from the earlier milestones. Each group must submit the following four items. Deliverable Description Submission Week Weight D1: Group Sheet and Grammar Group members with roll numbers, the assigned grammar in BNF, FIRST and FOLLOW sets, LL(1) parsing table, LR parsing table (action + goto), and at least three sample programs. 
+Week 13 10% 
+D2: Integrated Source Code All source files for the lexer, three parsers, symbol table, and error handler. Build script (Makefile or batch file). README file. Folder with sample input files. Folder with output of every module. 
+Week 16 40% 
+D3: Project Report Grammar specification, description of each module, construction of the LR parsing table (showing the working), discussion of how the modules are integrated, sample input and output, limitations, and references. 
+Week 16 25% 
+D4: Live Demonstration Fifteen-minute demo per group. Run sample programs through every module. Each member explains their part. Short Q&A session at the end. 
+Week 16 25% 
+ The four deliverables together make up the project marks. The grading rubric in Section 6 is applied on top of these deliverables. 6. Grading Rubric (Unchanged) The grading rubric remains the same as the one given in the original semester plan. Component Excellent (90–100%) Good (70–89%) Satisfactory (50–69%) Poor (<50%) Lexer All tokens, robust errors Most tokens, basic errors Basic tokens work Major issues 
+CS-471L Compiler Construction Lab  
+Page 4 of 5 
+Component Excellent (90–100%) Good (70–89%) Satisfactory (50–69%) Poor (<50%) Parser Complete grammar, AST Most grammar, some AST Basic statements Incomplete Symbol Table Scopes, efficient Basic scopes Works Not functional Semantics Type checking, validation Basic type checking Minimal Missing Integration Seamless, well-tested Works together Basic integration Poor Documentation Professional, complete Good coverage Adequate Insufficient Demo Confident, handles edge cases Good presentation Basic demo Unprepared 
+ Bonus Marks (Up to 15%) • Working error handler with both panic-mode and phrase-level recovery. • Clear and friendly error messages with line and column information. • LR parsing table built by hand and matched with an auto-generated table from a tool such as YACC or Bison. • AST visualization (text or graphical). 7. Submission Guidelines File Naming CS471L_Project_Group#_RollNo.zip Example: CS471L_Project_Group3_2021CS101.zip Folder Layout submission/ ├── src/             (all source code files) ├── docs/            (project report and grammar) ├── test/            (sample programs) ├── output/          (sample outputs for each module) ├── Makefile         (build file) └── README.md        (build and run instructions) Submission Platform Upload on the GCR only. Email submissions will not be accepted unless the GCR is down. Late Submission Policy 
+CS-471L Compiler Construction Lab  
+Page 5 of 5 
+Days Late Penalty 1 day −10% 2 days −20% 3 days −30% More than 3 days Not accepted  8. Academic Integrity • Code sharing between groups is not allowed. • Code from previous semesters or from public online repositories is not allowed. • AI tools may be used to understand concepts only, not to generate the source code of the compiler. • All submissions will be checked with MOSS (Measure of Software Similarity). • Plagiarism penalties listed in the course policy apply. 9. Evaluation Format • Each group will be evaluated in a separate slot in the final lab week. • The teaching assistant will run a few unseen test programs through the compiler. • Every member will be asked at least two questions on the module they built. • Every member will be asked at least one question on how the modules are integrated. • Marks may differ within a group based on the individual viva. • Bring a laptop with the compiler ready to run. Code that does not compile at demo time will lose integration marks. 10. Quick Checklist Before Submission • All six modules build and run from a single command. • Lexer prints the token stream for the sample input. • Recursive descent parser, predictive parser, and LR parser all accept the same valid input and reject the same invalid input. • Symbol table dump is correct after declarations. • Error handler reports line and column numbers and recovers from at least one error per input file. • Project report contains the grammar, FIRST/FOLLOW sets, LL(1) table, LR action and goto tables, and sample traces. • All members can explain their part of the code.  End of Document  
