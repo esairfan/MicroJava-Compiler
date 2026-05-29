@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MicroJava Mini-Compiler Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="glass-background"></div>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-icon">⚡</span>
+                <h1>MicroJava <span class="accent-text">Mini-Compiler</span></h1>
+            </div>
+            <div class="controls-group">
+                <input type="file" id="file-upload" accept=".mj,.txt" style="display: none;">
+                <label for="file-upload" class="btn btn-secondary" style="cursor: pointer;">
+                    <span>Open File</span>
+                </label>
+                <button id="compile-btn" class="btn btn-primary">
+                    <span class="btn-text">Compile Code</span>
+                    <span class="btn-spinner"></span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <main class="workspace">
+            <!-- Left Panel: Code Editor -->
+            <section class="editor-section card">
+                <div class="panel-header">
+                    <h2>Source Code Editor</h2>
+                    <span class="file-name" id="current-filename">untitled.mj</span>
+                </div>
+                <div class="editor-container">
+                    <div class="line-numbers" id="line-numbers">1</div>
+                    <textarea id="code-textarea" spellcheck="false" placeholder="write your MicroJava code here..."></textarea>
+                </div>
+            </section>
+
+            <!-- Right Panel: Output Dashboard -->
+            <section class="dashboard-section card">
+                <div class="panel-header">
+                    <h2>Compilation Dashboard</h2>
+                    <span class="status-badge" id="status-badge">Idle</span>
+                </div>
+                
+                <!-- Tab Headers -->
+                <div class="tab-headers">
+                    <button class="tab-btn active" data-tab="lexer">1. Lexer</button>
+                    <button class="tab-btn" data-tab="rd-tree">2. RD Tree</button>
+                    <button class="tab-btn" data-tab="sym-table">3. Symbol Table</button>
+                    <button class="tab-btn" data-tab="ll1-steps">4. LL(1)</button>
+                    <button class="tab-btn" data-tab="lr1-actions">5. LR(1)</button>
+                    <button class="tab-btn" data-tab="run-vm" id="tab-btn-run-vm">6. Terminal</button>
+                </div>
+
+                <!-- Tab Contents -->
+                <div class="tab-contents">
+                    <!-- Lexer Tab -->
+                    <div class="tab-pane active" id="tab-lexer">
+                        <div class="table-container">
+                            <table id="lexer-table">
+                                <thead>
+                                    <tr>
+                                        <th>Token Type</th>
+                                        <th>Lexeme</th>
+                                        <th>Line</th>
+                                        <th>Column</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="4" class="empty-state">No tokens scanned. Click compile.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- RD Tree Tab -->
+                    <div class="tab-pane" id="tab-rd-tree">
+                        <div class="tree-container" id="rd-tree-content">
+                            <div class="empty-state">No parse tree generated. Click compile.</div>
+                        </div>
+                    </div>
+
+                    <!-- Symbol Table Tab -->
+                    <div class="tab-pane" id="tab-sym-table">
+                        <div class="table-container">
+                            <table id="sym-table">
+                                <thead>
+                                    <tr>
+                                        <th>Scope</th>
+                                        <th>Symbol Name</th>
+                                        <th>Kind</th>
+                                        <th>Data Type</th>
+                                        <th>Line</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td colspan="5" class="empty-state">No symbols loaded. Click compile.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- LL1 Steps Tab -->
+                    <div class="tab-pane" id="tab-ll1-steps">
+                        <div class="terminal-container" id="ll1-content">
+                            <div class="empty-state">No LL(1) derivations yet. Click compile.</div>
+                        </div>
+                    </div>
+
+                    <!-- LR1 Actions Tab -->
+                    <div class="tab-pane" id="tab-lr1-actions">
+                        <div class="terminal-container" id="lr1-content">
+                            <div class="empty-state">No LR(1) actions logged yet. Click compile.</div>
+                        </div>
+                    </div>
+
+                    <!-- Run Program Terminal Tab -->
+                    <div class="tab-pane" id="tab-run-vm">
+                        <div class="vm-container" style="display: flex; flex-direction: column; height: 100%;">
+                            <div class="vm-controls" style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                                <button id="run-vm-btn" class="btn btn-primary" style="display:none;">Run Program</button>
+                                <button id="reset-vm-btn" class="btn btn-secondary" style="display:none;">Reset / Stop</button>
+                            </div>
+                            <div class="vm-layout" id="vm-layout" style="display:none; grid-template-columns: 1fr; gap: 1rem; flex: 1; min-height: 0;">
+                                <!-- Full Width Terminal Console -->
+                                <div class="vm-console card" style="background: #05070c; border: 1px solid rgba(255,255,255,0.08); font-family: 'Fira Code', monospace; padding: 1.2rem; display: flex; flex-direction: column; min-height: 0; border-radius: 8px;">
+                                    <div class="vm-console-log" id="vm-log" style="flex: 1; overflow-y: auto; color: #38bdf8; font-size: 0.9rem; line-height: 1.6; margin-bottom: 0.8rem; white-space: pre-wrap;"></div>
+                                    <div class="vm-input-line" style="display: flex; align-items: center; color: #10b981; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.7rem;">
+                                        <span style="font-weight: bold; margin-right: 0.5rem; color: #10b981;">$ </span>
+                                        <input type="text" id="vm-input" placeholder="Enter input here..." style="flex: 1; background: transparent; border: none; outline: none; color: #f3f4f6; font-family: inherit; font-size: 0.9rem;" />
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="empty-state" id="vm-empty-state">Compile successfully to run your program in the terminal.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Console / Error Panel -->
+                <div class="console-panel error" id="console-panel" style="display: none;">
+                    <div class="console-header">
+                        <h3>Error Console</h3>
+                        <button class="console-close" id="console-close">&times;</button>
+                    </div>
+                    <div class="console-body" id="console-body">
+                        <!-- Errors will be injected here -->
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
