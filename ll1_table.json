@@ -1,0 +1,1189 @@
+{
+  "first": {
+    "Program": [
+      "program"
+    ],
+    "ConstDecl": [
+      "final"
+    ],
+    "VarDecl": [
+      "ident"
+    ],
+    "ClassDecl": [
+      "class"
+    ],
+    "Program_Body": [
+      "",
+      "ident",
+      "final",
+      "class"
+    ],
+    "ConstValue": [
+      "number",
+      "charConst"
+    ],
+    "Type": [
+      "ident"
+    ],
+    "VarDecl_Tail": [
+      "",
+      ","
+    ],
+    "VarDecls": [
+      "",
+      "ident"
+    ],
+    "MethodDecl": [
+      "void",
+      "ident"
+    ],
+    "MethodDecls": [
+      "",
+      "void",
+      "ident"
+    ],
+    "MethodType": [
+      "void",
+      "ident"
+    ],
+    "FormPars": [
+      "ident"
+    ],
+    "FormPars_Opt": [
+      "",
+      "ident"
+    ],
+    "FormPars_Tail": [
+      "",
+      ","
+    ],
+    "Type_Opt": [
+      "",
+      "["
+    ],
+    "Block": [
+      "{"
+    ],
+    "Statement": [
+      ";",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "read",
+      "print",
+      "if"
+    ],
+    "Statements": [
+      "",
+      ";",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "read",
+      "print",
+      "if"
+    ],
+    "Designator": [
+      "ident"
+    ],
+    "Statement_AssignOrCall": [
+      "(",
+      "="
+    ],
+    "ActPars": [
+      "("
+    ],
+    "Else_Opt": [
+      "",
+      "else"
+    ],
+    "Expr": [
+      "number",
+      "-",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Expr_Opt": [
+      "",
+      "-",
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Print_Opt": [
+      "",
+      ","
+    ],
+    "ActPars_List": [
+      "",
+      "-",
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "ActPars_Tail": [
+      "",
+      ","
+    ],
+    "Relop": [
+      "<=",
+      "==",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Expr_Minus": [
+      "",
+      "-"
+    ],
+    "Addop": [
+      "+",
+      "-"
+    ],
+    "Expr_Tail": [
+      "",
+      "-",
+      "+"
+    ],
+    "Factor": [
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Mulop": [
+      "*",
+      "/",
+      "%"
+    ],
+    "Term_Tail": [
+      "",
+      "/",
+      "*",
+      "%"
+    ],
+    "Factor_Designator": [
+      "",
+      "("
+    ],
+    "Factor_New": [
+      "",
+      "["
+    ],
+    "Designator_Tail": [
+      "",
+      "[",
+      "."
+    ],
+    "Term": [
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Condition": [
+      "number",
+      "-",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ]
+  },
+  "follow": {
+    "Program": [
+      "$"
+    ],
+    "Program_Body": [
+      "{"
+    ],
+    "MethodDecls": [
+      "}"
+    ],
+    "ConstDecl": [
+      "{",
+      "final",
+      "ident",
+      "class"
+    ],
+    "VarDecl": [
+      "{",
+      "ident",
+      "}",
+      "final",
+      "class"
+    ],
+    "ClassDecl": [
+      "{",
+      "final",
+      "ident",
+      "class"
+    ],
+    "Type": [
+      "ident"
+    ],
+    "ConstValue": [
+      ";"
+    ],
+    "VarDecl_Tail": [
+      ";"
+    ],
+    "VarDecls": [
+      "}",
+      "{"
+    ],
+    "MethodDecl": [
+      "}",
+      "void",
+      "ident"
+    ],
+    "MethodType": [
+      "ident"
+    ],
+    "FormPars_Opt": [
+      ")"
+    ],
+    "Block": [
+      ";",
+      "void",
+      "else",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "}",
+      "read",
+      "print",
+      "if"
+    ],
+    "FormPars": [
+      ")"
+    ],
+    "FormPars_Tail": [
+      ")"
+    ],
+    "Type_Opt": [
+      "ident"
+    ],
+    "Statements": [
+      "}"
+    ],
+    "Statement": [
+      ";",
+      "else",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "}",
+      "read",
+      "print",
+      "if"
+    ],
+    "Designator": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "(",
+      "/",
+      "+",
+      "]",
+      ",",
+      "==",
+      "=",
+      ")",
+      "%",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Statement_AssignOrCall": [
+      ";",
+      "else",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "}",
+      "read",
+      "print",
+      "if"
+    ],
+    "Condition": [
+      ")"
+    ],
+    "Else_Opt": [
+      ";",
+      "else",
+      "{",
+      "return",
+      "ident",
+      "while",
+      "}",
+      "read",
+      "print",
+      "if"
+    ],
+    "Expr_Opt": [
+      ";"
+    ],
+    "Expr": [
+      ";",
+      "<=",
+      "]",
+      "<",
+      ",",
+      "==",
+      ")",
+      "!=",
+      ">=",
+      ">"
+    ],
+    "Print_Opt": [
+      ")"
+    ],
+    "ActPars": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "/",
+      "+",
+      "<",
+      "]",
+      ",",
+      "==",
+      ")",
+      "%",
+      "!=",
+      ">=",
+      ">"
+    ],
+    "ActPars_List": [
+      ")"
+    ],
+    "ActPars_Tail": [
+      ")"
+    ],
+    "Relop": [
+      "number",
+      "-",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Expr_Minus": [
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Term": [
+      "-",
+      ";",
+      "<=",
+      "+",
+      "]",
+      ",",
+      "==",
+      ")",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Expr_Tail": [
+      ";",
+      "<=",
+      "]",
+      ",",
+      "==",
+      ")",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Addop": [
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Factor": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "/",
+      "+",
+      "<",
+      "]",
+      ",",
+      "==",
+      ")",
+      "%",
+      "!=",
+      ">=",
+      ">"
+    ],
+    "Term_Tail": [
+      "-",
+      ";",
+      "<=",
+      "+",
+      "]",
+      "<",
+      ",",
+      "==",
+      ")",
+      "!=",
+      ">=",
+      ">"
+    ],
+    "Mulop": [
+      "number",
+      "(",
+      "charConst",
+      "ident",
+      "new"
+    ],
+    "Factor_Designator": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "/",
+      "+",
+      "]",
+      ",",
+      "==",
+      ")",
+      "%",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Factor_New": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "/",
+      "+",
+      "]",
+      ",",
+      "==",
+      ")",
+      "%",
+      "!=",
+      ">",
+      ">=",
+      "<"
+    ],
+    "Designator_Tail": [
+      "*",
+      "-",
+      ";",
+      "<=",
+      "(",
+      "/",
+      "+",
+      "<",
+      "]",
+      ",",
+      "==",
+      "=",
+      ")",
+      "%",
+      "!=",
+      ">=",
+      ">"
+    ]
+  },
+  "table": {
+    "Program": {
+      "program": 0
+    },
+    "Program_Body": {
+      "final": 0,
+      "ident": 1,
+      "class": 2,
+      "{": 3
+    },
+    "ConstDecl": {
+      "final": 0
+    },
+    "ConstValue": {
+      "number": 0,
+      "charConst": 1
+    },
+    "VarDecl": {
+      "ident": 0
+    },
+    "VarDecl_Tail": {
+      ",": 0,
+      ";": 1
+    },
+    "ClassDecl": {
+      "class": 0
+    },
+    "VarDecls": {
+      "ident": 0,
+      "}": 1,
+      "{": 1
+    },
+    "MethodDecls": {
+      "void": 0,
+      "ident": 0,
+      "}": 1
+    },
+    "MethodDecl": {
+      "void": 0,
+      "ident": 0
+    },
+    "MethodType": {
+      "ident": 0,
+      "void": 1
+    },
+    "FormPars_Opt": {
+      "ident": 0,
+      ")": 1
+    },
+    "FormPars": {
+      "ident": 0
+    },
+    "FormPars_Tail": {
+      ",": 0,
+      ")": 1
+    },
+    "Type": {
+      "ident": 0
+    },
+    "Type_Opt": {
+      "[": 0,
+      "ident": 1
+    },
+    "Block": {
+      "{": 0
+    },
+    "Statements": {
+      ";": 0,
+      "{": 0,
+      "return": 0,
+      "ident": 0,
+      "while": 0,
+      "read": 0,
+      "print": 0,
+      "if": 0,
+      "}": 1
+    },
+    "Statement": {
+      "ident": 0,
+      "if": 1,
+      "while": 2,
+      "return": 3,
+      "read": 4,
+      "print": 5,
+      "{": 6,
+      ";": 7
+    },
+    "Statement_AssignOrCall": {
+      "=": 0,
+      "(": 1
+    },
+    "Else_Opt": {
+      "else": 0,
+      ";": 1,
+      "{": 1,
+      "return": 1,
+      "ident": 1,
+      "while": 1,
+      "}": 1,
+      "read": 1,
+      "print": 1,
+      "if": 1
+    },
+    "Expr_Opt": {
+      "number": 0,
+      "-": 0,
+      "(": 0,
+      "charConst": 0,
+      "new": 0,
+      "ident": 0,
+      ";": 1
+    },
+    "Print_Opt": {
+      ",": 0,
+      ")": 1
+    },
+    "ActPars": {
+      "(": 0
+    },
+    "ActPars_List": {
+      "number": 0,
+      "-": 0,
+      "(": 0,
+      "charConst": 0,
+      "new": 0,
+      "ident": 0,
+      ")": 1
+    },
+    "ActPars_Tail": {
+      ",": 0,
+      ")": 1
+    },
+    "Condition": {
+      "number": 0,
+      "-": 0,
+      "(": 0,
+      "charConst": 0,
+      "new": 0,
+      "ident": 0
+    },
+    "Relop": {
+      "==": 0,
+      "!=": 1,
+      ">": 2,
+      ">=": 3,
+      "<": 4,
+      "<=": 5
+    },
+    "Expr": {
+      "number": 0,
+      "-": 0,
+      "(": 0,
+      "charConst": 0,
+      "new": 0,
+      "ident": 0
+    },
+    "Expr_Minus": {
+      "-": 0,
+      "number": 1,
+      "(": 1,
+      "charConst": 1,
+      "ident": 1,
+      "new": 1
+    },
+    "Expr_Tail": {
+      "+": 0,
+      "-": 0,
+      ";": 1,
+      "<=": 1,
+      "]": 1,
+      ",": 1,
+      "==": 1,
+      ")": 1,
+      "!=": 1,
+      ">": 1,
+      ">=": 1,
+      "<": 1
+    },
+    "Addop": {
+      "+": 0,
+      "-": 1
+    },
+    "Term": {
+      "number": 0,
+      "(": 0,
+      "charConst": 0,
+      "new": 0,
+      "ident": 0
+    },
+    "Term_Tail": {
+      "*": 0,
+      "/": 0,
+      "%": 0,
+      "-": 1,
+      ";": 1,
+      "<=": 1,
+      "+": 1,
+      "]": 1,
+      "<": 1,
+      ",": 1,
+      "==": 1,
+      ")": 1,
+      "!=": 1,
+      ">=": 1,
+      ">": 1
+    },
+    "Mulop": {
+      "*": 0,
+      "/": 1,
+      "%": 2
+    },
+    "Factor": {
+      "ident": 0,
+      "number": 1,
+      "charConst": 2,
+      "new": 3,
+      "(": 4
+    },
+    "Factor_Designator": {
+      "(": 0,
+      "*": 1,
+      "-": 1,
+      ";": 1,
+      "<=": 1,
+      "/": 1,
+      "+": 1,
+      "]": 1,
+      ",": 1,
+      "==": 1,
+      ")": 1,
+      "%": 1,
+      "!=": 1,
+      ">": 1,
+      ">=": 1,
+      "<": 1
+    },
+    "Factor_New": {
+      "[": 0,
+      "*": 1,
+      "-": 1,
+      ";": 1,
+      "<=": 1,
+      "/": 1,
+      "+": 1,
+      "]": 1,
+      ",": 1,
+      "==": 1,
+      ")": 1,
+      "%": 1,
+      "!=": 1,
+      ">": 1,
+      ">=": 1,
+      "<": 1
+    },
+    "Designator": {
+      "ident": 0
+    },
+    "Designator_Tail": {
+      ".": 0,
+      "[": 1,
+      "*": 2,
+      "-": 2,
+      ";": 2,
+      "<=": 2,
+      "(": 2,
+      "/": 2,
+      "+": 2,
+      "<": 2,
+      "]": 2,
+      ",": 2,
+      "==": 2,
+      "=": 2,
+      ")": 2,
+      "%": 2,
+      "!=": 2,
+      ">=": 2,
+      ">": 2
+    }
+  },
+  "grammar": {
+    "Program": [
+      [
+        "program",
+        "ident",
+        "Program_Body",
+        "{",
+        "MethodDecls",
+        "}"
+      ]
+    ],
+    "Program_Body": [
+      [
+        "ConstDecl",
+        "Program_Body"
+      ],
+      [
+        "VarDecl",
+        "Program_Body"
+      ],
+      [
+        "ClassDecl",
+        "Program_Body"
+      ],
+      []
+    ],
+    "ConstDecl": [
+      [
+        "final",
+        "Type",
+        "ident",
+        "=",
+        "ConstValue",
+        ";"
+      ]
+    ],
+    "ConstValue": [
+      [
+        "number"
+      ],
+      [
+        "charConst"
+      ]
+    ],
+    "VarDecl": [
+      [
+        "Type",
+        "ident",
+        "VarDecl_Tail",
+        ";"
+      ]
+    ],
+    "VarDecl_Tail": [
+      [
+        ",",
+        "ident",
+        "VarDecl_Tail"
+      ],
+      []
+    ],
+    "ClassDecl": [
+      [
+        "class",
+        "ident",
+        "{",
+        "VarDecls",
+        "}"
+      ]
+    ],
+    "VarDecls": [
+      [
+        "VarDecl",
+        "VarDecls"
+      ],
+      []
+    ],
+    "MethodDecls": [
+      [
+        "MethodDecl",
+        "MethodDecls"
+      ],
+      []
+    ],
+    "MethodDecl": [
+      [
+        "MethodType",
+        "ident",
+        "(",
+        "FormPars_Opt",
+        ")",
+        "VarDecls",
+        "Block"
+      ]
+    ],
+    "MethodType": [
+      [
+        "Type"
+      ],
+      [
+        "void"
+      ]
+    ],
+    "FormPars_Opt": [
+      [
+        "FormPars"
+      ],
+      []
+    ],
+    "FormPars": [
+      [
+        "Type",
+        "ident",
+        "FormPars_Tail"
+      ]
+    ],
+    "FormPars_Tail": [
+      [
+        ",",
+        "Type",
+        "ident",
+        "FormPars_Tail"
+      ],
+      []
+    ],
+    "Type": [
+      [
+        "ident",
+        "Type_Opt"
+      ]
+    ],
+    "Type_Opt": [
+      [
+        "[",
+        "]"
+      ],
+      []
+    ],
+    "Block": [
+      [
+        "{",
+        "Statements",
+        "}"
+      ]
+    ],
+    "Statements": [
+      [
+        "Statement",
+        "Statements"
+      ],
+      []
+    ],
+    "Statement": [
+      [
+        "Designator",
+        "Statement_AssignOrCall"
+      ],
+      [
+        "if",
+        "(",
+        "Condition",
+        ")",
+        "Statement",
+        "Else_Opt"
+      ],
+      [
+        "while",
+        "(",
+        "Condition",
+        ")",
+        "Statement"
+      ],
+      [
+        "return",
+        "Expr_Opt",
+        ";"
+      ],
+      [
+        "read",
+        "(",
+        "Designator",
+        ")",
+        ";"
+      ],
+      [
+        "print",
+        "(",
+        "Expr",
+        "Print_Opt",
+        ")",
+        ";"
+      ],
+      [
+        "Block"
+      ],
+      [
+        ";"
+      ]
+    ],
+    "Statement_AssignOrCall": [
+      [
+        "=",
+        "Expr",
+        ";"
+      ],
+      [
+        "ActPars",
+        ";"
+      ]
+    ],
+    "Else_Opt": [
+      [
+        "else",
+        "Statement"
+      ],
+      []
+    ],
+    "Expr_Opt": [
+      [
+        "Expr"
+      ],
+      []
+    ],
+    "Print_Opt": [
+      [
+        ",",
+        "number"
+      ],
+      []
+    ],
+    "ActPars": [
+      [
+        "(",
+        "ActPars_List",
+        ")"
+      ]
+    ],
+    "ActPars_List": [
+      [
+        "Expr",
+        "ActPars_Tail"
+      ],
+      []
+    ],
+    "ActPars_Tail": [
+      [
+        ",",
+        "Expr",
+        "ActPars_Tail"
+      ],
+      []
+    ],
+    "Condition": [
+      [
+        "Expr",
+        "Relop",
+        "Expr"
+      ]
+    ],
+    "Relop": [
+      [
+        "=="
+      ],
+      [
+        "!="
+      ],
+      [
+        ">"
+      ],
+      [
+        ">="
+      ],
+      [
+        "<"
+      ],
+      [
+        "<="
+      ]
+    ],
+    "Expr": [
+      [
+        "Expr_Minus",
+        "Term",
+        "Expr_Tail"
+      ]
+    ],
+    "Expr_Minus": [
+      [
+        "-"
+      ],
+      []
+    ],
+    "Expr_Tail": [
+      [
+        "Addop",
+        "Term",
+        "Expr_Tail"
+      ],
+      []
+    ],
+    "Addop": [
+      [
+        "+"
+      ],
+      [
+        "-"
+      ]
+    ],
+    "Term": [
+      [
+        "Factor",
+        "Term_Tail"
+      ]
+    ],
+    "Term_Tail": [
+      [
+        "Mulop",
+        "Factor",
+        "Term_Tail"
+      ],
+      []
+    ],
+    "Mulop": [
+      [
+        "*"
+      ],
+      [
+        "/"
+      ],
+      [
+        "%"
+      ]
+    ],
+    "Factor": [
+      [
+        "Designator",
+        "Factor_Designator"
+      ],
+      [
+        "number"
+      ],
+      [
+        "charConst"
+      ],
+      [
+        "new",
+        "ident",
+        "Factor_New"
+      ],
+      [
+        "(",
+        "Expr",
+        ")"
+      ]
+    ],
+    "Factor_Designator": [
+      [
+        "ActPars"
+      ],
+      []
+    ],
+    "Factor_New": [
+      [
+        "[",
+        "Expr",
+        "]"
+      ],
+      []
+    ],
+    "Designator": [
+      [
+        "ident",
+        "Designator_Tail"
+      ]
+    ],
+    "Designator_Tail": [
+      [
+        ".",
+        "ident",
+        "Designator_Tail"
+      ],
+      [
+        "[",
+        "Expr",
+        "]",
+        "Designator_Tail"
+      ],
+      []
+    ]
+  }
+}
