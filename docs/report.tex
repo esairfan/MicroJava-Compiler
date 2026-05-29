@@ -1,0 +1,535 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{hyperref}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, positioning}
+
+% Color definitions for code blocks
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+% Code snippet styling config
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle={\small\ttfamily},
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=5pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+\lstset{style=mystyle}
+
+% Flowchart styles
+\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+\tikzstyle{decision} = [diamond, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+\tikzstyle{arrow} = [thick,->,>=stealth]
+
+\title{MicroJava Mini-Compiler Project \\ \large Comprehensive Architectural Flow, Component Linkage, and Implementation Report}
+\author{Academic Compiler Engineering Team}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\newpage
+
+\tableofcontents
+\newpage
+
+\section{Executive Summary}
+This document provides a detailed overview of the MicroJava Mini-Compiler project. It acts as a comprehensive reference guide to help presenters and students understand how the compiler is designed, how its code files are linked together, and how data flows from the Web GUI to the C++ compiler engine.
+
+The project builds a complete, multi-stage syntax analyzer and runner for the MicroJava language. It features:
+\begin{enumerate}
+    \item A high-fidelity \textbf{Web Dashboard GUI} built using clean HTML5, CSS3 Glassmorphism, and vanilla JavaScript.
+    \item An interactive \textbf{Terminal Console} that compiles and runs MicroJava code inside the browser in real-time.
+    \item A multithreaded \textbf{Python HTTP Server} backend acting as an orchestrator.
+    \item A highly optimized \textbf{C++17 Compiler Frontend} executing 5 key phases of syntax validation:
+    \begin{itemize}
+        \item Phase 1: Lexical Analysis (Lexer) using double-buffering.
+        \item Phase 2: Recursive Descent Parsing (AST Visualizer).
+        \item Phase 3: Symbol Table Management.
+        \item Phase 4: LL(1) Predictive Parsing.
+        \item Phase 5: Canonical LR(1) Bottom-Up Parsing.
+    \end{itemize}
+\end{enumerate}
+
+All components are linked together to create a smooth, unified playground that compiles code, generates tabular metrics, highlights source line syntax bugs, and runs valid programs interactively.
+
+\newpage
+
+\section{Project Detail Flow Diagram}
+The compiling and execution system works on a client-server relationship. Below is the step-by-step layout of how code written by a user travels through the compiler pipeline to produce visual statistics and terminal execution outputs.
+
+\subsection{TikZ Flow Diagram}
+\begin{center}
+\begin{tikzpicture}[node distance=2.2cm]
+
+% Nodes
+\node (start) [startstop] {User edits code in Web GUI};
+\node (compile) [process, below of=start] {Click ``Compile Code'' btn};
+\node (post) [io, below of=compile] {POST request `/compile` with Code payload};
+\node (server) [process, below of=post] {Python Server writes `temp.mj`};
+\node (cpprun) [process, below of=server] {Run C++ `minicompiler.exe temp.mj`};
+\node (lexer) [process, below of=cpprun] {Lexer generates Token Stream};
+\node (rdparse) [process, below of=lexer] {RD Parser evaluates grammar};
+\node (ll1lr1) [process, below of=rdparse] {LL(1) \& LR(1) Parsers validate syntax};
+\node (success) [decision, below of=ll1lr1, yshift=-0.5cm] {Compilation Success?};
+\node (showerr) [process, right of=success, xshift=3.5cm] {Show Error Console \& highlight lines};
+\node (jsontab) [io, left of=success, xshift=-3.5cm] {Return JSON success with stdout logs};
+\node (poputabs) [process, below of=jsontab] {Populate Dashboard Tabs};
+\node (transp) [process, below of=poputabs] {Transpile Tokens to JS on-the-fly};
+\node (runvm) [startstop, below of=transp] {Terminal executes compiled program};
+
+% Arrows
+\draw [arrow] (start) -- (compile);
+\draw [arrow] (compile) -- (post);
+\draw [arrow] (post) -- (server);
+\draw [arrow] (server) -- (cpprun);
+\draw [arrow] (cpprun) -- (lexer);
+\draw [arrow] (lexer) -- (rdparse);
+\draw [arrow] (rdparse) -- (ll1lr1);
+\draw [arrow] (ll1lr1) -- (success);
+\draw [arrow] (success) -- node[anchor=south] {No} (showerr);
+\draw [arrow] (success) -- node[anchor=south] {Yes} (jsontab);
+\draw [arrow] (jsontab) -- (poputabs);
+\draw [arrow] (poputabs) -- (transp);
+\draw [arrow] (transp) -- (runvm);
+\draw [arrow] (showerr) |- (start);
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+\subsection{Detailed Process Flow Explanation}
+The data flow described in the diagram contains distinct, logical steps:
+
+\subsubsection{1. Frontend Entry}
+The user writes code in the browser editor or loads a `.mj` (MicroJava) source file via the file uploader. When they click the ``Compile Code'' button, the editor locks, shows a spinner, and sends an asynchronous JSON POST request to the local HTTP server containing the code.
+
+\subsubsection{2. Server Orchestration}
+The multithreaded Python server (`server.py`) receives the request. It writes the code content to a temporary workspace file named `test/temp.mj`. It then spawns a C++ subprocess execution using the command:
+\begin{verbatim}
+minicompiler.exe test/temp.mj
+\end{verbatim}
+
+\subsubsection{3. C++ Compilation Engine}
+The C++ executable loads the file and feeds it sequentially through 5 compiler layers:
+\begin{itemize}
+    \item \textbf{Lexical Scanning}: The input characters are grouped into tokens. Semicolons, comments, numbers, and identifiers are extracted. Semicolons and brackets are mapped to tokens.
+    \item \textbf{Recursive Descent Syntax Check}: Validates code against the EBNF structures and prints a graphical ASCII tree of the syntax hierarchy using tree characters.
+    \item \textbf{Symbol Table Check}: Registers global variables, constants, user-defined class fields, scopes, and local parameters. It outputs a scope table dump.
+    \item \textbf{LL(1) Top-Down Parse}: Parses the program using a predictive parser table and stack, printing out each applied rule step-by-step.
+    \item \textbf{Canonical LR(1) Bottom-Up Parse}: Validates code using a shift-reduce parser state machine, outputting shift/reduce/accept/goto actions.
+\end{itemize}
+
+\subsubsection{4. Server Response}
+If any syntax or lexical errors are found during parsing, the C++ engine prints the error descriptions to standard output and stderr and exits with a failure code.
+The Python server intercepts this exit code, grabs the stdout/stderr stream data, formats it into a JSON object, and sends it back to the browser.
+
+\subsubsection{5. GUI Processing and Rendering}
+The browser client (`app.js`) processes the server's JSON payload:
+\begin{itemize}
+    \item \textbf{On Failure}: It opens the sliding Error Console panel, displays context-aware debugging guides explaining how to fix the error, and highlights the first failing line number in red.
+    \item \textbf{On Success}: It unlocks the ``6. Terminal'' run button, clears errors, parses the outputs, and populates the 5 tab interfaces (Lexer table, RD tree, Symbol scope list, LL(1) rule sequence, and LR(1) shifts).
+\end{itemize}
+
+\subsubsection{6. Real-Time Execution Transpilation}
+When the user clicks the ``Run Program'' button inside the Terminal tab:
+\begin{itemize}
+    \item The browser JS code reads the token stream generated by the compiler lexer.
+    \item A custom JS EBNF transpiler inside `app.js` translates the MicroJava code directly into a clean, asynchronous JavaScript string.
+    \item The transpiled JS is run in an async environment, pausing on `read()` using JS `Promises` to wait for console input, and executing prints directly into the terminal window.
+\end{itemize}
+
+\newpage
+
+\section{Compiler Project Code Files and Linkage}
+The project consists of multiple header files, C++ source modules, Python scripts, and frontend assets. They are linked together logically to form the compiler suite.
+
+\subsection{File Dependencies and Linkage Map}
+Below is a diagram representing how the files depend on one another. The arrows represent `#include` dependencies in C++, execution dependencies, or script routing.
+
+\begin{center}
+\begin{tikzpicture}[node distance=2.5cm, box/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm}]
+
+% C++ Headers
+\node (token_h) [box, fill=purple!20] {token.h};
+\node (lexer_h) [box, fill=purple!20, right of=token_h, xshift=1.5cm] {lexer.h};
+\node (sym_h) [box, fill=purple!20, right of=lexer_h, xshift=1.5cm] {symbol\_table.h};
+\node (tables_h) [box, fill=purple!20, right of=sym_h, xshift=2cm] {tables.h};
+\node (parser_rd_h) [box, fill=purple!20, below of=lexer_h] {parser\_rd.h};
+\node (parser_ll_h) [box, fill=purple!20, below of=sym_h] {parser\_ll.h};
+\node (parser_lr_h) [box, fill=purple!20, below of=tables_h] {parser\_lr.h};
+
+% C++ Implementations
+\node (token_cpp) [box, fill=blue!10, below of=token_h, yshift=-3cm] {token.cpp};
+\node (lexer_cpp) [box, fill=blue!10, below of=lexer_h, yshift=-3cm] {lexer.cpp};
+\node (sym_cpp) [box, fill=blue!10, below of=sym_h, yshift=-3cm] {symbol\_table.cpp};
+\node (tables_cpp) [box, fill=blue!10, below of=tables_h, yshift=-3cm] {tables.cpp};
+\node (parser_rd_cpp) [box, fill=blue!10, below of=parser_rd_h, yshift=-3cm] {parser\_rd.cpp};
+\node (parser_ll_cpp) [box, fill=blue!10, below of=parser_ll_h, yshift=-3cm] {parser\_ll.cpp};
+\node (parser_lr_cpp) [box, fill=blue!10, below of=parser_lr_h, yshift=-3cm] {parser\_lr.cpp};
+\node (main_cpp) [box, fill=blue!15, below of=parser_rd_cpp, xshift=3cm] {main.cpp};
+
+% Executable
+\node (minicomp) [box, fill=orange!40, below of=main_cpp] {minicompiler.exe};
+
+% Server and GUI
+\node (server_py) [box, fill=yellow!30, left of=minicomp, xshift=-2.5cm] {server.py};
+\node (index_html) [box, fill=green!20, left of=server_py, xshift=-2.5cm] {index.html};
+\node (app_js) [box, fill=green!20, below of=index_html] {app.js};
+\node (style_css) [box, fill=green!20, above of=index_html] {style.css};
+
+% Header to CPP Links
+\draw [arrow, dashed] (token_h) -- (token_cpp);
+\draw [arrow, dashed] (lexer_h) -- (lexer_cpp);
+\draw [arrow, dashed] (sym_h) -- (sym_cpp);
+\draw [arrow, dashed] (tables_h) -- (tables_cpp);
+\draw [arrow, dashed] (parser_rd_h) -- (parser_rd_cpp);
+\draw [arrow, dashed] (parser_ll_h) -- (parser_ll_cpp);
+\draw [arrow, dashed] (parser_lr_h) -- (parser_lr_cpp);
+
+% Main CPP Links
+\draw [arrow] (main_cpp) -- (minicomp);
+\draw [arrow] (parser_rd_cpp) -- (main_cpp);
+\draw [arrow] (parser_ll_cpp) -- (main_cpp);
+\draw [arrow] (parser_lr_cpp) -- (main_cpp);
+\draw [arrow] (lexer_cpp) -- (main_cpp);
+
+% Server & GUI Links
+\draw [arrow] (server_py) -- node[anchor=south] {spawns} (minicomp);
+\draw [arrow] (index_html) -- node[anchor=east] {serves} (server_py);
+\draw [arrow] (app_js) -- node[anchor=north] {loads in} (index_html);
+\draw [arrow] (style_css) -- node[anchor=south] {styles} (index_html);
+\draw [arrow] (app_js) -- node[anchor=south] {POST} (server_py);
+
+\end{tikzpicture}
+\end{center}
+
+\newpage
+
+\subsection{C++ Code Files Breakdown}
+
+\subsubsection{1. token.h and token.cpp}
+These files define the list of valid tokens in the MicroJava vocabulary. This includes language keywords like `program`, `while`, and `if`, mathematical symbols like `+`, `-`, and `/`, brackets, identifiers, and literals.
+The `tokenTypeToString` utility function defined in `token.cpp` translates token enums into printable strings, which is heavily used by the C++ terminal logging logic.
+
+\subsubsection{2. lexer.h and lexer.cpp}
+The Lexer handles character parsing. It reads the source code characters from the disk file and groups them into individual tokens. 
+It features a double-buffering scheme to process large files quickly and tracks line and column coordinates. This allows it to report the exact locations of lexical issues (e.g., unrecognized characters).
+
+\subsubsection{3. symbol\_table.h and symbol\_table.cpp}
+This component keeps track of all user-declared names. This includes constant values, classes, scopes, arrays, and variables.
+It uses a scope chain stack. When the parser parses a new class or block, it pushes a new scope level. When exiting the block, it pops the scope. This allows checking for duplicate variable definitions or verifying if variables are used outside their valid scope.
+Standard functions like `chr`, `ord`, and `len` are preloaded into the base level of the symbol table.
+
+\subsubsection{4. tables.h and tables.cpp}
+These files store the precompiled compiler transition tables generated by the generator scripts:
+\begin{itemize}
+    \item The LL(1) Predictive Parsing Table: Directs the top-down parser stack.
+    \item The Canonical LR(1) Action and Goto Tables: Implements the state transitions for the shift-reduce bottom-up parser (containing over 380 states).
+\end{itemize}
+
+\subsubsection{5. parser\_rd.h and parser\_rd.cpp}
+Implements the Recursive Descent Parser. This parser uses a series of recursive functions directly derived from the MicroJava EBNF grammar.
+As it executes, it outputs a hierarchical tree graph using Unicode symbols (`├──`, `│`) to visually represent the nesting of code statements.
+
+\subsubsection{6. parser\_ll.h and parser\_ll.cpp}
+Implements the LL(1) parser. It uses a parser stack and references the pre-generated LL(1) parse table.
+It contains error recovery code: if a syntax mismatch occurs at the end of a file unexpectedly, it pops the parsing stack to prevent infinite loop errors.
+
+\subsubsection{7. parser\_lr.h and parser\_lr.cpp}
+Implements the Canonical LR(1) parser. It uses a state-machine stack. It pushes states and symbols onto the stack during shift actions and pops them during reductions. It reads actions from the LR(1) tables.
+
+\subsubsection{8. main.cpp}
+The entry point of the C++ program. It receives the path to the MicroJava source file, initializes the lexer, and feeds the code through the parsers in sequence.
+
+\newpage
+
+\subsection{Python Backend Files}
+
+\subsubsection{1. server.py}
+A multithreaded HTTP server built using Python's `http.server` and `socketserver.ThreadingMixIn`. It performs two tasks:
+\begin{enumerate}
+    \item It serves the HTML, CSS, and JS files from the `gui/` directory to the user's web browser.
+    \item It provides a POST `/compile` endpoint. When it receives source code, it writes it to a file, runs `minicompiler.exe`, captures the output, and returns it as a JSON response.
+\end{enumerate}
+
+\subsection{Frontend GUI Files}
+
+\subsubsection{1. index.html}
+Defines the layout of the compiler playground. It splits the screen into a code editor on the left and a compilation feedback dashboard on the right.
+
+\subsubsection{2. style.css}
+A stylesheet featuring modern design concepts like glassmorphism card styling, responsive layouts, custom terminal themes, and a dark color scheme.
+It aligns line numbers and code text by setting an explicit matching line height of `1.5rem` on both elements.
+
+\subsubsection{3. app.js}
+The client application logic. It handles tab switching, triggers requests to the server, formats raw logs into tree grids, and runs a client-side transpiler and Terminal runner that converts the compiled token stream into JS to execute programs in real-time.
+
+\newpage
+
+\section{MicroJava Grammar EBNF Specification}
+The compiler is designed to parse the official MicroJava EBNF syntax. Below is the simplified EBNF syntax used by the parsers:
+
+\begin{lstlisting}[language=HTML, caption=MicroJava EBNF Grammar]
+Program = "program" ident {ConstDecl | VarDecl | ClassDecl} "{" {MethodDecl} "}".
+ConstDecl = "final" Type ident "=" (number | charConst) ";".
+VarDecl = Type ident {"," ident} ";".
+ClassDecl = "class" ident "{" {VarDecl} "}".
+MethodDecl = (Type | "void") ident "(" [FormPars] ")" {VarDecl} Block.
+FormPars = Type ident {"," Type ident}.
+Type = ident ["[" "]"].
+Block = "{" {Statement} "}".
+Statement = Designator ("=" Expr | ActPars) ";"
+          | "if" "(" Condition ")" Statement ["else" Statement]
+          | "while" "(" Condition ")" Statement
+          | "return" [Expr] ";"
+          | "read" "(" Designator ")" ";"
+          | "print" "(" Expr ["," number] ")" ";"
+          | Block
+          | ";".
+ActPars = "(" [Expr {"," Expr}] ")".
+Condition = Expr Relop Expr.
+Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
+Expr = ["-"] Term {Addop Term}.
+Addop = "+" | "-".
+Term = Factor {Mulop Factor}.
+Mulop = "*" | "/" | "%".
+Factor = Designator [ActPars]
+       | number
+       | charConst
+       | "new" ident ["[" Expr "]"]
+       | "(" Expr ")".
+Designator = ident {"." ident | "[" Expr "]"}.
+\end{lstlisting}
+
+\newpage
+
+\section{Detailed Phase-by-Phase Execution Analysis}
+This section explains how each compiler stage processes the source code.
+
+\subsection{Phase 1: Lexical Analysis (Lexer)}
+The Lexer takes raw character inputs and outputs a clean token stream. For example, the code:
+\begin{lstlisting}
+size = 5;
+\end{lstlisting}
+is broken down into:
+\begin{enumerate}
+    \item \textbf{Token 1}: Type: `IDENTIFIER`, Lexeme: ``size``, Line: 1, Column: 1
+    \item \textbf{Token 2}: Type: `ASSIGN`, Lexeme: ``=``, Line: 1, Column: 6
+    \item \textbf{Token 3}: Type: `NUMBER`, Lexeme: ``5``, Line: 1, Column: 8
+    \item \textbf{Token 4}: Type: `SEMICOLON`, Lexeme: ``;``, Line: 1, Column: 9
+\end{enumerate}
+Whitespace and comments are ignored. If it finds an invalid character (such as `@`), it creates an `ERROR` token and reports it.
+
+\subsection{Phase 2: Recursive Descent Parse Tree}
+The Recursive Descent Parser checks if the tokens match the expected grammar rules. If a rule is matched, the parser prints a node to the output stream. For example:
+\begin{verbatim}
+├── Program (token: "program")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  └── Identifier (token: "size")
+\end{verbatim}
+This produces an ASCII visualization of the code's structural layout.
+
+\subsection{Phase 3: Symbol Table Processing}
+During parsing, names are registered in the Symbol Table.
+If the parser processes:
+\begin{lstlisting}
+int x;
+\end{lstlisting}
+The compiler inserts `x` as a variable (`SymbolKind::VAR`) of type `int` (`DataType::INT`) under the current scope level.
+If the parser then encounters `x = 5`, it looks up `x` in the scope chain to verify it was declared. If the variable is not found in the table, it reports an error.
+
+\subsection{Phase 4: LL(1) Parsing}
+The LL(1) parser is a top-down parser. It uses an explicit parsing stack. It pushes the start symbol `Program` onto the stack and reads input tokens:
+\begin{enumerate}
+    \item It pops the top symbol from the stack.
+    \item If the symbol is a terminal and matches the current token, it consumes the token and advances.
+    \item If the symbol is a non-terminal, it looks up the parse table using the non-terminal and the current token. It pops the non-terminal and pushes the corresponding grammar rule's right-hand side in reverse order.
+    \item If the table entry is empty, it reports a syntax error and runs recovery code.
+\end{enumerate}
+
+\subsection{Phase 5: Canonical LR(1) Parsing}
+The LR(1) parser is a bottom-up parser. It uses a state stack to track transitions. It reads tokens and performs one of four actions:
+\begin{itemize}
+    \item \textbf{Shift (S)}: Pushes the current token and a target state onto the stack and reads the next token.
+    \item \textbf{Reduce (R)}: Pops states corresponding to the length of a matched grammar rule. It looks up the Goto table using the state now at the top of the stack and the rule's left-hand side, then pushes the new GOTO state.
+    \item \textbf{Accept (acc)}: Terminates successfully if the start symbol has been reduced at EOF.
+    \item \textbf{Error}: Triggers syntax error recovery if no transition is defined.
+\end{itemize}
+
+\newpage
+
+\section{Real-Time Transpiler and Virtual Execution Engine}
+Once C++ validation completes successfully, the web dashboard enables the Program Terminal.
+
+\subsection{EBNF to JavaScript Transpilation}
+The browser reads the token stream generated by the compiler lexer. It runs a lightweight compiler class `MicroJavaTranspiler` that parses this token stream and produces a standard, asynchronous JavaScript string.
+
+Below is an example of a transpilation mapping:
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+\textbf{MicroJava Source} & \textbf{Transpiled JavaScript Output} \\ \hline
+`final int size = 10;` & `const size = 10;` \\ \hline
+`int[] pos;` & `let pos = null;` \\ \hline
+`pos = new int[size];` & `pos = new Array(size).fill(0);` \\ \hline
+`read(x);` & `x = await window.\_\_mj\_read();` \\ \hline
+`print(fact);` & `window.\_\_mj\_print(fact);` \\ \hline
+`while (i < size) \{ \dots \}` & `while (i < size) \{ await yieldCheck(); \dots \}` \\ \hline
+`a / b` & `intDiv(a, b)` \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection{Sandboxed Execution Environment}
+The transpiled JavaScript is executed inside an asynchronous wrapper.
+The environment includes several support components:
+\begin{enumerate}
+    \item \textbf{Asynchronous I/O}:
+    \begin{itemize}
+        \item `window.\_\_mj\_print` formats the output and prints it to the terminal screen.
+        \item `window.\_\_mj\_read` displays an input cursor in the terminal, enables the textbox, and returns a JS `Promise`. When the user types an input and presses Enter, the promise resolves and execution resumes.
+    \end{itemize}
+    \item \textbf{Arithmetic Protection}:
+    \begin{itemize}
+        \item `intDiv(a, b)` handles integer division (`Math.trunc(a / b)`) and throws a division-by-zero exception if `b === 0`.
+        \item `intMod(a, b)` handles modulo (`a % b`) and catches division-by-zero issues.
+    \end{itemize}
+    \item \textbf{Sandboxing Safeguards}:
+    Every transpiled loop includes `await yieldCheck()`. If a loop cycles more than 500 times without I/O pause, `yieldCheck()` suspends execution briefly (`setTimeout(resolve, 0)`). This yields CPU control back to the browser, preventing infinite loops from freezing the tab.
+\end{enumerate}
+
+\newpage
+
+\section{Compiler Error Handling and Panic Mode Recovery}
+A core requirement of compilation systems is recovering from syntax errors. This compiler implements panic-mode synchronization in all three of its parser engines:
+
+\subsection{Recursive Descent Recovery}
+When a terminal matching fails, the parser triggers `reportError()`. It reports the line and column, increments the global error counter, and then skips tokens. It advances the lexer cursor until it finds one of the main structural synchronization boundaries:
+\begin{itemize}
+    \item A semicolon (`;`) representing statement ending.
+    \item A closing curly brace (`}`) indicating block ending.
+    \item The end of the file (`EOF`).
+\end{itemize}
+This prevents a single syntax error from throwing off the rest of the parsing steps.
+
+\subsection{LL(1) Top-down Recovery}
+The LL(1) stack parser recovers by skipping tokens until it finds a token that is in the `FOLLOW` set of the current failing non-terminal. It then pops that non-terminal off the stack and continues parsing. If it reaches EOF unexpectedly, it pops the stack directly to terminate compilation immediately without entering an infinite loop.
+
+\subsection{Canonical LR(1) Recovery}
+The LR(1) parser handles errors by looking up transitions. If no action exists for the current state and token, it prints a syntax error. It pops states off the parser stack until it finds a state that has a valid transition for the token or reaches EOF, at which point it halts to prevent hanging.
+
+\newpage
+
+\section{Appendix: Sample MicroJava Programs}
+Below are three standard valid programs which compile and execute successfully on the platform:
+
+\subsection{Program 1: Factorial Calculator}
+This program demonstrates conditions, recursive loops, inputs, outputs, and negative error checking.
+\begin{lstlisting}[caption=Factorial Calculator code]
+program Factorial
+{
+  void main()
+    int n, fact;
+  {
+    read(n);
+    if (n < 0) {
+      print('-'); 
+    } else {
+      fact = 1;
+      while (n > 1) {
+        fact = fact * n;
+        n = n - 1;
+      }
+      print(fact);
+    }
+  }
+}
+\end{lstlisting}
+
+\subsection{Program 2: Character Loop Control}
+This program demonstrates standard character arrays, character conversions, and iterative counts.
+\begin{lstlisting}[caption=Character Loop Control code]
+program ControlFlow
+  int count;
+  char letter;
+{
+  void main() {
+    count = 0;
+    while (count < 5) {
+      letter = chr(65 + count); 
+      print(letter);
+      count = count + 1;
+    }
+  }
+}
+\end{lstlisting}
+
+\newpage
+
+\subsection{Program 3: Array Maximum Finder}
+This program demonstrates class-less arrays, dynamic memory allocation via `new`, array indexing, and linear traversal logic.
+\begin{lstlisting}[caption=Array Maximum Finder code]
+program ArrayMax
+  int[] numbers;
+  int size;
+{
+  void main()
+    int i, max, val;
+  {
+    size = 5;
+    numbers = new int[size];
+    
+    // Read numbers from user input
+    i = 0;
+    while (i < size) {
+      read(val);
+      numbers[i] = val;
+      i = i + 1;
+    }
+    
+    // Find maximum
+    max = numbers[0];
+    i = 1;
+    while (i < size) {
+      if (numbers[i] > max) {
+        max = numbers[i];
+      }
+      i = i + 1;
+    }
+    
+    print(max);
+  }
+}
+\end{lstlisting}
+
+\newpage
+
+\section{Conclusion}
+This compiler project combines a structured C++ compiler frontend with a modern, responsive web sandbox. The multi-threaded Python server connects the frontend with the C++ validation backend. 
+
+The modular design separates syntax validation from program execution, while the browser-side transpiler allows users to run their programs interactively in a simulated terminal environment. This architectural layout serves as a clear, practical model for studying programming language translation.
+
+\end{document}
