@@ -12,10 +12,15 @@ private:
     int errorCount;
 
     int indentLevel;
+    DataType lastParsedType;
+    std::string lastParsedUserType;
+    bool lastParsedIsArray;
+
     void printNode(const std::string& nodeName);
     void advance();
     void match(TokenType expected);
     void reportError(const std::string& message);
+void reportSemanticError(const std::string& message); // Add this
 
     // MicroJava Grammar Methods
     void parseProgram();
