@@ -15,6 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const ll1Content = document.getElementById('ll1-content');
     const lr1Content = document.getElementById('lr1-content');
     let currentTokens = [];
+    let rawTreeText = "";
+    let currentTreeMode = "CST";
 
     // Start with blank editor
     codeTextarea.value = '';
@@ -176,19 +178,41 @@ document.addEventListener('DOMContentLoaded', () => {
     // Parse Outputs and populate tabs
     function parseCompilationResults(status, stdout, stderr) {
         // --- 1. Detect Parsing Errors ---
-        const errorPattern = /(?:Error|LL\(1\) Error|LR\(1\) Error) at line (\d+), col (\d+): (.*)/g;
-        let errors = [];
+        const errorPattern = /(Semantic Error|Lexical Error|Syntax Error|LL\(1\) Error|LR\(1\) Error|Error) at line (\d+), col (\d+): (.*)/gi;
+        let errorsMap = new Map();
         let match;
         
         // Search both stdout and stderr
         const fullOutput = stdout + "\n" + stderr;
         while ((match = errorPattern.exec(fullOutput)) !== null) {
-            errors.push({
-                line: parseInt(match[1]),
-                col: parseInt(match[2]),
-                message: match[3].trim()
-            });
+            const errType = match[1].trim();
+            const line = parseInt(match[2]);
+            const col = parseInt(match[3]);
+            const msg = match[4].trim();
+            const key = `${line}:${col}`;
+            
+            if (!errorsMap.has(key)) {
+                errorsMap.set(key, {
+                    type: errType,
+                    line: line,
+                    col: col,
+                    messages: [msg]
+                });
+            } else {
+                const current = errorsMap.get(key);
+                if (!current.messages.includes(msg)) {
+                    current.messages.push(msg);
+                }
+                const currentTypeLower = current.type.toLowerCase();
+                const newTypeLower = errType.toLowerCase();
+                if ((newTypeLower.includes("lexical") || newTypeLower.includes("semantic") || newTypeLower.includes("syntax")) && 
+                    (!currentTypeLower.includes("lexical") && !currentTypeLower.includes("semantic") && !currentTypeLower.includes("syntax"))) {
+                    current.type = errType;
+                }
+            }
         }
+
+        let errors = Array.from(errorsMap.values());
 
         if (errors.length > 0) {
             // Display errors
@@ -221,9 +245,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // --- 3. Extract Phase 2: Recursive Descent Parse Tree ---
         const rdTreeSection = extractSection(stdout, 'PHASE 2: RECURSIVE DESCENT PARSE TREE', 'PHASE 3: SYMBOL TABLE DUMP');
-        if (rdTreeSection) {
-            rdTreeContent.innerHTML = formatTree(rdTreeSection);
-        }
+        rawTreeText = rdTreeSection || "";
+        updateTreeDisplay();
 
         // --- 4. Extract Phase 3: Symbol Table ---
         const symTableSection = extractSection(stdout, 'PHASE 3: SYMBOL TABLE DUMP', 'PHASE 4: LL(1) PREDICTIVE PARSER STEPS');
@@ -368,6 +391,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Format terminal style parsing derivations
     function formatDerivations(text) {
+        if (text.includes('[LL_STEP]')) {
+            return formatStepsTable(text, '[LL_STEP]');
+        }
+        if (text.includes('[LR_STEP]')) {
+            return formatStepsTable(text, '[LR_STEP]');
+        }
+        
         const lines = text.split('\n');
         let html = '';
         for (let line of lines) {
@@ -397,15 +427,124 @@ document.addEventListener('DOMContentLoaded', () => {
         return html ? html : '<div class="empty-state">Empty Log.</div>';
     }
 
+    function formatStepsTable(text, prefix) {
+        const lines = text.split('\n');
+        let rowsHtml = '';
+        
+        for (let line of lines) {
+            if (!line.includes(prefix)) {
+                continue;
+            }
+            
+            const parts = line.split('|');
+            if (parts.length < 3) continue;
+            
+            let stackPart = parts[0].replace(prefix, '').replace('Stack:', '').trim();
+            let inputPart = parts[1].replace('Input:', '').trim();
+            let actionPart = parts[2].replace('Action:', '').trim();
+            
+            // Format stack elements as bubbles
+            const stackElems = stackPart.split(/\s+/).filter(x => x !== '');
+            let stackHtml = '';
+            for (let el of stackElems) {
+                stackHtml += `<span class="step-badge stack-badge">${escapeHtml(el)}</span>`;
+            }
+            
+            // Format input elements as bubbles
+            const inputElems = inputPart.split(/\s+/).filter(x => x !== '');
+            let inputHtml = '';
+            for (let el of inputElems) {
+                inputHtml += `<span class="step-badge input-badge">${escapeHtml(el)}</span>`;
+            }
+            
+            // Highlight action text
+            let actionHtml = escapeHtml(actionPart);
+            if (actionHtml.startsWith('Shift')) {
+                actionHtml = actionHtml.replace(/Shift\s+(.*)/, '<strong>Shift</strong> <span class="action-state">$1</span>');
+            } else if (actionHtml.startsWith('Reduce')) {
+                actionHtml = actionHtml
+                    .replace(/Reduce\s+\((\d+)\)/, '<strong>Reduce</strong> (<span class="rule-index">$1</span>)')
+                    .replace(/Pop\s+(\d+)\s+states?/, 'Pop <span class="pop-states">$1</span> state$2')
+                    .replace(/Push\s+GOTO\(([^,]+),\s*([^)]+)\)\s*=\s*([0-9\-]+)/, 'Push <strong>GOTO</strong>($1, <span class="goto-sym">$2</span>) = <span class="goto-state">$3</span>');
+            } else if (actionHtml.toLowerCase() === 'accept') {
+                actionHtml = '<span class="action-accept">Accept</span>';
+            } else if (actionHtml.startsWith('Match token')) {
+                actionHtml = actionHtml.replace(/Match token\s+'(.*)'/, '<strong>Match</strong> \'<span class="match-token">$1</span>\'');
+            } else if (actionHtml.startsWith('Applied Rule')) {
+                actionHtml = actionHtml.replace(/Applied Rule\s+(.*)/, 'Applied Rule <span class="applied-rule">$1</span>');
+            }
+            
+            rowsHtml += `<tr>
+                <td><div class="step-badge-container">${stackHtml}</div></td>
+                <td><div class="step-badge-container">${inputHtml}</div></td>
+                <td><div class="action-container">${actionHtml}</div></td>
+            </tr>`;
+        }
+        
+        if (!rowsHtml) {
+            return '<div class="empty-state">No steps recorded.</div>';
+        }
+        
+        return `<div class="table-responsive">
+            <table class="derivations-table">
+                <thead>
+                    <tr>
+                        <th style="width: 35%;">Stack</th>
+                        <th style="width: 35%;">Input Buffer</th>
+                        <th style="width: 30%;">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+            </table>
+        </div>`;
+    }
+
+    // Render parsed errors list
     // Render parsed errors list
     function renderErrors(errorsList) {
         let html = '';
         for (let err of errorsList) {
-            const guide = generateErrorGuide(err.message);
-            html += `<div class="error-item">
-                <div class="error-meta">Error on Line ${err.line}, Column ${err.col}</div>
-                <div class="error-message">${escapeHtml(err.message)}</div>
-                <div class="error-guide">💡 <strong>Compilation Guide:</strong> ${guide}</div>
+            let errorType = "Syntactic Error"; // default
+            const rawType = err.type.toLowerCase();
+            
+            let isLexical = rawType.includes("lexical");
+            let isSemantic = rawType.includes("semantic");
+            
+            for (let msg of err.messages) {
+                const msgLower = msg.toLowerCase();
+                if (msgLower.includes("lexical") || msgLower.includes("unknown char") || msgLower.includes("malformed char")) {
+                    isLexical = true;
+                }
+                if (msgLower.includes("semantic") || msgLower.includes("undeclared") || msgLower.includes("redeclaration") || msgLower.includes("type mismatch")) {
+                    isSemantic = true;
+                }
+            }
+            
+            if (isLexical) {
+                errorType = "Lexical Error";
+            } else if (isSemantic) {
+                errorType = "Semantic Error";
+            }
+            
+            let msgsHtml = '';
+            let guidesHtml = '';
+            let processedGuides = new Set();
+            
+            for (let msg of err.messages) {
+                msgsHtml += `<div class="error-message" style="margin-left: 10px; margin-bottom: 4px;">• ${escapeHtml(msg)}</div>`;
+                const guide = generateErrorGuide(msg);
+                if (!processedGuides.has(guide)) {
+                    processedGuides.add(guide);
+                    guidesHtml += `<div class="error-guide" style="margin-top: 4px; margin-bottom: 8px;">💡 <strong>Compilation Guide:</strong> ${guide}</div>`;
+                }
+            }
+            
+            html += `<div class="error-item" style="border-left: 4px solid #ef4444; padding-left: 12px; margin-bottom: 16px;">
+                <div class="error-meta" style="font-weight: bold; font-size: 0.95rem; margin-bottom: 6px; color: #f87171;">${errorType} on Line ${err.line}, Column ${err.col}</div>
+                ${msgsHtml}
+                ${guidesHtml}
             </div>`;
         }
         consoleBody.innerHTML = html;
@@ -419,6 +558,89 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="error-message">${escapeHtml(message)}</div>
         </div>`;
         consolePanel.style.display = 'block';
+    }
+
+    // AST / CST Toggle Controls
+    const cstBtn = document.getElementById('tree-cst-btn');
+    const astBtn = document.getElementById('tree-ast-btn');
+    
+    if (cstBtn && astBtn) {
+        cstBtn.addEventListener('click', () => {
+            cstBtn.classList.add('active-toggle');
+            astBtn.classList.remove('active-toggle');
+            currentTreeMode = "CST";
+            updateTreeDisplay();
+        });
+        
+        astBtn.addEventListener('click', () => {
+            astBtn.classList.add('active-toggle');
+            cstBtn.classList.remove('active-toggle');
+            currentTreeMode = "AST";
+            updateTreeDisplay();
+        });
+    }
+
+    function updateTreeDisplay() {
+        if (!rawTreeText) {
+            rdTreeContent.innerHTML = '<div class="empty-state">No parse tree generated. Click compile.</div>';
+            return;
+        }
+        if (currentTreeMode === "AST") {
+            const astText = convertCSTtoAST(rawTreeText);
+            rdTreeContent.innerHTML = formatTree(astText);
+        } else {
+            rdTreeContent.innerHTML = formatTree(rawTreeText);
+        }
+    }
+
+    function convertCSTtoAST(cstText) {
+        const lines = cstText.split('\n');
+        let astLines = [];
+        const skipNodes = [
+            "Type", "Expr", "Term", "Factor", "Designator_Tail", "FormPars_Opt", "FormPars_Tail", "VarDecl_Tail", "Designator",
+            "KW_PROGRAM", "LBRACE", "RBRACE", "LPAREN", "RPAREN", "SEMICOLON", "ASSIGN", "COMMA", "DOT",
+            "KW_VOID", "KW_FINAL", "KW_CLASS", "KW_IF", "KW_ELSE", "KW_WHILE", "KW_READ", "KW_PRINT", "KW_RETURN", "KW_NEW"
+        ];
+        let indentStack = [];
+        
+        for (let line of lines) {
+            if (line.trim() === '') continue;
+            
+            const matchIndent = line.match(/^(│  )*/);
+            const depth = matchIndent ? matchIndent[0].length / 3 : 0;
+            
+            const matchNode = line.match(/├── ([A-Za-z0-9_]+)/);
+            if (!matchNode) {
+                astLines.push(line);
+                continue;
+            }
+            
+            const nodeName = matchNode[1];
+            
+            while (indentStack.length > 0 && indentStack[indentStack.length - 1].depth >= depth) {
+                indentStack.pop();
+            }
+            
+            let currentAdjustment = indentStack.length > 0 ? indentStack[indentStack.length - 1].adj : 0;
+            
+            if (skipNodes.includes(nodeName)) {
+                indentStack.push({ depth: depth, adj: currentAdjustment + 1 });
+                continue;
+            }
+            
+            const newDepth = Math.max(0, depth - currentAdjustment);
+            const prefix = "│  ".repeat(newDepth);
+            let content = line.substring(line.indexOf("├──"));
+            
+            // Clean up node labels for leaf values in AST representation
+            content = content.replace(/├── IDENTIFIER \(token: "([^"]+)"\)/, '├── $1');
+            content = content.replace(/├── NUMBER \(token: "([^"]+)"\)/, '├── $1');
+            content = content.replace(/├── CHAR_CONST \(token: "([^"]+)"\)/, '├── $1');
+            
+            astLines.push(prefix + content);
+        }
+        
+        return astLines.join('\n');
     }
 
     // Generates helpful, context-aware bug-fixing guidance
