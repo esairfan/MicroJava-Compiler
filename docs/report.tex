@@ -5,8 +5,10 @@
 \usepackage{hyperref}
 \usepackage{listings}
 \usepackage{xcolor}
-\usepackage{tikz}
-\usetikzlibrary{shapes.geometric, arrows, positioning}
+% % \usepackage{tikz}
+% % \usetikzlibrary{shapes.geometric, arrows, positioning}
+\usepackage{amsmath}
+\usepackage{longtable}
 
 % Color definitions for code blocks
 \definecolor{codegreen}{rgb}{0,0.6,0}
@@ -36,261 +38,55 @@
 \lstset{style=mystyle}
 
 % Flowchart styles
-\tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
-\tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
-\tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
-\tikzstyle{decision} = [diamond, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!30]
-\tikzstyle{arrow} = [thick,->,>=stealth]
+% % \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
+% % \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
+% % \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
+% % \tikzstyle{decision} = [diamond, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!30]
+% % \tikzstyle{arrow} = [thick,->,>=stealth]
 
 \title{MicroJava Mini-Compiler Project \\ \large Comprehensive Architectural Flow, Component Linkage, and Implementation Report}
-\author{Academic Compiler Engineering Team}
+\author{ESA irfan (2023-cs-104) \and Hamdan Aleem (2023-cs-107) \\
+\vspace{0.3cm} \\
+Department of Computer Science \\
+University of Engineering and Technology (UET), Lahore \\
+\vspace{0.5cm} \\
+Instructor: Ms. Aaliya}
 \date{\today}
 
 \begin{document}
 
 \maketitle
-\newpage
 
+\newpage
+\begin{abstract}
+This report details the design and implementation of a multi-stage syntax validator and execution engine for the MicroJava language. The compiler incorporates five core phases: double-buffered lexical analysis, recursive descent parsing with dynamic ASCII tree visualization, chained-scope symbol table management, LL(1) non-recursive predictive parsing using an explicit stack, and Canonical LR(1) bottom-up parsing. We explore grammar transformations required to resolve left recursion and left factoring for LL(1) predictive parsing. We also justify the choice of Canonical LR(1) for bottom-up parsing and present end-to-end execution traces mapping input source code through every compilation compiler layer.
+\end{abstract}
+
+\newpage
 \tableofcontents
 \newpage
 
-\section{Executive Summary}
-This document provides a detailed overview of the MicroJava Mini-Compiler project. It acts as a comprehensive reference guide to help presenters and students understand how the compiler is designed, how its code files are linked together, and how data flows from the Web GUI to the C++ compiler engine.
+\section{Introduction and Language Overview}
+\subsection{Introduction to MicroJava}
+MicroJava is a subset of Java designed for compiler construction courses. It is a strongly-typed, object-oriented language that supports basic data types (integers and characters), constants, arrays, static class-like structures, methods, nested scopes, and control flow statements (such as conditional execution and loops). 
 
-The project builds a complete, multi-stage syntax analyzer and runner for the MicroJava language. It features:
-\begin{enumerate}
-    \item A high-fidelity \textbf{Web Dashboard GUI} built using clean HTML5, CSS3 Glassmorphism, and vanilla JavaScript.
-    \item An interactive \textbf{Terminal Console} that compiles and runs MicroJava code inside the browser in real-time.
-    \item A multithreaded \textbf{Python HTTP Server} backend acting as an orchestrator.
-    \item A highly optimized \textbf{C++17 Compiler Frontend} executing 5 key phases of syntax validation:
-    \begin{itemize}
-        \item Phase 1: Lexical Analysis (Lexer) using double-buffering.
-        \item Phase 2: Recursive Descent Parsing (AST Visualizer).
-        \item Phase 3: Symbol Table Management.
-        \item Phase 4: LL(1) Predictive Parsing.
-        \item Phase 5: Canonical LR(1) Bottom-Up Parsing.
-    \end{itemize}
-\end{enumerate}
-
-All components are linked together to create a smooth, unified playground that compiles code, generates tabular metrics, highlights source line syntax bugs, and runs valid programs interactively.
-
-\newpage
-
-\section{Project Detail Flow Diagram}
-The compiling and execution system works on a client-server relationship. Below is the step-by-step layout of how code written by a user travels through the compiler pipeline to produce visual statistics and terminal execution outputs.
-
-\subsection{TikZ Flow Diagram}
-\begin{center}
-\begin{tikzpicture}[node distance=2.2cm]
-
-% Nodes
-\node (start) [startstop] {User edits code in Web GUI};
-\node (compile) [process, below of=start] {Click ``Compile Code'' btn};
-\node (post) [io, below of=compile] {POST request `/compile` with Code payload};
-\node (server) [process, below of=post] {Python Server writes `temp.mj`};
-\node (cpprun) [process, below of=server] {Run C++ `minicompiler.exe temp.mj`};
-\node (lexer) [process, below of=cpprun] {Lexer generates Token Stream};
-\node (rdparse) [process, below of=lexer] {RD Parser evaluates grammar};
-\node (ll1lr1) [process, below of=rdparse] {LL(1) \& LR(1) Parsers validate syntax};
-\node (success) [decision, below of=ll1lr1, yshift=-0.5cm] {Compilation Success?};
-\node (showerr) [process, right of=success, xshift=3.5cm] {Show Error Console \& highlight lines};
-\node (jsontab) [io, left of=success, xshift=-3.5cm] {Return JSON success with stdout logs};
-\node (poputabs) [process, below of=jsontab] {Populate Dashboard Tabs};
-\node (transp) [process, below of=poputabs] {Transpile Tokens to JS on-the-fly};
-\node (runvm) [startstop, below of=transp] {Terminal executes compiled program};
-
-% Arrows
-\draw [arrow] (start) -- (compile);
-\draw [arrow] (compile) -- (post);
-\draw [arrow] (post) -- (server);
-\draw [arrow] (server) -- (cpprun);
-\draw [arrow] (cpprun) -- (lexer);
-\draw [arrow] (lexer) -- (rdparse);
-\draw [arrow] (rdparse) -- (ll1lr1);
-\draw [arrow] (ll1lr1) -- (success);
-\draw [arrow] (success) -- node[anchor=south] {No} (showerr);
-\draw [arrow] (success) -- node[anchor=south] {Yes} (jsontab);
-\draw [arrow] (jsontab) -- (poputabs);
-\draw [arrow] (poputabs) -- (transp);
-\draw [arrow] (transp) -- (runvm);
-\draw [arrow] (showerr) |- (start);
-
-\end{tikzpicture}
-\end{center}
-
-\newpage
-
-\subsection{Detailed Process Flow Explanation}
-The data flow described in the diagram contains distinct, logical steps:
-
-\subsubsection{1. Frontend Entry}
-The user writes code in the browser editor or loads a `.mj` (MicroJava) source file via the file uploader. When they click the ``Compile Code'' button, the editor locks, shows a spinner, and sends an asynchronous JSON POST request to the local HTTP server containing the code.
-
-\subsubsection{2. Server Orchestration}
-The multithreaded Python server (`server.py`) receives the request. It writes the code content to a temporary workspace file named `test/temp.mj`. It then spawns a C++ subprocess execution using the command:
-\begin{verbatim}
-minicompiler.exe test/temp.mj
-\end{verbatim}
-
-\subsubsection{3. C++ Compilation Engine}
-The C++ executable loads the file and feeds it sequentially through 5 compiler layers:
+\subsection{Key Implementation Features}
+The compiler implementation described in this report incorporates the following architectural highlights:
 \begin{itemize}
-    \item \textbf{Lexical Scanning}: The input characters are grouped into tokens. Semicolons, comments, numbers, and identifiers are extracted. Semicolons and brackets are mapped to tokens.
-    \item \textbf{Recursive Descent Syntax Check}: Validates code against the EBNF structures and prints a graphical ASCII tree of the syntax hierarchy using tree characters.
-    \item \textbf{Symbol Table Check}: Registers global variables, constants, user-defined class fields, scopes, and local parameters. It outputs a scope table dump.
-    \item \textbf{LL(1) Top-Down Parse}: Parses the program using a predictive parser table and stack, printing out each applied rule step-by-step.
-    \item \textbf{Canonical LR(1) Bottom-Up Parse}: Validates code using a shift-reduce parser state machine, outputting shift/reduce/accept/goto actions.
+    \item \textbf{C++17 Compiler Core}: Highly performant binary execution layer supporting five synchronized analysis phases.
+    \item \textbf{Single-Error Termination}: In compliance with robust validator rules, all three parser engines stop execution immediately at the first lexical, syntax, or semantic error, preventing cascading errors.
+    \item \textbf{Visual Representation}: The Recursive Descent parser outputs a colored ASCII concrete tree illustrating exact scope nesting and grammar expansions.
 \end{itemize}
 
-\subsubsection{4. Server Response}
-If any syntax or lexical errors are found during parsing, the C++ engine prints the error descriptions to standard output and stderr and exits with a failure code.
-The Python server intercepts this exit code, grabs the stdout/stderr stream data, formats it into a JSON object, and sends it back to the browser.
 
-\subsubsection{5. GUI Processing and Rendering}
-The browser client (`app.js`) processes the server's JSON payload:
-\begin{itemize}
-    \item \textbf{On Failure}: It opens the sliding Error Console panel, displays context-aware debugging guides explaining how to fix the error, and highlights the first failing line number in red.
-    \item \textbf{On Success}: It unlocks the ``6. Terminal'' run button, clears errors, parses the outputs, and populates the 5 tab interfaces (Lexer table, RD tree, Symbol scope list, LL(1) rule sequence, and LR(1) shifts).
-\end{itemize}
-
-\subsubsection{6. Real-Time Execution Transpilation}
-When the user clicks the ``Run Program'' button inside the Terminal tab:
-\begin{itemize}
-    \item The browser JS code reads the token stream generated by the compiler lexer.
-    \item A custom JS EBNF transpiler inside `app.js` translates the MicroJava code directly into a clean, asynchronous JavaScript string.
-    \item The transpiled JS is run in an async environment, pausing on `read()` using JS `Promises` to wait for console input, and executing prints directly into the terminal window.
-\end{itemize}
-
-\newpage
 
 \section{Compiler Project Code Files and Linkage}
 The project consists of multiple header files, C++ source modules, Python scripts, and frontend assets. They are linked together logically to form the compiler suite.
 
-\subsection{File Dependencies and Linkage Map}
-Below is a diagram representing how the files depend on one another. The arrows represent `#include` dependencies in C++, execution dependencies, or script routing.
-
-\begin{center}
-\begin{tikzpicture}[node distance=2.5cm, box/.style={draw, rectangle, minimum width=2.5cm, minimum height=0.8cm}]
-
-% C++ Headers
-\node (token_h) [box, fill=purple!20] {token.h};
-\node (lexer_h) [box, fill=purple!20, right of=token_h, xshift=1.5cm] {lexer.h};
-\node (sym_h) [box, fill=purple!20, right of=lexer_h, xshift=1.5cm] {symbol\_table.h};
-\node (tables_h) [box, fill=purple!20, right of=sym_h, xshift=2cm] {tables.h};
-\node (parser_rd_h) [box, fill=purple!20, below of=lexer_h] {parser\_rd.h};
-\node (parser_ll_h) [box, fill=purple!20, below of=sym_h] {parser\_ll.h};
-\node (parser_lr_h) [box, fill=purple!20, below of=tables_h] {parser\_lr.h};
-
-% C++ Implementations
-\node (token_cpp) [box, fill=blue!10, below of=token_h, yshift=-3cm] {token.cpp};
-\node (lexer_cpp) [box, fill=blue!10, below of=lexer_h, yshift=-3cm] {lexer.cpp};
-\node (sym_cpp) [box, fill=blue!10, below of=sym_h, yshift=-3cm] {symbol\_table.cpp};
-\node (tables_cpp) [box, fill=blue!10, below of=tables_h, yshift=-3cm] {tables.cpp};
-\node (parser_rd_cpp) [box, fill=blue!10, below of=parser_rd_h, yshift=-3cm] {parser\_rd.cpp};
-\node (parser_ll_cpp) [box, fill=blue!10, below of=parser_ll_h, yshift=-3cm] {parser\_ll.cpp};
-\node (parser_lr_cpp) [box, fill=blue!10, below of=parser_lr_h, yshift=-3cm] {parser\_lr.cpp};
-\node (main_cpp) [box, fill=blue!15, below of=parser_rd_cpp, xshift=3cm] {main.cpp};
-
-% Executable
-\node (minicomp) [box, fill=orange!40, below of=main_cpp] {minicompiler.exe};
-
-% Server and GUI
-\node (server_py) [box, fill=yellow!30, left of=minicomp, xshift=-2.5cm] {server.py};
-\node (index_html) [box, fill=green!20, left of=server_py, xshift=-2.5cm] {index.html};
-\node (app_js) [box, fill=green!20, below of=index_html] {app.js};
-\node (style_css) [box, fill=green!20, above of=index_html] {style.css};
-
-% Header to CPP Links
-\draw [arrow, dashed] (token_h) -- (token_cpp);
-\draw [arrow, dashed] (lexer_h) -- (lexer_cpp);
-\draw [arrow, dashed] (sym_h) -- (sym_cpp);
-\draw [arrow, dashed] (tables_h) -- (tables_cpp);
-\draw [arrow, dashed] (parser_rd_h) -- (parser_rd_cpp);
-\draw [arrow, dashed] (parser_ll_h) -- (parser_ll_cpp);
-\draw [arrow, dashed] (parser_lr_h) -- (parser_lr_cpp);
-
-% Main CPP Links
-\draw [arrow] (main_cpp) -- (minicomp);
-\draw [arrow] (parser_rd_cpp) -- (main_cpp);
-\draw [arrow] (parser_ll_cpp) -- (main_cpp);
-\draw [arrow] (parser_lr_cpp) -- (main_cpp);
-\draw [arrow] (lexer_cpp) -- (main_cpp);
-
-% Server & GUI Links
-\draw [arrow] (server_py) -- node[anchor=south] {spawns} (minicomp);
-\draw [arrow] (index_html) -- node[anchor=east] {serves} (server_py);
-\draw [arrow] (app_js) -- node[anchor=north] {loads in} (index_html);
-\draw [arrow] (style_css) -- node[anchor=south] {styles} (index_html);
-\draw [arrow] (app_js) -- node[anchor=south] {POST} (server_py);
-
-\end{tikzpicture}
-\end{center}
-
 \newpage
 
-\subsection{C++ Code Files Breakdown}
-
-\subsubsection{1. token.h and token.cpp}
-These files define the list of valid tokens in the MicroJava vocabulary. This includes language keywords like `program`, `while`, and `if`, mathematical symbols like `+`, `-`, and `/`, brackets, identifiers, and literals.
-The `tokenTypeToString` utility function defined in `token.cpp` translates token enums into printable strings, which is heavily used by the C++ terminal logging logic.
-
-\subsubsection{2. lexer.h and lexer.cpp}
-The Lexer handles character parsing. It reads the source code characters from the disk file and groups them into individual tokens. 
-It features a double-buffering scheme to process large files quickly and tracks line and column coordinates. This allows it to report the exact locations of lexical issues (e.g., unrecognized characters).
-
-\subsubsection{3. symbol\_table.h and symbol\_table.cpp}
-This component keeps track of all user-declared names. This includes constant values, classes, scopes, arrays, and variables.
-It uses a scope chain stack. When the parser parses a new class or block, it pushes a new scope level. When exiting the block, it pops the scope. This allows checking for duplicate variable definitions or verifying if variables are used outside their valid scope.
-Standard functions like `chr`, `ord`, and `len` are preloaded into the base level of the symbol table.
-
-\subsubsection{4. tables.h and tables.cpp}
-These files store the precompiled compiler transition tables generated by the generator scripts:
-\begin{itemize}
-    \item The LL(1) Predictive Parsing Table: Directs the top-down parser stack.
-    \item The Canonical LR(1) Action and Goto Tables: Implements the state transitions for the shift-reduce bottom-up parser (containing over 380 states).
-\end{itemize}
-
-\subsubsection{5. parser\_rd.h and parser\_rd.cpp}
-Implements the Recursive Descent Parser. This parser uses a series of recursive functions directly derived from the MicroJava EBNF grammar.
-As it executes, it outputs a hierarchical tree graph using Unicode symbols (`├──`, `│`) to visually represent the nesting of code statements.
-
-\subsubsection{6. parser\_ll.h and parser\_ll.cpp}
-Implements the LL(1) parser. It uses a parser stack and references the pre-generated LL(1) parse table.
-It contains error recovery code: if a syntax mismatch occurs at the end of a file unexpectedly, it pops the parsing stack to prevent infinite loop errors.
-
-\subsubsection{7. parser\_lr.h and parser\_lr.cpp}
-Implements the Canonical LR(1) parser. It uses a state-machine stack. It pushes states and symbols onto the stack during shift actions and pops them during reductions. It reads actions from the LR(1) tables.
-
-\subsubsection{8. main.cpp}
-The entry point of the C++ program. It receives the path to the MicroJava source file, initializes the lexer, and feeds the code through the parsers in sequence.
-
-\newpage
-
-\subsection{Python Backend Files}
-
-\subsubsection{1. server.py}
-A multithreaded HTTP server built using Python's `http.server` and `socketserver.ThreadingMixIn`. It performs two tasks:
-\begin{enumerate}
-    \item It serves the HTML, CSS, and JS files from the `gui/` directory to the user's web browser.
-    \item It provides a POST `/compile` endpoint. When it receives source code, it writes it to a file, runs `minicompiler.exe`, captures the output, and returns it as a JSON response.
-\end{enumerate}
-
-\subsection{Frontend GUI Files}
-
-\subsubsection{1. index.html}
-Defines the layout of the compiler playground. It splits the screen into a code editor on the left and a compilation feedback dashboard on the right.
-
-\subsubsection{2. style.css}
-A stylesheet featuring modern design concepts like glassmorphism card styling, responsive layouts, custom terminal themes, and a dark color scheme.
-It aligns line numbers and code text by setting an explicit matching line height of `1.5rem` on both elements.
-
-\subsubsection{3. app.js}
-The client application logic. It handles tab switching, triggers requests to the server, formats raw logs into tree grids, and runs a client-side transpiler and Terminal runner that converts the compiled token stream into JS to execute programs in real-time.
-
-\newpage
-
-\section{MicroJava Grammar EBNF Specification}
-The compiler is designed to parse the official MicroJava EBNF syntax. Below is the simplified EBNF syntax used by the parsers:
+\section{MicroJava EBNF Grammar Specification}
+The parser expects code written in accordance with the Context-Free Grammar (CFG) rules below:
 
 \begin{lstlisting}[language=HTML, caption=MicroJava EBNF Grammar]
 Program = "program" ident {ConstDecl | VarDecl | ClassDecl} "{" {MethodDecl} "}".
@@ -324,212 +120,1179 @@ Factor = Designator [ActPars]
 Designator = ident {"." ident | "[" Expr "]"}.
 \end{lstlisting}
 
+\subsection{Left Recursion and Left Factoring Solutions}
+To build a top-down parser like LL(1) or Recursive Descent, the grammar must be free from:
+\begin{enumerate}
+    \item \textbf{Left Recursion}: Rules like $A \rightarrow A\,\alpha \mid \beta$ cause infinite recursion.
+    \item \textbf{Common Prefixes}: Rules like $A \rightarrow \alpha\,\beta_1 \mid \alpha\,\beta_2$ prevent deterministic lookahead.
+\end{enumerate}
+
+\subsubsection{Left Recursion Solution}
+We eliminate direct left recursion using the transformation:
+$$A \rightarrow A\,\alpha \mid \beta \quad \Longrightarrow \quad A \rightarrow \beta\,A' \quad \text{and} \quad A' \rightarrow \alpha\,A' \mid \epsilon$$
+*Example Application (Expression rules)*:
+Original expression grammar:
+$$\text{Expr} \rightarrow \text{Expr} \,\, \text{Addop} \,\, \text{Term} \mid \text{Term}$$
+We transform this into:
+$$\text{Expr} \rightarrow \text{Term} \,\, \text{Expr'}$$
+$$\text{Expr'} \rightarrow \text{Addop} \,\, \text{Term} \,\, \text{Expr'} \mid \epsilon$$
+
+\subsubsection{Left Factoring Solution}
+Where rules share a common prefix, we delay the decision by moving the factor out:
+$$A \rightarrow \alpha\,\beta_1 \mid \alpha\,\beta_2 \quad \Longrightarrow \quad A \rightarrow \alpha\,A' \quad \text{and} \quad A' \rightarrow \beta_1 \mid \beta_2$$
+*Example Application (Designator Tail)*:
+$$\text{Designator} \rightarrow \text{ident} \cdot \text{ident} \mid \text{ident} \, [ \text{Expr} ] \mid \text{ident}$$
+We factor out $\text{ident}$:
+$$\text{Designator} \rightarrow \text{ident} \,\, \text{Designator\_Tail}$$
+$$\text{Designator\_Tail} \rightarrow \text{.} \, \text{ident} \, \text{Designator\_Tail} \mid \text{[} \, \text{Expr} \, \text{]} \, \text{Designator\_Tail} \mid \epsilon$$
+
+\subsection{Full Transformed LL(1) Grammar}
+Below is the complete, transformed MicroJava grammar after removing all left recursions and applying left factoring:
+\begin{lstlisting}[language=HTML, caption=Full Transformed LL(1) Grammar]
+Program = "program" ident Program_Body "{" MethodDecls "}".
+Program_Body = {ConstDecl | VarDecl | ClassDecl}.
+ConstDecl = "final" Type ident "=" ConstValue ";".
+ConstValue = number | charConst.
+VarDecl = Type ident VarDecl_Tail ";".
+VarDecl_Tail = {"," ident}.
+ClassDecl = "class" ident "{" VarDecls "}".
+VarDecls = {VarDecl}.
+MethodDecls = {MethodDecl}.
+MethodDecl = MethodType ident "(" FormPars_Opt ")" VarDecls Block.
+MethodType = Type | "void".
+FormPars_Opt = [FormPars].
+FormPars = Type ident FormPars_Tail.
+FormPars_Tail = {"," Type ident}.
+Type = ident Type_Opt.
+Type_Opt = ["[" "]"].
+Block = "{" Statements "}".
+Statements = {Statement}.
+Statement = Designator Statement_AssignOrCall ";"
+          | "if" "(" Condition ")" Statement Else_Opt
+          | "while" "(" Condition ")" Statement
+          | "return" Expr_Opt ";"
+          | "read" "(" Designator ")" ";"
+          | "print" "(" Expr Print_Opt ")" ";"
+          | Block
+          | ";".
+Statement_AssignOrCall = "=" Expr | ActPars.
+Else_Opt = ["else" Statement].
+Expr_Opt = [Expr].
+Print_Opt = ["," number].
+ActPars = "(" ActPars_List ")".
+ActPars_List = [Expr ActPars_Tail].
+ActPars_Tail = {"," Expr}.
+Condition = Expr Relop Expr.
+Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
+Expr = Expr_Minus Term Expr_Tail.
+Expr_Minus = ["-"].
+Expr_Tail = {Addop Term}.
+Addop = "+" | "-".
+Term = Factor Term_Tail.
+Term_Tail = {Mulop Factor}.
+Mulop = "*" | "/" | "%".
+Factor = Designator Factor_Designator
+       | number
+       | charConst
+       | "new" ident Factor_New
+       | "(" Expr ")".
+Factor_Designator = [ActPars].
+Factor_New = ["[" Expr "]"].
+Designator = ident Designator_Tail.
+Designator_Tail = {"." ident | "[" Expr "]"}.
+\end{lstlisting}
+
 \newpage
 
-\section{Detailed Phase-by-Phase Execution Analysis}
-This section explains how each compiler stage processes the source code.
+\section{Theoretical Logic and Implementation details}
 
-\subsection{Phase 1: Lexical Analysis (Lexer)}
-The Lexer takes raw character inputs and outputs a clean token stream. For example, the code:
-\begin{lstlisting}
-size = 5;
-\end{lstlisting}
-is broken down into:
-\begin{enumerate}
-    \item \textbf{Token 1}: Type: `IDENTIFIER`, Lexeme: ``size``, Line: 1, Column: 1
-    \item \textbf{Token 2}: Type: `ASSIGN`, Lexeme: ``=``, Line: 1, Column: 6
-    \item \textbf{Token 3}: Type: `NUMBER`, Lexeme: ``5``, Line: 1, Column: 8
-    \item \textbf{Token 4}: Type: `SEMICOLON`, Lexeme: ``;``, Line: 1, Column: 9
-\end{enumerate}
-Whitespace and comments are ignored. If it finds an invalid character (such as `@`), it creates an `ERROR` token and reports it.
-
-\subsection{Phase 2: Recursive Descent Parse Tree}
-The Recursive Descent Parser checks if the tokens match the expected grammar rules. If a rule is matched, the parser prints a node to the output stream. For example:
-\begin{verbatim}
-├── Program (token: "program")
-│  ├── VarDecl (token: "int")
-│  │  ├── Type (token: "int")
-│  │  └── Identifier (token: "size")
-\end{verbatim}
-This produces an ASCII visualization of the code's structural layout.
-
-\subsection{Phase 3: Symbol Table Processing}
-During parsing, names are registered in the Symbol Table.
-If the parser processes:
-\begin{lstlisting}
-int x;
-\end{lstlisting}
-The compiler inserts `x` as a variable (`SymbolKind::VAR`) of type `int` (`DataType::INT`) under the current scope level.
-If the parser then encounters `x = 5`, it looks up `x` in the scope chain to verify it was declared. If the variable is not found in the table, it reports an error.
-
-\subsection{Phase 4: LL(1) Parsing}
-The LL(1) parser is a top-down parser. It uses an explicit parsing stack. It pushes the start symbol `Program` onto the stack and reads input tokens:
-\begin{enumerate}
-    \item It pops the top symbol from the stack.
-    \item If the symbol is a terminal and matches the current token, it consumes the token and advances.
-    \item If the symbol is a non-terminal, it looks up the parse table using the non-terminal and the current token. It pops the non-terminal and pushes the corresponding grammar rule's right-hand side in reverse order.
-    \item If the table entry is empty, it reports a syntax error and runs recovery code.
-\end{enumerate}
-
-\subsection{Phase 5: Canonical LR(1) Parsing}
-The LR(1) parser is a bottom-up parser. It uses a state stack to track transitions. It reads tokens and performs one of four actions:
+\subsection{Lexical Analyzer (Lexer)}
+\subsubsection{Theoretical Logic}
+The lexer converts a sequence of characters into a sequence of tokens. It reads characters from a file stream and partitions them based on the regular definitions of the vocabulary:
 \begin{itemize}
-    \item \textbf{Shift (S)}: Pushes the current token and a target state onto the stack and reads the next token.
-    \item \textbf{Reduce (R)}: Pops states corresponding to the length of a matched grammar rule. It looks up the Goto table using the state now at the top of the stack and the rule's left-hand side, then pushes the new GOTO state.
-    \item \textbf{Accept (acc)}: Terminates successfully if the start symbol has been reduced at EOF.
-    \item \textbf{Error}: Triggers syntax error recovery if no transition is defined.
+    \item $\text{Keyword} = \textbf{program} \mid \textbf{class} \mid \textbf{void} \mid \textbf{final} \mid \textbf{new} \mid \textbf{if} \mid \textbf{else} \mid \textbf{while} \mid \textbf{read} \mid \textbf{print} \mid \textbf{return}$
+    \item $\text{Identifier} = \text{letter} \, (\text{letter} \mid \text{digit})^*$
+    \item $\text{Number} = \text{digit}^+$
+    \item $\text{CharConst} = \text{'`'} \, \text{any\_printable\_char} \, \text{'`'}$
+\end{itemize}
+It uses a double-buffering scheme to process characters efficiently and keeps track of character coordinates (line and column numbers) to pinpoint lexical errors.
+
+\subsection{Recursive Descent Parser \& Tree Logic}
+\subsubsection{Theoretical Logic}
+The Recursive Descent (RD) parser is a top-down validation system. It matches the sequence of tokens by recursively calling parsing functions corresponding to each non-terminal. 
+
+\subsubsection{Tree Generation Logic}
+The parser outputs a text-based representation of the Concrete Syntax Tree (CST) by tracking the call stack depth using a nesting counter variable:
+\begin{itemize}
+    \item When a parsing function (e.g., `parseVarDecl()`) is entered, `indentLevel` is incremented.
+    \item A branch node name is printed prefixed by vertical lines ($\text{indentLevel} \times \text{``│ ''}$).
+    \item When the function returns, `indentLevel` is decremented.
+\end{itemize}
+Because this tree corresponds exactly to the parser's active execution stack, it represents the leftmost derivation hierarchy of the program.
+
+\subsection{Non-Recursive LL(1) Stack Parser}
+\subsubsection{Theoretical Logic}
+Unlike recursive descent, the LL(1) parser uses a non-recursive predictive parsing model with an explicit stack. It looks up transitions in the 2D parser table $M[A, a]$:
+\begin{itemize}
+    \item If the top of the stack is a terminal and matches the lookahead token, it pops and advances.
+    \item If the top is a non-terminal $A$, it queries the table $M[A, a]$ to retrieve rule $A \rightarrow Y_1 Y_2 \dots Y_k$. It pops $A$ and pushes the right-hand symbols onto the stack in reverse order: $Y_k$, then $Y_{k-1}$ down to $Y_1$.
 \end{itemize}
 
+\subsection{Canonical LR(1) Parser}
+\subsubsection{Theoretical Logic and Choice Justification}
+The LR(1) parser is a bottom-up shift-reduce syntax validator. We chose the **Canonical LR(1)** model for our bottom-up parser. 
+
+\subsubsection{Justification for Canonical LR(1)}
+We preferred Canonical LR(1) over LR(0), SLR(1), or LALR(1) due to the following reasons:
+\begin{enumerate}
+    \item \textbf{Explicit Lookahead handling}: LR(1) embeds lookahead items $[A \rightarrow \alpha \cdot \beta, a]$ directly within states, resolving shift/reduce conflicts that SLR(1) cannot handle due to its reliance on FOLLOW sets.
+    \item \textbf{No Conflict Merging}: Unlike LALR(1), which merges states with the same core items but different lookaheads (sometimes introducing reduce-reduce conflicts), Canonical LR(1) keeps these states split, guaranteeing strict parsing correctness.
+    \item \textbf{Handles Complex Subsets}: MicroJava contains nested expression boundaries and variable scopes where shift-reduce decisions depend heavily on the lookahead. LR(1) guarantees unambiguous transitions.
+\end{enumerate}
+
+\subsubsection{Standard Shift-Reduce Algorithm}
+The parser maintains a stack of states $s_0 s_1 \dots s_m$ and a stack of symbols $X_1 X_2 \dots X_m$. 
+For each step, let $s$ be the state at the top of the stack, and $a$ be the current lookahead token. It queries $\text{Action}[s, a]$:
+\begin{enumerate}
+    \item \textbf{Shift to state $s'$}: Push $a$ onto the symbol stack, push $s'$ onto the state stack, and fetch the next token.
+    \item \textbf{Reduce by rule $A \rightarrow \beta$}: Pop $r = |\beta|$ symbols and states off the stacks. Let the new top state be $s''$. Query the GOTO table entry $s_{new} = \text{Goto}[s'', A]$. Push symbol $A$ and state $s_{new}$ onto the stacks.
+    \item \textbf{Accept}: Terminate parsing with success.
+    \item \textbf{Error}: Stop parsing immediately and print the line and column numbers.
+\end{enumerate}
+
 \newpage
 
-\section{Real-Time Transpiler and Virtual Execution Engine}
-Once C++ validation completes successfully, the web dashboard enables the Program Terminal.
+\section{Grammar Parsing Sets and Representative Tables}
 
-\subsection{EBNF to JavaScript Transpilation}
-The browser reads the token stream generated by the compiler lexer. It runs a lightweight compiler class `MicroJavaTranspiler` that parses this token stream and produces a standard, asynchronous JavaScript string.
-
-Below is an example of a transpilation mapping:
+\subsection{FIRST Sets}
 \begin{center}
-\begin{tabular}{|l|l|}
+\begin{tabular}{|l|p{10cm}|}
 \hline
-\textbf{MicroJava Source} & \textbf{Transpiled JavaScript Output} \\ \hline
-`final int size = 10;` & `const size = 10;` \\ \hline
-`int[] pos;` & `let pos = null;` \\ \hline
-`pos = new int[size];` & `pos = new Array(size).fill(0);` \\ \hline
-`read(x);` & `x = await window.\_\_mj\_read();` \\ \hline
-`print(fact);` & `window.\_\_mj\_print(fact);` \\ \hline
-`while (i < size) \{ \dots \}` & `while (i < size) \{ await yieldCheck(); \dots \}` \\ \hline
-`a / b` & `intDiv(a, b)` \\ \hline
+\textbf{Non-Terminal} & \textbf{FIRST Set} \\ \hline
+\texttt{ActPars} & \texttt{(} \\ \hline
+\texttt{ActPars\_List} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{ActPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{Addop} & \texttt{+}, \texttt{-} \\ \hline
+\texttt{Block} & \texttt{\{} \\ \hline
+\texttt{ClassDecl} & \texttt{class} \\ \hline
+\texttt{Condition} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{ConstDecl} & \texttt{final} \\ \hline
+\texttt{ConstValue} & \texttt{charConst}, \texttt{number} \\ \hline
+\texttt{Designator} & \texttt{ident} \\ \hline
+\texttt{Designator\_Tail} & $\epsilon$, \texttt{.}, \texttt{[} \\ \hline
+\texttt{Else\_Opt} & $\epsilon$, \texttt{else} \\ \hline
+\texttt{Expr} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Minus} & $\epsilon$, \texttt{-} \\ \hline
+\texttt{Expr\_Opt} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Tail} & $\epsilon$, \texttt{+}, \texttt{-} \\ \hline
+\texttt{Factor} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Factor\_Designator} & $\epsilon$, \texttt{(} \\ \hline
+\texttt{Factor\_New} & $\epsilon$, \texttt{[} \\ \hline
+\texttt{FormPars} & \texttt{ident} \\ \hline
+\texttt{FormPars\_Opt} & $\epsilon$, \texttt{ident} \\ \hline
+\texttt{FormPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{MethodDecl} & \texttt{ident}, \texttt{void} \\ \hline
+\texttt{MethodDecls} & $\epsilon$, \texttt{ident}, \texttt{void} \\ \hline
+\texttt{MethodType} & \texttt{ident}, \texttt{void} \\ \hline
+\texttt{Mulop} & \texttt{\%}, \texttt{*}, \texttt{/} \\ \hline
+\texttt{Print\_Opt} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{Program} & \texttt{program} \\ \hline
+\texttt{Program\_Body} & $\epsilon$, \texttt{class}, \texttt{final}, \texttt{ident} \\ \hline
+\texttt{Relop} & \texttt{!=}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=} \\ \hline
+\texttt{Statement} & \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
+\texttt{Statement\_AssignOrCall} & \texttt{(}, \texttt{=} \\ \hline
+\texttt{Statements} & $\epsilon$, \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
+\texttt{Term} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Term\_Tail} & $\epsilon$, \texttt{\%}, \texttt{*}, \texttt{/} \\ \hline
+\texttt{Type} & \texttt{ident} \\ \hline
+\texttt{Type\_Opt} & $\epsilon$, \texttt{[} \\ \hline
+\texttt{VarDecl} & \texttt{ident} \\ \hline
+\texttt{VarDecl\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{VarDecls} & $\epsilon$, \texttt{ident} \\ \hline
 \end{tabular}
 \end{center}
 
-\subsection{Sandboxed Execution Environment}
-The transpiled JavaScript is executed inside an asynchronous wrapper.
-The environment includes several support components:
-\begin{enumerate}
-    \item \textbf{Asynchronous I/O}:
-    \begin{itemize}
-        \item `window.\_\_mj\_print` formats the output and prints it to the terminal screen.
-        \item `window.\_\_mj\_read` displays an input cursor in the terminal, enables the textbox, and returns a JS `Promise`. When the user types an input and presses Enter, the promise resolves and execution resumes.
-    \end{itemize}
-    \item \textbf{Arithmetic Protection}:
-    \begin{itemize}
-        \item `intDiv(a, b)` handles integer division (`Math.trunc(a / b)`) and throws a division-by-zero exception if `b === 0`.
-        \item `intMod(a, b)` handles modulo (`a % b`) and catches division-by-zero issues.
-    \end{itemize}
-    \item \textbf{Sandboxing Safeguards}:
-    Every transpiled loop includes `await yieldCheck()`. If a loop cycles more than 500 times without I/O pause, `yieldCheck()` suspends execution briefly (`setTimeout(resolve, 0)`). This yields CPU control back to the browser, preventing infinite loops from freezing the tab.
+\subsection{FOLLOW Sets}
+\begin{center}
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Non-Terminal} & \textbf{FOLLOW Set} \\ \hline
+\texttt{ActPars} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{ActPars\_List} & \texttt{)} \\ \hline
+\texttt{ActPars\_Tail} & \texttt{)} \\ \hline
+\texttt{Addop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Block} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{void}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{ClassDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
+\texttt{Condition} & \texttt{)} \\ \hline
+\texttt{ConstDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
+\texttt{ConstValue} & \texttt{;} \\ \hline
+\texttt{Designator} & \texttt{!=}, \texttt{\%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Designator\_Tail} & \texttt{!=}, \texttt{\%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Else\_Opt} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Expr} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Expr\_Minus} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Opt} & \texttt{;} \\ \hline
+\texttt{Expr\_Tail} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor\_Designator} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor\_New} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{FormPars} & \texttt{)} \\ \hline
+\texttt{FormPars\_Opt} & \texttt{)} \\ \hline
+\texttt{FormPars\_Tail} & \texttt{)} \\ \hline
+\texttt{MethodDecl} & \texttt{ident}, \texttt{void}, \texttt{\}} \\ \hline
+\texttt{MethodDecls} & \texttt{\}} \\ \hline
+\texttt{MethodType} & \texttt{ident} \\ \hline
+\texttt{Mulop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Print\_Opt} & \texttt{)} \\ \hline
+\texttt{Program} & \texttt{\$} \\ \hline
+\texttt{Program\_Body} & \texttt{\{} \\ \hline
+\texttt{Relop} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Statement} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Statement\_AssignOrCall} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Statements} & \texttt{\}} \\ \hline
+\texttt{Term} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Term\_Tail} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Type} & \texttt{ident} \\ \hline
+\texttt{Type\_Opt} & \texttt{ident} \\ \hline
+\texttt{VarDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{VarDecl\_Tail} & \texttt{;} \\ \hline
+\texttt{VarDecls} & \texttt{\{}, \texttt{\}} \\ \hline
+\end{tabular}
+\end{center}
+
+\subsection{LL(1) Predictive Parsing Table (Representative Subset)}
+\begin{center}
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Non-Terminal} & \textbf{Input Token} & \textbf{Applied Rule} \\ \hline
+\texttt{ActPars} & \texttt{(} & $ActPars \rightarrow ( ActPars\_List )$ \\ \hline
+\texttt{ActPars\_List} & \texttt{(} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{)} & $ActPars\_List \rightarrow \epsilon$ \\ \hline
+\texttt{ActPars\_List} & \texttt{-} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{charConst} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{ident} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{new} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{number} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_Tail} & \texttt{)} & $ActPars\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{ActPars\_Tail} & \texttt{,} & $ActPars\_Tail \rightarrow , Expr ActPars\_Tail$ \\ \hline
+\texttt{Addop} & \texttt{+} & $Addop \rightarrow +$ \\ \hline
+\texttt{Addop} & \texttt{-} & $Addop \rightarrow -$ \\ \hline
+\texttt{Block} & \texttt{\{} & $Block \rightarrow \{ Statements \}$ \\ \hline
+\texttt{ClassDecl} & \texttt{class} & $ClassDecl \rightarrow class ident \{ VarDecls \}$ \\ \hline
+\texttt{Condition} & \texttt{(} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{-} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{charConst} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{ident} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{new} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{number} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{ConstDecl} & \texttt{final} & $ConstDecl \rightarrow final Type ident = ConstValue ;$ \\ \hline
+\texttt{ConstValue} & \texttt{charConst} & $ConstValue \rightarrow charConst$ \\ \hline
+\texttt{ConstValue} & \texttt{number} & $ConstValue \rightarrow number$ \\ \hline
+\texttt{Designator} & \texttt{ident} & $Designator \rightarrow ident Designator\_Tail$ \\ \hline
+\end{tabular}
+\end{center}
+
+\newpage
+
+\section{Canonical LR(1) Action, GOTO, and Trace Output}
+The Canonical LR(1) parser generates 381 states. Below is the representative subset of the generated Action and Goto tables for the first 30 states, followed by an execution stack trace.
+
+\subsection{Action and Goto Tables (All 381 States)}
+\begin{longtable}{|c|p{7.5cm}|p{6.5cm}|}
+\hline
+\textbf{State} & \textbf{Action Transitions (Terminal $\rightarrow$ Action)} & \textbf{GOTO Transitions (Non-Terminal $\rightarrow$ State)} \\ \hline
+\endfirsthead
+\hline
+\textbf{State} & \textbf{Action Transitions (Terminal $\rightarrow$ Action)} & \textbf{GOTO Transitions (Non-Terminal $\rightarrow$ State)} \\ \hline
+\endhead
+\hline
+\endfoot
+\hline
+\endlastfoot
+0 & \texttt{program} $\rightarrow$ \texttt{S1} & \texttt{Program} $\rightarrow$ 2 \\ \hline
+1 & \texttt{ident} $\rightarrow$ \texttt{S3} & None \\ \hline
+2 & \texttt{\$} $\rightarrow$ \texttt{acc} & None \\ \hline
+3 & \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{\{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{Program\_Body} $\rightarrow$ 5, \texttt{VarDecl} $\rightarrow$ 7, \texttt{Type} $\rightarrow$ 8, \texttt{ConstDecl} $\rightarrow$ 11 \\ \hline
+4 & \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{\{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{Program\_Body} $\rightarrow$ 12, \texttt{VarDecl} $\rightarrow$ 7, \texttt{Type} $\rightarrow$ 8, \texttt{ConstDecl} $\rightarrow$ 11 \\ \hline
+5 & \texttt{\{} $\rightarrow$ \texttt{S13} & None \\ \hline
+6 & \texttt{[} $\rightarrow$ \texttt{S15}, \texttt{ident} $\rightarrow$ \texttt{R27} & \texttt{Type\_Opt} $\rightarrow$ 14 \\ \hline
+7 & \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{\{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{Program\_Body} $\rightarrow$ 16, \texttt{VarDecl} $\rightarrow$ 7, \texttt{Type} $\rightarrow$ 8, \texttt{ConstDecl} $\rightarrow$ 11 \\ \hline
+8 & \texttt{ident} $\rightarrow$ \texttt{S17} & None \\ \hline
+9 & \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{Type} $\rightarrow$ 18 \\ \hline
+10 & \texttt{ident} $\rightarrow$ \texttt{S19} & None \\ \hline
+11 & \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{\{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{Program\_Body} $\rightarrow$ 20, \texttt{VarDecl} $\rightarrow$ 7, \texttt{Type} $\rightarrow$ 8, \texttt{ConstDecl} $\rightarrow$ 11 \\ \hline
+12 & \texttt{\{} $\rightarrow$ \texttt{R4} & None \\ \hline
+13 & \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{void} $\rightarrow$ \texttt{S21}, \texttt{\}} $\rightarrow$ \texttt{R16} & \texttt{MethodDecl} $\rightarrow$ 22, \texttt{Type} $\rightarrow$ 23, \texttt{MethodType} $\rightarrow$ 24, \texttt{MethodDecls} $\rightarrow$ 25 \\ \hline
+14 & \texttt{ident} $\rightarrow$ \texttt{R25} & None \\ \hline
+15 & \texttt{]} $\rightarrow$ \texttt{S26} & None \\ \hline
+16 & \texttt{\{} $\rightarrow$ \texttt{R3} & None \\ \hline
+17 & \texttt{,} $\rightarrow$ \texttt{S28}, \texttt{;} $\rightarrow$ \texttt{R11} & \texttt{VarDecl\_Tail} $\rightarrow$ 27 \\ \hline
+18 & \texttt{ident} $\rightarrow$ \texttt{S29} & None \\ \hline
+19 & \texttt{\{} $\rightarrow$ \texttt{S30} & None \\ \hline
+20 & \texttt{\{} $\rightarrow$ \texttt{R2} & None \\ \hline
+21 & \texttt{ident} $\rightarrow$ \texttt{R19} & None \\ \hline
+22 & \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{void} $\rightarrow$ \texttt{S21}, \texttt{\}} $\rightarrow$ \texttt{R16} & \texttt{MethodDecl} $\rightarrow$ 22, \texttt{Type} $\rightarrow$ 23, \texttt{MethodType} $\rightarrow$ 24, \texttt{MethodDecls} $\rightarrow$ 31 \\ \hline
+23 & \texttt{ident} $\rightarrow$ \texttt{R18} & None \\ \hline
+24 & \texttt{ident} $\rightarrow$ \texttt{S32} & None \\ \hline
+25 & \texttt{\}} $\rightarrow$ \texttt{S33} & None \\ \hline
+26 & \texttt{ident} $\rightarrow$ \texttt{R26} & None \\ \hline
+27 & \texttt{;} $\rightarrow$ \texttt{S34} & None \\ \hline
+28 & \texttt{ident} $\rightarrow$ \texttt{S35} & None \\ \hline
+29 & \texttt{=} $\rightarrow$ \texttt{S36} & None \\ \hline
+30 & \texttt{\}} $\rightarrow$ \texttt{R14}, \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{VarDecl} $\rightarrow$ 37, \texttt{Type} $\rightarrow$ 38, \texttt{VarDecls} $\rightarrow$ 39 \\ \hline
+31 & \texttt{\}} $\rightarrow$ \texttt{R15} & None \\ \hline
+32 & \texttt{(} $\rightarrow$ \texttt{S40} & None \\ \hline
+33 & \texttt{\$} $\rightarrow$ \texttt{R1} & None \\ \hline
+34 & \texttt{\{} $\rightarrow$ \texttt{R9}, \texttt{ident} $\rightarrow$ \texttt{R9}, \texttt{final} $\rightarrow$ \texttt{R9}, \texttt{class} $\rightarrow$ \texttt{R9} & None \\ \hline
+35 & \texttt{,} $\rightarrow$ \texttt{S28}, \texttt{;} $\rightarrow$ \texttt{R11} & \texttt{VarDecl\_Tail} $\rightarrow$ 41 \\ \hline
+36 & \texttt{number} $\rightarrow$ \texttt{S42}, \texttt{charConst} $\rightarrow$ \texttt{S43} & \texttt{ConstValue} $\rightarrow$ 44 \\ \hline
+37 & \texttt{\}} $\rightarrow$ \texttt{R14}, \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{VarDecl} $\rightarrow$ 37, \texttt{Type} $\rightarrow$ 38, \texttt{VarDecls} $\rightarrow$ 45 \\ \hline
+38 & \texttt{ident} $\rightarrow$ \texttt{S46} & None \\ \hline
+39 & \texttt{\}} $\rightarrow$ \texttt{S47} & None \\ \hline
+40 & \texttt{)} $\rightarrow$ \texttt{R21}, \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{FormPars\_Opt} $\rightarrow$ 48, \texttt{Type} $\rightarrow$ 49, \texttt{FormPars} $\rightarrow$ 50 \\ \hline
+41 & \texttt{;} $\rightarrow$ \texttt{R10} & None \\ \hline
+42 & \texttt{;} $\rightarrow$ \texttt{R7} & None \\ \hline
+43 & \texttt{;} $\rightarrow$ \texttt{R8} & None \\ \hline
+44 & \texttt{;} $\rightarrow$ \texttt{S51} & None \\ \hline
+45 & \texttt{\}} $\rightarrow$ \texttt{R13} & None \\ \hline
+46 & \texttt{;} $\rightarrow$ \texttt{R11}, \texttt{,} $\rightarrow$ \texttt{S28} & \texttt{VarDecl\_Tail} $\rightarrow$ 52 \\ \hline
+47 & \texttt{class} $\rightarrow$ \texttt{R12}, \texttt{\{} $\rightarrow$ \texttt{R12}, \texttt{ident} $\rightarrow$ \texttt{R12}, \texttt{final} $\rightarrow$ \texttt{R12} & None \\ \hline
+48 & \texttt{)} $\rightarrow$ \texttt{S53} & None \\ \hline
+49 & \texttt{ident} $\rightarrow$ \texttt{S54} & None \\ \hline
+50 & \texttt{)} $\rightarrow$ \texttt{R20} & None \\ \hline
+51 & \texttt{class} $\rightarrow$ \texttt{R6}, \texttt{\{} $\rightarrow$ \texttt{R6}, \texttt{ident} $\rightarrow$ \texttt{R6}, \texttt{final} $\rightarrow$ \texttt{R6} & None \\ \hline
+52 & \texttt{;} $\rightarrow$ \texttt{S55} & None \\ \hline
+53 & \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{\{} $\rightarrow$ \texttt{R14} & \texttt{VarDecl} $\rightarrow$ 56, \texttt{Type} $\rightarrow$ 57, \texttt{VarDecls} $\rightarrow$ 58 \\ \hline
+54 & \texttt{)} $\rightarrow$ \texttt{R24}, \texttt{,} $\rightarrow$ \texttt{S59} & \texttt{FormPars\_Tail} $\rightarrow$ 60 \\ \hline
+55 & \texttt{ident} $\rightarrow$ \texttt{R9}, \texttt{\}} $\rightarrow$ \texttt{R9} & None \\ \hline
+56 & \texttt{\{} $\rightarrow$ \texttt{R14}, \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{VarDecl} $\rightarrow$ 56, \texttt{Type} $\rightarrow$ 57, \texttt{VarDecls} $\rightarrow$ 61 \\ \hline
+57 & \texttt{ident} $\rightarrow$ \texttt{S62} & None \\ \hline
+58 & \texttt{\{} $\rightarrow$ \texttt{S64} & \texttt{Block} $\rightarrow$ 63 \\ \hline
+59 & \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{Type} $\rightarrow$ 65 \\ \hline
+60 & \texttt{)} $\rightarrow$ \texttt{R22} & None \\ \hline
+61 & \texttt{\{} $\rightarrow$ \texttt{R13} & None \\ \hline
+62 & \texttt{,} $\rightarrow$ \texttt{S28}, \texttt{;} $\rightarrow$ \texttt{R11} & \texttt{VarDecl\_Tail} $\rightarrow$ 66 \\ \hline
+63 & \texttt{ident} $\rightarrow$ \texttt{R17}, \texttt{\}} $\rightarrow$ \texttt{R17}, \texttt{void} $\rightarrow$ \texttt{R17} & None \\ \hline
+64 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{\}} $\rightarrow$ \texttt{R30}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Statements} $\rightarrow$ 71, \texttt{Statement} $\rightarrow$ 72, \texttt{Block} $\rightarrow$ 75 \\ \hline
+65 & \texttt{ident} $\rightarrow$ \texttt{S79} & None \\ \hline
+66 & \texttt{;} $\rightarrow$ \texttt{S80} & None \\ \hline
+67 & \texttt{read} $\rightarrow$ \texttt{R38}, \texttt{\}} $\rightarrow$ \texttt{R38}, \texttt{\{} $\rightarrow$ \texttt{R38}, \texttt{ident} $\rightarrow$ \texttt{R38}, \texttt{while} $\rightarrow$ \texttt{R38}, \texttt{;} $\rightarrow$ \texttt{R38}, \texttt{return} $\rightarrow$ \texttt{R38}, \texttt{if} $\rightarrow$ \texttt{R38}, \texttt{print} $\rightarrow$ \texttt{R38} & None \\ \hline
+68 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{\}} $\rightarrow$ \texttt{R30}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Statements} $\rightarrow$ 81, \texttt{Statement} $\rightarrow$ 72, \texttt{Block} $\rightarrow$ 75 \\ \hline
+69 & \texttt{=} $\rightarrow$ \texttt{S84}, \texttt{(} $\rightarrow$ \texttt{S83} & \texttt{Statement\_AssignOrCall} $\rightarrow$ 82, \texttt{ActPars} $\rightarrow$ 85 \\ \hline
+70 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{;} $\rightarrow$ \texttt{R44}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 86, \texttt{Expr} $\rightarrow$ 87, \texttt{Expr\_Opt} $\rightarrow$ 89 \\ \hline
+71 & \texttt{\}} $\rightarrow$ \texttt{S90} & None \\ \hline
+72 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{\}} $\rightarrow$ \texttt{R30}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Statements} $\rightarrow$ 91, \texttt{Statement} $\rightarrow$ 72, \texttt{Block} $\rightarrow$ 75 \\ \hline
+73 & \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{=} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S92}, \texttt{.} $\rightarrow$ \texttt{S94} & \texttt{Designator\_Tail} $\rightarrow$ 93 \\ \hline
+74 & \texttt{(} $\rightarrow$ \texttt{S95} & None \\ \hline
+75 & \texttt{\{} $\rightarrow$ \texttt{R37}, \texttt{;} $\rightarrow$ \texttt{R37}, \texttt{while} $\rightarrow$ \texttt{R37}, \texttt{ident} $\rightarrow$ \texttt{R37}, \texttt{print} $\rightarrow$ \texttt{R37}, \texttt{return} $\rightarrow$ \texttt{R37}, \texttt{\}} $\rightarrow$ \texttt{R37}, \texttt{if} $\rightarrow$ \texttt{R37}, \texttt{read} $\rightarrow$ \texttt{R37} & None \\ \hline
+76 & \texttt{(} $\rightarrow$ \texttt{S96} & None \\ \hline
+77 & \texttt{(} $\rightarrow$ \texttt{S97} & None \\ \hline
+78 & \texttt{(} $\rightarrow$ \texttt{S98} & None \\ \hline
+79 & \texttt{)} $\rightarrow$ \texttt{R24}, \texttt{,} $\rightarrow$ \texttt{S59} & \texttt{FormPars\_Tail} $\rightarrow$ 99 \\ \hline
+80 & \texttt{\{} $\rightarrow$ \texttt{R9}, \texttt{ident} $\rightarrow$ \texttt{R9} & None \\ \hline
+81 & \texttt{\}} $\rightarrow$ \texttt{S100} & None \\ \hline
+82 & \texttt{;} $\rightarrow$ \texttt{R31}, \texttt{while} $\rightarrow$ \texttt{R31}, \texttt{ident} $\rightarrow$ \texttt{R31}, \texttt{return} $\rightarrow$ \texttt{R31}, \texttt{if} $\rightarrow$ \texttt{R31}, \texttt{\}} $\rightarrow$ \texttt{R31}, \texttt{print} $\rightarrow$ \texttt{R31}, \texttt{read} $\rightarrow$ \texttt{R31}, \texttt{\{} $\rightarrow$ \texttt{R31} & None \\ \hline
+83 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 102, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+84 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 86, \texttt{Expr} $\rightarrow$ 104 \\ \hline
+85 & \texttt{;} $\rightarrow$ \texttt{S105} & None \\ \hline
+86 & \texttt{(} $\rightarrow$ \texttt{S108}, \texttt{new} $\rightarrow$ \texttt{S113}, \texttt{charConst} $\rightarrow$ \texttt{S109}, \texttt{ident} $\rightarrow$ \texttt{S111}, \texttt{number} $\rightarrow$ \texttt{S107} & \texttt{Term} $\rightarrow$ 106, \texttt{Factor} $\rightarrow$ 110, \texttt{Designator} $\rightarrow$ 112 \\ \hline
+87 & \texttt{;} $\rightarrow$ \texttt{R43} & None \\ \hline
+88 & \texttt{number} $\rightarrow$ \texttt{R60}, \texttt{charConst} $\rightarrow$ \texttt{R60}, \texttt{(} $\rightarrow$ \texttt{R60}, \texttt{ident} $\rightarrow$ \texttt{R60}, \texttt{new} $\rightarrow$ \texttt{R60} & None \\ \hline
+89 & \texttt{;} $\rightarrow$ \texttt{S114} & None \\ \hline
+90 & \texttt{\}} $\rightarrow$ \texttt{R28}, \texttt{ident} $\rightarrow$ \texttt{R28}, \texttt{void} $\rightarrow$ \texttt{R28} & None \\ \hline
+91 & \texttt{\}} $\rightarrow$ \texttt{R29} & None \\ \hline
+92 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 116 \\ \hline
+93 & \texttt{=} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81} & None \\ \hline
+94 & \texttt{ident} $\rightarrow$ \texttt{S117} & None \\ \hline
+95 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 118, \texttt{Condition} $\rightarrow$ 119, \texttt{Expr} $\rightarrow$ 120 \\ \hline
+96 & \texttt{ident} $\rightarrow$ \texttt{S122} & \texttt{Designator} $\rightarrow$ 121 \\ \hline
+97 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{Expr} $\rightarrow$ 123 \\ \hline
+98 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 118, \texttt{Condition} $\rightarrow$ 124, \texttt{Expr} $\rightarrow$ 120 \\ \hline
+99 & \texttt{)} $\rightarrow$ \texttt{R23} & None \\ \hline
+100 & \texttt{\{} $\rightarrow$ \texttt{R28}, \texttt{;} $\rightarrow$ \texttt{R28}, \texttt{ident} $\rightarrow$ \texttt{R28}, \texttt{while} $\rightarrow$ \texttt{R28}, \texttt{print} $\rightarrow$ \texttt{R28}, \texttt{return} $\rightarrow$ \texttt{R28}, \texttt{if} $\rightarrow$ \texttt{R28}, \texttt{\}} $\rightarrow$ \texttt{R28}, \texttt{read} $\rightarrow$ \texttt{R28} & None \\ \hline
+101 & \texttt{(} $\rightarrow$ \texttt{S127}, \texttt{new} $\rightarrow$ \texttt{S132}, \texttt{charConst} $\rightarrow$ \texttt{S128}, \texttt{number} $\rightarrow$ \texttt{S125}, \texttt{ident} $\rightarrow$ \texttt{S130} & \texttt{Term} $\rightarrow$ 126, \texttt{Factor} $\rightarrow$ 129, \texttt{Designator} $\rightarrow$ 131 \\ \hline
+102 & \texttt{)} $\rightarrow$ \texttt{S133} & None \\ \hline
+103 & \texttt{)} $\rightarrow$ \texttt{R51}, \texttt{,} $\rightarrow$ \texttt{S134} & \texttt{ActPars\_Tail} $\rightarrow$ 135 \\ \hline
+104 & \texttt{;} $\rightarrow$ \texttt{S136} & None \\ \hline
+105 & \texttt{if} $\rightarrow$ \texttt{R40}, \texttt{print} $\rightarrow$ \texttt{R40}, \texttt{\}} $\rightarrow$ \texttt{R40}, \texttt{read} $\rightarrow$ \texttt{R40}, \texttt{\{} $\rightarrow$ \texttt{R40}, \texttt{ident} $\rightarrow$ \texttt{R40}, \texttt{while} $\rightarrow$ \texttt{R40}, \texttt{;} $\rightarrow$ \texttt{R40}, \texttt{return} $\rightarrow$ \texttt{R40} & None \\ \hline
+106 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{;} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 139, \texttt{Expr\_Tail} $\rightarrow$ 140 \\ \hline
+107 & \texttt{;} $\rightarrow$ \texttt{R73}, \texttt{*} $\rightarrow$ \texttt{R73}, \texttt{+} $\rightarrow$ \texttt{R73}, \texttt{/} $\rightarrow$ \texttt{R73}, \texttt{-} $\rightarrow$ \texttt{R73}, \texttt{\%} $\rightarrow$ \texttt{R73} & None \\ \hline
+108 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 142 \\ \hline
+109 & \texttt{*} $\rightarrow$ \texttt{R74}, \texttt{+} $\rightarrow$ \texttt{R74}, \texttt{\%} $\rightarrow$ \texttt{R74}, \texttt{-} $\rightarrow$ \texttt{R74}, \texttt{;} $\rightarrow$ \texttt{R74}, \texttt{/} $\rightarrow$ \texttt{R74} & None \\ \hline
+110 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{;} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 146, \texttt{Mulop} $\rightarrow$ 147 \\ \hline
+111 & \texttt{[} $\rightarrow$ \texttt{S148}, \texttt{.} $\rightarrow$ \texttt{S150}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{;} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 149 \\ \hline
+112 & \texttt{*} $\rightarrow$ \texttt{R78}, \texttt{(} $\rightarrow$ \texttt{S152}, \texttt{;} $\rightarrow$ \texttt{R78}, \texttt{+} $\rightarrow$ \texttt{R78}, \texttt{/} $\rightarrow$ \texttt{R78}, \texttt{\%} $\rightarrow$ \texttt{R78}, \texttt{-} $\rightarrow$ \texttt{R78} & \texttt{Factor\_Designator} $\rightarrow$ 151, \texttt{ActPars} $\rightarrow$ 153 \\ \hline
+113 & \texttt{ident} $\rightarrow$ \texttt{S154} & None \\ \hline
+114 & \texttt{print} $\rightarrow$ \texttt{R34}, \texttt{return} $\rightarrow$ \texttt{R34}, \texttt{\}} $\rightarrow$ \texttt{R34}, \texttt{if} $\rightarrow$ \texttt{R34}, \texttt{read} $\rightarrow$ \texttt{R34}, \texttt{ident} $\rightarrow$ \texttt{R34}, \texttt{\{} $\rightarrow$ \texttt{R34}, \texttt{;} $\rightarrow$ \texttt{R34}, \texttt{while} $\rightarrow$ \texttt{R34} & None \\ \hline
+115 & \texttt{(} $\rightarrow$ \texttt{S157}, \texttt{new} $\rightarrow$ \texttt{S162}, \texttt{charConst} $\rightarrow$ \texttt{S158}, \texttt{ident} $\rightarrow$ \texttt{S160}, \texttt{number} $\rightarrow$ \texttt{S155} & \texttt{Term} $\rightarrow$ 156, \texttt{Factor} $\rightarrow$ 159, \texttt{Designator} $\rightarrow$ 161 \\ \hline
+116 & \texttt{]} $\rightarrow$ \texttt{S163} & None \\ \hline
+117 & \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{=} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S92}, \texttt{.} $\rightarrow$ \texttt{S94} & \texttt{Designator\_Tail} $\rightarrow$ 164 \\ \hline
+118 & \texttt{new} $\rightarrow$ \texttt{S172}, \texttt{ident} $\rightarrow$ \texttt{S170}, \texttt{(} $\rightarrow$ \texttt{S167}, \texttt{charConst} $\rightarrow$ \texttt{S168}, \texttt{number} $\rightarrow$ \texttt{S165} & \texttt{Term} $\rightarrow$ 166, \texttt{Factor} $\rightarrow$ 169, \texttt{Designator} $\rightarrow$ 171 \\ \hline
+119 & \texttt{)} $\rightarrow$ \texttt{S173} & None \\ \hline
+120 & \texttt{==} $\rightarrow$ \texttt{S176}, \texttt{!=} $\rightarrow$ \texttt{S177}, \texttt{>} $\rightarrow$ \texttt{S178}, \texttt{>=} $\rightarrow$ \texttt{S179}, \texttt{<} $\rightarrow$ \texttt{S180}, \texttt{<=} $\rightarrow$ \texttt{S174} & \texttt{Relop} $\rightarrow$ 175 \\ \hline
+121 & \texttt{)} $\rightarrow$ \texttt{S181} & None \\ \hline
+122 & \texttt{.} $\rightarrow$ \texttt{S182}, \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S183} & \texttt{Designator\_Tail} $\rightarrow$ 184 \\ \hline
+123 & \texttt{,} $\rightarrow$ \texttt{S185}, \texttt{)} $\rightarrow$ \texttt{R46} & \texttt{Print\_Opt} $\rightarrow$ 186 \\ \hline
+124 & \texttt{)} $\rightarrow$ \texttt{S187} & None \\ \hline
+125 & \texttt{)} $\rightarrow$ \texttt{R73}, \texttt{*} $\rightarrow$ \texttt{R73}, \texttt{+} $\rightarrow$ \texttt{R73}, \texttt{/} $\rightarrow$ \texttt{R73}, \texttt{-} $\rightarrow$ \texttt{R73}, \texttt{,} $\rightarrow$ \texttt{R73}, \texttt{\%} $\rightarrow$ \texttt{R73} & None \\ \hline
+126 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{)} $\rightarrow$ \texttt{R63}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{,} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 188, \texttt{Expr\_Tail} $\rightarrow$ 189 \\ \hline
+127 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 190 \\ \hline
+128 & \texttt{*} $\rightarrow$ \texttt{R74}, \texttt{+} $\rightarrow$ \texttt{R74}, \texttt{\%} $\rightarrow$ \texttt{R74}, \texttt{-} $\rightarrow$ \texttt{R74}, \texttt{)} $\rightarrow$ \texttt{R74}, \texttt{/} $\rightarrow$ \texttt{R74}, \texttt{,} $\rightarrow$ \texttt{R74} & None \\ \hline
+129 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{,} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{)} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 191, \texttt{Mulop} $\rightarrow$ 192 \\ \hline
+130 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S194}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S193}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{,} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 195 \\ \hline
+131 & \texttt{*} $\rightarrow$ \texttt{R78}, \texttt{(} $\rightarrow$ \texttt{S197}, \texttt{+} $\rightarrow$ \texttt{R78}, \texttt{/} $\rightarrow$ \texttt{R78}, \texttt{\%} $\rightarrow$ \texttt{R78}, \texttt{,} $\rightarrow$ \texttt{R78}, \texttt{-} $\rightarrow$ \texttt{R78}, \texttt{)} $\rightarrow$ \texttt{R78} & \texttt{Factor\_Designator} $\rightarrow$ 196, \texttt{ActPars} $\rightarrow$ 198 \\ \hline
+132 & \texttt{ident} $\rightarrow$ \texttt{S199} & None \\ \hline
+133 & \texttt{;} $\rightarrow$ \texttt{R47} & None \\ \hline
+134 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{Expr} $\rightarrow$ 200 \\ \hline
+135 & \texttt{)} $\rightarrow$ \texttt{R48} & None \\ \hline
+136 & \texttt{if} $\rightarrow$ \texttt{R39}, \texttt{print} $\rightarrow$ \texttt{R39}, \texttt{read} $\rightarrow$ \texttt{R39}, \texttt{\{} $\rightarrow$ \texttt{R39}, \texttt{ident} $\rightarrow$ \texttt{R39}, \texttt{while} $\rightarrow$ \texttt{R39}, \texttt{;} $\rightarrow$ \texttt{R39}, \texttt{\}} $\rightarrow$ \texttt{R39}, \texttt{return} $\rightarrow$ \texttt{R39} & None \\ \hline
+137 & \texttt{number} $\rightarrow$ \texttt{R64}, \texttt{new} $\rightarrow$ \texttt{R64}, \texttt{ident} $\rightarrow$ \texttt{R64}, \texttt{(} $\rightarrow$ \texttt{R64}, \texttt{charConst} $\rightarrow$ \texttt{R64} & None \\ \hline
+138 & \texttt{number} $\rightarrow$ \texttt{R65}, \texttt{ident} $\rightarrow$ \texttt{R65}, \texttt{new} $\rightarrow$ \texttt{R65}, \texttt{(} $\rightarrow$ \texttt{R65}, \texttt{charConst} $\rightarrow$ \texttt{R65} & None \\ \hline
+139 & \texttt{(} $\rightarrow$ \texttt{S108}, \texttt{new} $\rightarrow$ \texttt{S113}, \texttt{charConst} $\rightarrow$ \texttt{S109}, \texttt{ident} $\rightarrow$ \texttt{S111}, \texttt{number} $\rightarrow$ \texttt{S107} & \texttt{Term} $\rightarrow$ 201, \texttt{Factor} $\rightarrow$ 110, \texttt{Designator} $\rightarrow$ 112 \\ \hline
+140 & \texttt{;} $\rightarrow$ \texttt{R59} & None \\ \hline
+141 & \texttt{(} $\rightarrow$ \texttt{S204}, \texttt{new} $\rightarrow$ \texttt{S209}, \texttt{charConst} $\rightarrow$ \texttt{S205}, \texttt{ident} $\rightarrow$ \texttt{S207}, \texttt{number} $\rightarrow$ \texttt{S202} & \texttt{Term} $\rightarrow$ 203, \texttt{Factor} $\rightarrow$ 206, \texttt{Designator} $\rightarrow$ 208 \\ \hline
+142 & \texttt{)} $\rightarrow$ \texttt{S210} & None \\ \hline
+143 & \texttt{ident} $\rightarrow$ \texttt{R69}, \texttt{(} $\rightarrow$ \texttt{R69}, \texttt{charConst} $\rightarrow$ \texttt{R69}, \texttt{number} $\rightarrow$ \texttt{R69}, \texttt{new} $\rightarrow$ \texttt{R69} & None \\ \hline
+144 & \texttt{new} $\rightarrow$ \texttt{R70}, \texttt{(} $\rightarrow$ \texttt{R70}, \texttt{ident} $\rightarrow$ \texttt{R70}, \texttt{charConst} $\rightarrow$ \texttt{R70}, \texttt{number} $\rightarrow$ \texttt{R70} & None \\ \hline
+145 & \texttt{ident} $\rightarrow$ \texttt{R71}, \texttt{(} $\rightarrow$ \texttt{R71}, \texttt{new} $\rightarrow$ \texttt{R71}, \texttt{number} $\rightarrow$ \texttt{R71}, \texttt{charConst} $\rightarrow$ \texttt{R71} & None \\ \hline
+146 & \texttt{+} $\rightarrow$ \texttt{R66}, \texttt{-} $\rightarrow$ \texttt{R66}, \texttt{;} $\rightarrow$ \texttt{R66} & None \\ \hline
+147 & \texttt{(} $\rightarrow$ \texttt{S108}, \texttt{new} $\rightarrow$ \texttt{S113}, \texttt{charConst} $\rightarrow$ \texttt{S109}, \texttt{ident} $\rightarrow$ \texttt{S111}, \texttt{number} $\rightarrow$ \texttt{S107} & \texttt{Factor} $\rightarrow$ 211, \texttt{Designator} $\rightarrow$ 112 \\ \hline
+148 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 212 \\ \hline
+149 & \texttt{-} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81}, \texttt{\%} $\rightarrow$ \texttt{R81}, \texttt{;} $\rightarrow$ \texttt{R81}, \texttt{*} $\rightarrow$ \texttt{R81}, \texttt{+} $\rightarrow$ \texttt{R81}, \texttt{/} $\rightarrow$ \texttt{R81} & None \\ \hline
+150 & \texttt{ident} $\rightarrow$ \texttt{S213} & None \\ \hline
+151 & \texttt{;} $\rightarrow$ \texttt{R72}, \texttt{*} $\rightarrow$ \texttt{R72}, \texttt{+} $\rightarrow$ \texttt{R72}, \texttt{/} $\rightarrow$ \texttt{R72}, \texttt{\%} $\rightarrow$ \texttt{R72}, \texttt{-} $\rightarrow$ \texttt{R72} & None \\ \hline
+152 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 214, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+153 & \texttt{-} $\rightarrow$ \texttt{R77}, \texttt{;} $\rightarrow$ \texttt{R77}, \texttt{*} $\rightarrow$ \texttt{R77}, \texttt{+} $\rightarrow$ \texttt{R77}, \texttt{/} $\rightarrow$ \texttt{R77}, \texttt{\%} $\rightarrow$ \texttt{R77} & None \\ \hline
+154 & \texttt{[} $\rightarrow$ \texttt{S215}, \texttt{*} $\rightarrow$ \texttt{R80}, \texttt{;} $\rightarrow$ \texttt{R80}, \texttt{+} $\rightarrow$ \texttt{R80}, \texttt{/} $\rightarrow$ \texttt{R80}, \texttt{\%} $\rightarrow$ \texttt{R80}, \texttt{-} $\rightarrow$ \texttt{R80} & \texttt{Factor\_New} $\rightarrow$ 216 \\ \hline
+155 & \texttt{*} $\rightarrow$ \texttt{R73}, \texttt{+} $\rightarrow$ \texttt{R73}, \texttt{/} $\rightarrow$ \texttt{R73}, \texttt{-} $\rightarrow$ \texttt{R73}, \texttt{]} $\rightarrow$ \texttt{R73}, \texttt{\%} $\rightarrow$ \texttt{R73} & None \\ \hline
+156 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{]} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 217, \texttt{Expr\_Tail} $\rightarrow$ 218 \\ \hline
+157 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 219 \\ \hline
+158 & \texttt{*} $\rightarrow$ \texttt{R74}, \texttt{+} $\rightarrow$ \texttt{R74}, \texttt{]} $\rightarrow$ \texttt{R74}, \texttt{\%} $\rightarrow$ \texttt{R74}, \texttt{-} $\rightarrow$ \texttt{R74}, \texttt{/} $\rightarrow$ \texttt{R74} & None \\ \hline
+159 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{]} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 220, \texttt{Mulop} $\rightarrow$ 221 \\ \hline
+160 & \texttt{[} $\rightarrow$ \texttt{S222}, \texttt{.} $\rightarrow$ \texttt{S224}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{]} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 223 \\ \hline
+161 & \texttt{*} $\rightarrow$ \texttt{R78}, \texttt{(} $\rightarrow$ \texttt{S226}, \texttt{]} $\rightarrow$ \texttt{R78}, \texttt{+} $\rightarrow$ \texttt{R78}, \texttt{/} $\rightarrow$ \texttt{R78}, \texttt{\%} $\rightarrow$ \texttt{R78}, \texttt{-} $\rightarrow$ \texttt{R78} & \texttt{Factor\_Designator} $\rightarrow$ 225, \texttt{ActPars} $\rightarrow$ 227 \\ \hline
+162 & \texttt{ident} $\rightarrow$ \texttt{S228} & None \\ \hline
+163 & \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{=} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S92}, \texttt{.} $\rightarrow$ \texttt{S94} & \texttt{Designator\_Tail} $\rightarrow$ 229 \\ \hline
+164 & \texttt{=} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82} & None \\ \hline
+165 & \texttt{>=} $\rightarrow$ \texttt{R73}, \texttt{==} $\rightarrow$ \texttt{R73}, \texttt{-} $\rightarrow$ \texttt{R73}, \texttt{>} $\rightarrow$ \texttt{R73}, \texttt{*} $\rightarrow$ \texttt{R73}, \texttt{+} $\rightarrow$ \texttt{R73}, \texttt{/} $\rightarrow$ \texttt{R73}, \texttt{<=} $\rightarrow$ \texttt{R73}, \texttt{<} $\rightarrow$ \texttt{R73}, \texttt{!=} $\rightarrow$ \texttt{R73}, \texttt{\%} $\rightarrow$ \texttt{R73} & None \\ \hline
+166 & \texttt{!=} $\rightarrow$ \texttt{R63}, \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{>} $\rightarrow$ \texttt{R63}, \texttt{<=} $\rightarrow$ \texttt{R63}, \texttt{<} $\rightarrow$ \texttt{R63}, \texttt{>=} $\rightarrow$ \texttt{R63}, \texttt{==} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 230, \texttt{Expr\_Tail} $\rightarrow$ 231 \\ \hline
+167 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 232 \\ \hline
+168 & \texttt{*} $\rightarrow$ \texttt{R74}, \texttt{+} $\rightarrow$ \texttt{R74}, \texttt{<} $\rightarrow$ \texttt{R74}, \texttt{/} $\rightarrow$ \texttt{R74}, \texttt{<=} $\rightarrow$ \texttt{R74}, \texttt{!=} $\rightarrow$ \texttt{R74}, \texttt{\%} $\rightarrow$ \texttt{R74}, \texttt{>=} $\rightarrow$ \texttt{R74}, \texttt{-} $\rightarrow$ \texttt{R74}, \texttt{>} $\rightarrow$ \texttt{R74}, \texttt{==} $\rightarrow$ \texttt{R74} & None \\ \hline
+169 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{<=} $\rightarrow$ \texttt{R68}, \texttt{>=} $\rightarrow$ \texttt{R68}, \texttt{==} $\rightarrow$ \texttt{R68}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{>} $\rightarrow$ \texttt{R68}, \texttt{<} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{!=} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 233, \texttt{Mulop} $\rightarrow$ 234 \\ \hline
+170 & \texttt{[} $\rightarrow$ \texttt{S236}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S235}, \texttt{<=} $\rightarrow$ \texttt{R84}, \texttt{>=} $\rightarrow$ \texttt{R84}, \texttt{==} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{>} $\rightarrow$ \texttt{R84}, \texttt{<} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{!=} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 237 \\ \hline
+171 & \texttt{>=} $\rightarrow$ \texttt{R78}, \texttt{==} $\rightarrow$ \texttt{R78}, \texttt{(} $\rightarrow$ \texttt{S239}, \texttt{-} $\rightarrow$ \texttt{R78}, \texttt{>} $\rightarrow$ \texttt{R78}, \texttt{<} $\rightarrow$ \texttt{R78}, \texttt{*} $\rightarrow$ \texttt{R78}, \texttt{+} $\rightarrow$ \texttt{R78}, \texttt{/} $\rightarrow$ \texttt{R78}, \texttt{!=} $\rightarrow$ \texttt{R78}, \texttt{\%} $\rightarrow$ \texttt{R78}, \texttt{<=} $\rightarrow$ \texttt{R78} & \texttt{Factor\_Designator} $\rightarrow$ 238, \texttt{ActPars} $\rightarrow$ 240 \\ \hline
+172 & \texttt{ident} $\rightarrow$ \texttt{S241} & None \\ \hline
+173 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Block} $\rightarrow$ 75, \texttt{Statement} $\rightarrow$ 242 \\ \hline
+174 & \texttt{number} $\rightarrow$ \texttt{R58}, \texttt{new} $\rightarrow$ \texttt{R58}, \texttt{ident} $\rightarrow$ \texttt{R58}, \texttt{(} $\rightarrow$ \texttt{R58}, \texttt{charConst} $\rightarrow$ \texttt{R58}, \texttt{-} $\rightarrow$ \texttt{R58} & None \\ \hline
+175 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 243 \\ \hline
+176 & \texttt{ident} $\rightarrow$ \texttt{R53}, \texttt{new} $\rightarrow$ \texttt{R53}, \texttt{(} $\rightarrow$ \texttt{R53}, \texttt{charConst} $\rightarrow$ \texttt{R53}, \texttt{-} $\rightarrow$ \texttt{R53}, \texttt{number} $\rightarrow$ \texttt{R53} & None \\ \hline
+177 & \texttt{(} $\rightarrow$ \texttt{R54}, \texttt{ident} $\rightarrow$ \texttt{R54}, \texttt{new} $\rightarrow$ \texttt{R54}, \texttt{charConst} $\rightarrow$ \texttt{R54}, \texttt{-} $\rightarrow$ \texttt{R54}, \texttt{number} $\rightarrow$ \texttt{R54} & None \\ \hline
+178 & \texttt{new} $\rightarrow$ \texttt{R55}, \texttt{-} $\rightarrow$ \texttt{R55}, \texttt{ident} $\rightarrow$ \texttt{R55}, \texttt{(} $\rightarrow$ \texttt{R55}, \texttt{charConst} $\rightarrow$ \texttt{R55}, \texttt{number} $\rightarrow$ \texttt{R55} & None \\ \hline
+179 & \texttt{new} $\rightarrow$ \texttt{R56}, \texttt{-} $\rightarrow$ \texttt{R56}, \texttt{ident} $\rightarrow$ \texttt{R56}, \texttt{(} $\rightarrow$ \texttt{R56}, \texttt{number} $\rightarrow$ \texttt{R56}, \texttt{charConst} $\rightarrow$ \texttt{R56} & None \\ \hline
+180 & \texttt{ident} $\rightarrow$ \texttt{R57}, \texttt{(} $\rightarrow$ \texttt{R57}, \texttt{charConst} $\rightarrow$ \texttt{R57}, \texttt{number} $\rightarrow$ \texttt{R57}, \texttt{new} $\rightarrow$ \texttt{R57}, \texttt{-} $\rightarrow$ \texttt{R57} & None \\ \hline
+181 & \texttt{;} $\rightarrow$ \texttt{S244} & None \\ \hline
+182 & \texttt{ident} $\rightarrow$ \texttt{S245} & None \\ \hline
+183 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 246 \\ \hline
+184 & \texttt{)} $\rightarrow$ \texttt{R81} & None \\ \hline
+185 & \texttt{number} $\rightarrow$ \texttt{S247} & None \\ \hline
+186 & \texttt{)} $\rightarrow$ \texttt{S248} & None \\ \hline
+187 & \texttt{read} $\rightarrow$ \texttt{S256}, \texttt{print} $\rightarrow$ \texttt{S257}, \texttt{if} $\rightarrow$ \texttt{S253}, \texttt{while} $\rightarrow$ \texttt{S254}, \texttt{\{} $\rightarrow$ \texttt{S250}, \texttt{;} $\rightarrow$ \texttt{S249}, \texttt{return} $\rightarrow$ \texttt{S252}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 251, \texttt{Block} $\rightarrow$ 255, \texttt{Statement} $\rightarrow$ 258 \\ \hline
+188 & \texttt{(} $\rightarrow$ \texttt{S127}, \texttt{new} $\rightarrow$ \texttt{S132}, \texttt{charConst} $\rightarrow$ \texttt{S128}, \texttt{number} $\rightarrow$ \texttt{S125}, \texttt{ident} $\rightarrow$ \texttt{S130} & \texttt{Term} $\rightarrow$ 259, \texttt{Factor} $\rightarrow$ 129, \texttt{Designator} $\rightarrow$ 131 \\ \hline
+189 & \texttt{,} $\rightarrow$ \texttt{R59}, \texttt{)} $\rightarrow$ \texttt{R59} & None \\ \hline
+190 & \texttt{)} $\rightarrow$ \texttt{S260} & None \\ \hline
+191 & \texttt{+} $\rightarrow$ \texttt{R66}, \texttt{)} $\rightarrow$ \texttt{R66}, \texttt{-} $\rightarrow$ \texttt{R66}, \texttt{,} $\rightarrow$ \texttt{R66} & None \\ \hline
+192 & \texttt{(} $\rightarrow$ \texttt{S127}, \texttt{new} $\rightarrow$ \texttt{S132}, \texttt{charConst} $\rightarrow$ \texttt{S128}, \texttt{number} $\rightarrow$ \texttt{S125}, \texttt{ident} $\rightarrow$ \texttt{S130} & \texttt{Factor} $\rightarrow$ 261, \texttt{Designator} $\rightarrow$ 131 \\ \hline
+193 & \texttt{ident} $\rightarrow$ \texttt{S262} & None \\ \hline
+194 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 263 \\ \hline
+195 & \texttt{-} $\rightarrow$ \texttt{R81}, \texttt{*} $\rightarrow$ \texttt{R81}, \texttt{+} $\rightarrow$ \texttt{R81}, \texttt{/} $\rightarrow$ \texttt{R81}, \texttt{,} $\rightarrow$ \texttt{R81}, \texttt{\%} $\rightarrow$ \texttt{R81}, \texttt{)} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81} & None \\ \hline
+196 & \texttt{)} $\rightarrow$ \texttt{R72}, \texttt{*} $\rightarrow$ \texttt{R72}, \texttt{+} $\rightarrow$ \texttt{R72}, \texttt{/} $\rightarrow$ \texttt{R72}, \texttt{,} $\rightarrow$ \texttt{R72}, \texttt{\%} $\rightarrow$ \texttt{R72}, \texttt{-} $\rightarrow$ \texttt{R72} & None \\ \hline
+197 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 264, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+198 & \texttt{-} $\rightarrow$ \texttt{R77}, \texttt{)} $\rightarrow$ \texttt{R77}, \texttt{*} $\rightarrow$ \texttt{R77}, \texttt{+} $\rightarrow$ \texttt{R77}, \texttt{/} $\rightarrow$ \texttt{R77}, \texttt{,} $\rightarrow$ \texttt{R77}, \texttt{\%} $\rightarrow$ \texttt{R77} & None \\ \hline
+199 & \texttt{[} $\rightarrow$ \texttt{S265}, \texttt{*} $\rightarrow$ \texttt{R80}, \texttt{,} $\rightarrow$ \texttt{R80}, \texttt{+} $\rightarrow$ \texttt{R80}, \texttt{/} $\rightarrow$ \texttt{R80}, \texttt{\%} $\rightarrow$ \texttt{R80}, \texttt{-} $\rightarrow$ \texttt{R80}, \texttt{)} $\rightarrow$ \texttt{R80} & \texttt{Factor\_New} $\rightarrow$ 266 \\ \hline
+200 & \texttt{)} $\rightarrow$ \texttt{R51}, \texttt{,} $\rightarrow$ \texttt{S134} & \texttt{ActPars\_Tail} $\rightarrow$ 267 \\ \hline
+201 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{;} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 139, \texttt{Expr\_Tail} $\rightarrow$ 268 \\ \hline
+202 & \texttt{)} $\rightarrow$ \texttt{R73}, \texttt{*} $\rightarrow$ \texttt{R73}, \texttt{+} $\rightarrow$ \texttt{R73}, \texttt{/} $\rightarrow$ \texttt{R73}, \texttt{-} $\rightarrow$ \texttt{R73}, \texttt{\%} $\rightarrow$ \texttt{R73} & None \\ \hline
+203 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{)} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 269, \texttt{Expr\_Tail} $\rightarrow$ 270 \\ \hline
+204 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 141, \texttt{Expr} $\rightarrow$ 271 \\ \hline
+205 & \texttt{*} $\rightarrow$ \texttt{R74}, \texttt{+} $\rightarrow$ \texttt{R74}, \texttt{\%} $\rightarrow$ \texttt{R74}, \texttt{-} $\rightarrow$ \texttt{R74}, \texttt{)} $\rightarrow$ \texttt{R74}, \texttt{/} $\rightarrow$ \texttt{R74} & None \\ \hline
+206 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{)} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 272, \texttt{Mulop} $\rightarrow$ 273 \\ \hline
+207 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S274}, \texttt{.} $\rightarrow$ \texttt{S276}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 275 \\ \hline
+208 & \texttt{*} $\rightarrow$ \texttt{R78}, \texttt{(} $\rightarrow$ \texttt{S278}, \texttt{+} $\rightarrow$ \texttt{R78}, \texttt{/} $\rightarrow$ \texttt{R78}, \texttt{\%} $\rightarrow$ \texttt{R78}, \texttt{-} $\rightarrow$ \texttt{R78}, \texttt{)} $\rightarrow$ \texttt{R78} & \texttt{Factor\_Designator} $\rightarrow$ 277, \texttt{ActPars} $\rightarrow$ 279 \\ \hline
+209 & \texttt{ident} $\rightarrow$ \texttt{S280} & None \\ \hline
+210 & \texttt{\%} $\rightarrow$ \texttt{R76}, \texttt{/} $\rightarrow$ \texttt{R76}, \texttt{;} $\rightarrow$ \texttt{R76}, \texttt{*} $\rightarrow$ \texttt{R76}, \texttt{+} $\rightarrow$ \texttt{R76}, \texttt{-} $\rightarrow$ \texttt{R76} & None \\ \hline
+211 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{;} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 281, \texttt{Mulop} $\rightarrow$ 147 \\ \hline
+212 & \texttt{]} $\rightarrow$ \texttt{S282} & None \\ \hline
+213 & \texttt{[} $\rightarrow$ \texttt{S148}, \texttt{.} $\rightarrow$ \texttt{S150}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{;} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 283 \\ \hline
+214 & \texttt{)} $\rightarrow$ \texttt{S284} & None \\ \hline
+215 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 285 \\ \hline
+216 & \texttt{-} $\rightarrow$ \texttt{R75}, \texttt{;} $\rightarrow$ \texttt{R75}, \texttt{*} $\rightarrow$ \texttt{R75}, \texttt{+} $\rightarrow$ \texttt{R75}, \texttt{/} $\rightarrow$ \texttt{R75}, \texttt{\%} $\rightarrow$ \texttt{R75} & None \\ \hline
+217 & \texttt{(} $\rightarrow$ \texttt{S157}, \texttt{new} $\rightarrow$ \texttt{S162}, \texttt{charConst} $\rightarrow$ \texttt{S158}, \texttt{ident} $\rightarrow$ \texttt{S160}, \texttt{number} $\rightarrow$ \texttt{S155} & \texttt{Term} $\rightarrow$ 286, \texttt{Factor} $\rightarrow$ 159, \texttt{Designator} $\rightarrow$ 161 \\ \hline
+218 & \texttt{]} $\rightarrow$ \texttt{R59} & None \\ \hline
+219 & \texttt{)} $\rightarrow$ \texttt{S287} & None \\ \hline
+220 & \texttt{]} $\rightarrow$ \texttt{R66}, \texttt{+} $\rightarrow$ \texttt{R66}, \texttt{-} $\rightarrow$ \texttt{R66} & None \\ \hline
+221 & \texttt{(} $\rightarrow$ \texttt{S157}, \texttt{new} $\rightarrow$ \texttt{S162}, \texttt{charConst} $\rightarrow$ \texttt{S158}, \texttt{ident} $\rightarrow$ \texttt{S160}, \texttt{number} $\rightarrow$ \texttt{S155} & \texttt{Factor} $\rightarrow$ 288, \texttt{Designator} $\rightarrow$ 161 \\ \hline
+222 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 289 \\ \hline
+223 & \texttt{-} $\rightarrow$ \texttt{R81}, \texttt{+} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81}, \texttt{\%} $\rightarrow$ \texttt{R81}, \texttt{*} $\rightarrow$ \texttt{R81}, \texttt{]} $\rightarrow$ \texttt{R81}, \texttt{/} $\rightarrow$ \texttt{R81} & None \\ \hline
+224 & \texttt{ident} $\rightarrow$ \texttt{S290} & None \\ \hline
+225 & \texttt{*} $\rightarrow$ \texttt{R72}, \texttt{]} $\rightarrow$ \texttt{R72}, \texttt{+} $\rightarrow$ \texttt{R72}, \texttt{/} $\rightarrow$ \texttt{R72}, \texttt{\%} $\rightarrow$ \texttt{R72}, \texttt{-} $\rightarrow$ \texttt{R72} & None \\ \hline
+226 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 291, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+227 & \texttt{-} $\rightarrow$ \texttt{R77}, \texttt{*} $\rightarrow$ \texttt{R77}, \texttt{+} $\rightarrow$ \texttt{R77}, \texttt{]} $\rightarrow$ \texttt{R77}, \texttt{/} $\rightarrow$ \texttt{R77}, \texttt{\%} $\rightarrow$ \texttt{R77} & None \\ \hline
+228 & \texttt{[} $\rightarrow$ \texttt{S292}, \texttt{*} $\rightarrow$ \texttt{R80}, \texttt{]} $\rightarrow$ \texttt{R80}, \texttt{+} $\rightarrow$ \texttt{R80}, \texttt{/} $\rightarrow$ \texttt{R80}, \texttt{\%} $\rightarrow$ \texttt{R80}, \texttt{-} $\rightarrow$ \texttt{R80} & \texttt{Factor\_New} $\rightarrow$ 293 \\ \hline
+229 & \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{=} $\rightarrow$ \texttt{R83} & None \\ \hline
+230 & \texttt{new} $\rightarrow$ \texttt{S172}, \texttt{ident} $\rightarrow$ \texttt{S170}, \texttt{(} $\rightarrow$ \texttt{S167}, \texttt{charConst} $\rightarrow$ \texttt{S168}, \texttt{number} $\rightarrow$ \texttt{S165} & \texttt{Term} $\rightarrow$ 294, \texttt{Factor} $\rightarrow$ 169, \texttt{Designator} $\rightarrow$ 171 \\ \hline
+231 & \texttt{<=} $\rightarrow$ \texttt{R59}, \texttt{>=} $\rightarrow$ \texttt{R59}, \texttt{!=} $\rightarrow$ \texttt{R59}, \texttt{<} $\rightarrow$ \texttt{R59}, \texttt{>} $\rightarrow$ \texttt{R59}, \texttt{==} $\rightarrow$ \texttt{R59} & None \\ \hline
+232 & \texttt{)} $\rightarrow$ \texttt{S295} & None \\ \hline
+233 & \texttt{-} $\rightarrow$ \texttt{R66}, \texttt{!=} $\rightarrow$ \texttt{R66}, \texttt{>} $\rightarrow$ \texttt{R66}, \texttt{==} $\rightarrow$ \texttt{R66}, \texttt{+} $\rightarrow$ \texttt{R66}, \texttt{<} $\rightarrow$ \texttt{R66}, \texttt{<=} $\rightarrow$ \texttt{R66}, \texttt{>=} $\rightarrow$ \texttt{R66} & None \\ \hline
+234 & \texttt{new} $\rightarrow$ \texttt{S172}, \texttt{ident} $\rightarrow$ \texttt{S170}, \texttt{(} $\rightarrow$ \texttt{S167}, \texttt{charConst} $\rightarrow$ \texttt{S168}, \texttt{number} $\rightarrow$ \texttt{S165} & \texttt{Factor} $\rightarrow$ 296, \texttt{Designator} $\rightarrow$ 171 \\ \hline
+235 & \texttt{ident} $\rightarrow$ \texttt{S297} & None \\ \hline
+236 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 298 \\ \hline
+237 & \texttt{-} $\rightarrow$ \texttt{R81}, \texttt{>} $\rightarrow$ \texttt{R81}, \texttt{==} $\rightarrow$ \texttt{R81}, \texttt{*} $\rightarrow$ \texttt{R81}, \texttt{+} $\rightarrow$ \texttt{R81}, \texttt{/} $\rightarrow$ \texttt{R81}, \texttt{<} $\rightarrow$ \texttt{R81}, \texttt{\%} $\rightarrow$ \texttt{R81}, \texttt{<=} $\rightarrow$ \texttt{R81}, \texttt{>=} $\rightarrow$ \texttt{R81}, \texttt{!=} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81} & None \\ \hline
+238 & \texttt{>} $\rightarrow$ \texttt{R72}, \texttt{==} $\rightarrow$ \texttt{R72}, \texttt{<} $\rightarrow$ \texttt{R72}, \texttt{*} $\rightarrow$ \texttt{R72}, \texttt{+} $\rightarrow$ \texttt{R72}, \texttt{/} $\rightarrow$ \texttt{R72}, \texttt{<=} $\rightarrow$ \texttt{R72}, \texttt{>=} $\rightarrow$ \texttt{R72}, \texttt{!=} $\rightarrow$ \texttt{R72}, \texttt{\%} $\rightarrow$ \texttt{R72}, \texttt{-} $\rightarrow$ \texttt{R72} & None \\ \hline
+239 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 299, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+240 & \texttt{<} $\rightarrow$ \texttt{R77}, \texttt{*} $\rightarrow$ \texttt{R77}, \texttt{+} $\rightarrow$ \texttt{R77}, \texttt{/} $\rightarrow$ \texttt{R77}, \texttt{<=} $\rightarrow$ \texttt{R77}, \texttt{!=} $\rightarrow$ \texttt{R77}, \texttt{\%} $\rightarrow$ \texttt{R77}, \texttt{-} $\rightarrow$ \texttt{R77}, \texttt{>=} $\rightarrow$ \texttt{R77}, \texttt{>} $\rightarrow$ \texttt{R77}, \texttt{==} $\rightarrow$ \texttt{R77} & None \\ \hline
+241 & \texttt{*} $\rightarrow$ \texttt{R80}, \texttt{[} $\rightarrow$ \texttt{S300}, \texttt{<=} $\rightarrow$ \texttt{R80}, \texttt{>=} $\rightarrow$ \texttt{R80}, \texttt{==} $\rightarrow$ \texttt{R80}, \texttt{-} $\rightarrow$ \texttt{R80}, \texttt{>} $\rightarrow$ \texttt{R80}, \texttt{<} $\rightarrow$ \texttt{R80}, \texttt{+} $\rightarrow$ \texttt{R80}, \texttt{/} $\rightarrow$ \texttt{R80}, \texttt{!=} $\rightarrow$ \texttt{R80}, \texttt{\%} $\rightarrow$ \texttt{R80} & \texttt{Factor\_New} $\rightarrow$ 301 \\ \hline
+242 & \texttt{if} $\rightarrow$ \texttt{R33}, \texttt{print} $\rightarrow$ \texttt{R33}, \texttt{\}} $\rightarrow$ \texttt{R33}, \texttt{;} $\rightarrow$ \texttt{R33}, \texttt{read} $\rightarrow$ \texttt{R33}, \texttt{\{} $\rightarrow$ \texttt{R33}, \texttt{ident} $\rightarrow$ \texttt{R33}, \texttt{while} $\rightarrow$ \texttt{R33}, \texttt{return} $\rightarrow$ \texttt{R33} & None \\ \hline
+243 & \texttt{)} $\rightarrow$ \texttt{R52} & None \\ \hline
+244 & \texttt{read} $\rightarrow$ \texttt{R35}, \texttt{\{} $\rightarrow$ \texttt{R35}, \texttt{while} $\rightarrow$ \texttt{R35}, \texttt{ident} $\rightarrow$ \texttt{R35}, \texttt{;} $\rightarrow$ \texttt{R35}, \texttt{print} $\rightarrow$ \texttt{R35}, \texttt{return} $\rightarrow$ \texttt{R35}, \texttt{if} $\rightarrow$ \texttt{R35}, \texttt{\}} $\rightarrow$ \texttt{R35} & None \\ \hline
+245 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S182}, \texttt{[} $\rightarrow$ \texttt{S183} & \texttt{Designator\_Tail} $\rightarrow$ 302 \\ \hline
+246 & \texttt{]} $\rightarrow$ \texttt{S303} & None \\ \hline
+247 & \texttt{)} $\rightarrow$ \texttt{R45} & None \\ \hline
+248 & \texttt{;} $\rightarrow$ \texttt{S304} & None \\ \hline
+249 & \texttt{read} $\rightarrow$ \texttt{R38}, \texttt{\}} $\rightarrow$ \texttt{R38}, \texttt{\{} $\rightarrow$ \texttt{R38}, \texttt{return} $\rightarrow$ \texttt{R38}, \texttt{ident} $\rightarrow$ \texttt{R38}, \texttt{;} $\rightarrow$ \texttt{R38}, \texttt{while} $\rightarrow$ \texttt{R38}, \texttt{else} $\rightarrow$ \texttt{R38}, \texttt{if} $\rightarrow$ \texttt{R38}, \texttt{print} $\rightarrow$ \texttt{R38} & None \\ \hline
+250 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{\}} $\rightarrow$ \texttt{R30}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Statements} $\rightarrow$ 305, \texttt{Statement} $\rightarrow$ 72, \texttt{Block} $\rightarrow$ 75 \\ \hline
+251 & \texttt{=} $\rightarrow$ \texttt{S307}, \texttt{(} $\rightarrow$ \texttt{S83} & \texttt{Statement\_AssignOrCall} $\rightarrow$ 306, \texttt{ActPars} $\rightarrow$ 308 \\ \hline
+252 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{;} $\rightarrow$ \texttt{R44}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 86, \texttt{Expr} $\rightarrow$ 87, \texttt{Expr\_Opt} $\rightarrow$ 309 \\ \hline
+253 & \texttt{(} $\rightarrow$ \texttt{S310} & None \\ \hline
+254 & \texttt{(} $\rightarrow$ \texttt{S311} & None \\ \hline
+255 & \texttt{\{} $\rightarrow$ \texttt{R37}, \texttt{;} $\rightarrow$ \texttt{R37}, \texttt{while} $\rightarrow$ \texttt{R37}, \texttt{ident} $\rightarrow$ \texttt{R37}, \texttt{else} $\rightarrow$ \texttt{R37}, \texttt{print} $\rightarrow$ \texttt{R37}, \texttt{return} $\rightarrow$ \texttt{R37}, \texttt{\}} $\rightarrow$ \texttt{R37}, \texttt{if} $\rightarrow$ \texttt{R37}, \texttt{read} $\rightarrow$ \texttt{R37} & None \\ \hline
+256 & \texttt{(} $\rightarrow$ \texttt{S312} & None \\ \hline
+257 & \texttt{(} $\rightarrow$ \texttt{S313} & None \\ \hline
+258 & \texttt{return} $\rightarrow$ \texttt{R42}, \texttt{else} $\rightarrow$ \texttt{S315}, \texttt{if} $\rightarrow$ \texttt{R42}, \texttt{read} $\rightarrow$ \texttt{R42}, \texttt{\{} $\rightarrow$ \texttt{R42}, \texttt{ident} $\rightarrow$ \texttt{R42}, \texttt{print} $\rightarrow$ \texttt{R42}, \texttt{while} $\rightarrow$ \texttt{R42}, \texttt{;} $\rightarrow$ \texttt{R42}, \texttt{\}} $\rightarrow$ \texttt{R42} & \texttt{Else\_Opt} $\rightarrow$ 314 \\ \hline
+259 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{)} $\rightarrow$ \texttt{R63}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{,} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 188, \texttt{Expr\_Tail} $\rightarrow$ 316 \\ \hline
+260 & \texttt{)} $\rightarrow$ \texttt{R76}, \texttt{\%} $\rightarrow$ \texttt{R76}, \texttt{/} $\rightarrow$ \texttt{R76}, \texttt{,} $\rightarrow$ \texttt{R76}, \texttt{*} $\rightarrow$ \texttt{R76}, \texttt{+} $\rightarrow$ \texttt{R76}, \texttt{-} $\rightarrow$ \texttt{R76} & None \\ \hline
+261 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{,} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{)} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 317, \texttt{Mulop} $\rightarrow$ 192 \\ \hline
+262 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S194}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S193}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{,} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 318 \\ \hline
+263 & \texttt{]} $\rightarrow$ \texttt{S319} & None \\ \hline
+264 & \texttt{)} $\rightarrow$ \texttt{S320} & None \\ \hline
+265 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 321 \\ \hline
+266 & \texttt{-} $\rightarrow$ \texttt{R75}, \texttt{)} $\rightarrow$ \texttt{R75}, \texttt{*} $\rightarrow$ \texttt{R75}, \texttt{+} $\rightarrow$ \texttt{R75}, \texttt{/} $\rightarrow$ \texttt{R75}, \texttt{,} $\rightarrow$ \texttt{R75}, \texttt{\%} $\rightarrow$ \texttt{R75} & None \\ \hline
+267 & \texttt{)} $\rightarrow$ \texttt{R50} & None \\ \hline
+268 & \texttt{;} $\rightarrow$ \texttt{R62} & None \\ \hline
+269 & \texttt{(} $\rightarrow$ \texttt{S204}, \texttt{new} $\rightarrow$ \texttt{S209}, \texttt{charConst} $\rightarrow$ \texttt{S205}, \texttt{ident} $\rightarrow$ \texttt{S207}, \texttt{number} $\rightarrow$ \texttt{S202} & \texttt{Term} $\rightarrow$ 322, \texttt{Factor} $\rightarrow$ 206, \texttt{Designator} $\rightarrow$ 208 \\ \hline
+270 & \texttt{)} $\rightarrow$ \texttt{R59} & None \\ \hline
+271 & \texttt{)} $\rightarrow$ \texttt{S323} & None \\ \hline
+272 & \texttt{+} $\rightarrow$ \texttt{R66}, \texttt{-} $\rightarrow$ \texttt{R66}, \texttt{)} $\rightarrow$ \texttt{R66} & None \\ \hline
+273 & \texttt{(} $\rightarrow$ \texttt{S204}, \texttt{new} $\rightarrow$ \texttt{S209}, \texttt{charConst} $\rightarrow$ \texttt{S205}, \texttt{ident} $\rightarrow$ \texttt{S207}, \texttt{number} $\rightarrow$ \texttt{S202} & \texttt{Factor} $\rightarrow$ 324, \texttt{Designator} $\rightarrow$ 208 \\ \hline
+274 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 325 \\ \hline
+275 & \texttt{-} $\rightarrow$ \texttt{R81}, \texttt{(} $\rightarrow$ \texttt{R81}, \texttt{\%} $\rightarrow$ \texttt{R81}, \texttt{)} $\rightarrow$ \texttt{R81}, \texttt{*} $\rightarrow$ \texttt{R81}, \texttt{+} $\rightarrow$ \texttt{R81}, \texttt{/} $\rightarrow$ \texttt{R81} & None \\ \hline
+276 & \texttt{ident} $\rightarrow$ \texttt{S326} & None \\ \hline
+277 & \texttt{)} $\rightarrow$ \texttt{R72}, \texttt{*} $\rightarrow$ \texttt{R72}, \texttt{+} $\rightarrow$ \texttt{R72}, \texttt{/} $\rightarrow$ \texttt{R72}, \texttt{\%} $\rightarrow$ \texttt{R72}, \texttt{-} $\rightarrow$ \texttt{R72} & None \\ \hline
+278 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{)} $\rightarrow$ \texttt{R49}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{ActPars\_List} $\rightarrow$ 327, \texttt{Expr} $\rightarrow$ 103 \\ \hline
+279 & \texttt{-} $\rightarrow$ \texttt{R77}, \texttt{)} $\rightarrow$ \texttt{R77}, \texttt{*} $\rightarrow$ \texttt{R77}, \texttt{+} $\rightarrow$ \texttt{R77}, \texttt{/} $\rightarrow$ \texttt{R77}, \texttt{\%} $\rightarrow$ \texttt{R77} & None \\ \hline
+280 & \texttt{[} $\rightarrow$ \texttt{S328}, \texttt{*} $\rightarrow$ \texttt{R80}, \texttt{+} $\rightarrow$ \texttt{R80}, \texttt{/} $\rightarrow$ \texttt{R80}, \texttt{\%} $\rightarrow$ \texttt{R80}, \texttt{-} $\rightarrow$ \texttt{R80}, \texttt{)} $\rightarrow$ \texttt{R80} & \texttt{Factor\_New} $\rightarrow$ 329 \\ \hline
+281 & \texttt{-} $\rightarrow$ \texttt{R67}, \texttt{;} $\rightarrow$ \texttt{R67}, \texttt{+} $\rightarrow$ \texttt{R67} & None \\ \hline
+282 & \texttt{[} $\rightarrow$ \texttt{S148}, \texttt{.} $\rightarrow$ \texttt{S150}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{;} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 330 \\ \hline
+283 & \texttt{/} $\rightarrow$ \texttt{R82}, \texttt{\%} $\rightarrow$ \texttt{R82}, \texttt{+} $\rightarrow$ \texttt{R82}, \texttt{*} $\rightarrow$ \texttt{R82}, \texttt{-} $\rightarrow$ \texttt{R82}, \texttt{;} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82} & None \\ \hline
+284 & \texttt{;} $\rightarrow$ \texttt{R47}, \texttt{*} $\rightarrow$ \texttt{R47}, \texttt{+} $\rightarrow$ \texttt{R47}, \texttt{-} $\rightarrow$ \texttt{R47}, \texttt{\%} $\rightarrow$ \texttt{R47}, \texttt{/} $\rightarrow$ \texttt{R47} & None \\ \hline
+285 & \texttt{]} $\rightarrow$ \texttt{S331} & None \\ \hline
+286 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{]} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 217, \texttt{Expr\_Tail} $\rightarrow$ 332 \\ \hline
+287 & \texttt{\%} $\rightarrow$ \texttt{R76}, \texttt{/} $\rightarrow$ \texttt{R76}, \texttt{]} $\rightarrow$ \texttt{R76}, \texttt{*} $\rightarrow$ \texttt{R76}, \texttt{+} $\rightarrow$ \texttt{R76}, \texttt{-} $\rightarrow$ \texttt{R76} & None \\ \hline
+288 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{]} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 333, \texttt{Mulop} $\rightarrow$ 221 \\ \hline
+289 & \texttt{]} $\rightarrow$ \texttt{S334} & None \\ \hline
+290 & \texttt{[} $\rightarrow$ \texttt{S222}, \texttt{.} $\rightarrow$ \texttt{S224}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{]} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 335 \\ \hline
+291 & \texttt{)} $\rightarrow$ \texttt{S336} & None \\ \hline
+292 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 337 \\ \hline
+293 & \texttt{-} $\rightarrow$ \texttt{R75}, \texttt{*} $\rightarrow$ \texttt{R75}, \texttt{+} $\rightarrow$ \texttt{R75}, \texttt{]} $\rightarrow$ \texttt{R75}, \texttt{/} $\rightarrow$ \texttt{R75}, \texttt{\%} $\rightarrow$ \texttt{R75} & None \\ \hline
+294 & \texttt{!=} $\rightarrow$ \texttt{R63}, \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{>} $\rightarrow$ \texttt{R63}, \texttt{<=} $\rightarrow$ \texttt{R63}, \texttt{<} $\rightarrow$ \texttt{R63}, \texttt{>=} $\rightarrow$ \texttt{R63}, \texttt{==} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 230, \texttt{Expr\_Tail} $\rightarrow$ 338 \\ \hline
+295 & \texttt{>} $\rightarrow$ \texttt{R76}, \texttt{==} $\rightarrow$ \texttt{R76}, \texttt{*} $\rightarrow$ \texttt{R76}, \texttt{+} $\rightarrow$ \texttt{R76}, \texttt{<} $\rightarrow$ \texttt{R76}, \texttt{\%} $\rightarrow$ \texttt{R76}, \texttt{<=} $\rightarrow$ \texttt{R76}, \texttt{!=} $\rightarrow$ \texttt{R76}, \texttt{/} $\rightarrow$ \texttt{R76}, \texttt{>=} $\rightarrow$ \texttt{R76}, \texttt{-} $\rightarrow$ \texttt{R76} & None \\ \hline
+296 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{<=} $\rightarrow$ \texttt{R68}, \texttt{>=} $\rightarrow$ \texttt{R68}, \texttt{==} $\rightarrow$ \texttt{R68}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{>} $\rightarrow$ \texttt{R68}, \texttt{<} $\rightarrow$ \texttt{R68}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{!=} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 339, \texttt{Mulop} $\rightarrow$ 234 \\ \hline
+297 & \texttt{[} $\rightarrow$ \texttt{S236}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{!=} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S235}, \texttt{<=} $\rightarrow$ \texttt{R84}, \texttt{>=} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{==} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{>} $\rightarrow$ \texttt{R84}, \texttt{<} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 340 \\ \hline
+298 & \texttt{]} $\rightarrow$ \texttt{S341} & None \\ \hline
+299 & \texttt{)} $\rightarrow$ \texttt{S342} & None \\ \hline
+300 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 343 \\ \hline
+301 & \texttt{>=} $\rightarrow$ \texttt{R75}, \texttt{-} $\rightarrow$ \texttt{R75}, \texttt{>} $\rightarrow$ \texttt{R75}, \texttt{==} $\rightarrow$ \texttt{R75}, \texttt{<} $\rightarrow$ \texttt{R75}, \texttt{*} $\rightarrow$ \texttt{R75}, \texttt{+} $\rightarrow$ \texttt{R75}, \texttt{/} $\rightarrow$ \texttt{R75}, \texttt{<=} $\rightarrow$ \texttt{R75}, \texttt{!=} $\rightarrow$ \texttt{R75}, \texttt{\%} $\rightarrow$ \texttt{R75} & None \\ \hline
+302 & \texttt{)} $\rightarrow$ \texttt{R82} & None \\ \hline
+303 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S182}, \texttt{[} $\rightarrow$ \texttt{S183} & \texttt{Designator\_Tail} $\rightarrow$ 344 \\ \hline
+304 & \texttt{read} $\rightarrow$ \texttt{R36}, \texttt{\{} $\rightarrow$ \texttt{R36}, \texttt{ident} $\rightarrow$ \texttt{R36}, \texttt{;} $\rightarrow$ \texttt{R36}, \texttt{while} $\rightarrow$ \texttt{R36}, \texttt{print} $\rightarrow$ \texttt{R36}, \texttt{return} $\rightarrow$ \texttt{R36}, \texttt{\}} $\rightarrow$ \texttt{R36}, \texttt{if} $\rightarrow$ \texttt{R36} & None \\ \hline
+305 & \texttt{\}} $\rightarrow$ \texttt{S345} & None \\ \hline
+306 & \texttt{;} $\rightarrow$ \texttt{R31}, \texttt{while} $\rightarrow$ \texttt{R31}, \texttt{ident} $\rightarrow$ \texttt{R31}, \texttt{else} $\rightarrow$ \texttt{R31}, \texttt{return} $\rightarrow$ \texttt{R31}, \texttt{if} $\rightarrow$ \texttt{R31}, \texttt{\}} $\rightarrow$ \texttt{R31}, \texttt{print} $\rightarrow$ \texttt{R31}, \texttt{read} $\rightarrow$ \texttt{R31}, \texttt{\{} $\rightarrow$ \texttt{R31} & None \\ \hline
+307 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 86, \texttt{Expr} $\rightarrow$ 346 \\ \hline
+308 & \texttt{;} $\rightarrow$ \texttt{S347} & None \\ \hline
+309 & \texttt{;} $\rightarrow$ \texttt{S348} & None \\ \hline
+310 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 118, \texttt{Condition} $\rightarrow$ 349, \texttt{Expr} $\rightarrow$ 120 \\ \hline
+311 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 118, \texttt{Condition} $\rightarrow$ 350, \texttt{Expr} $\rightarrow$ 120 \\ \hline
+312 & \texttt{ident} $\rightarrow$ \texttt{S122} & \texttt{Designator} $\rightarrow$ 351 \\ \hline
+313 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 101, \texttt{Expr} $\rightarrow$ 352 \\ \hline
+314 & \texttt{;} $\rightarrow$ \texttt{R32}, \texttt{ident} $\rightarrow$ \texttt{R32}, \texttt{while} $\rightarrow$ \texttt{R32}, \texttt{print} $\rightarrow$ \texttt{R32}, \texttt{return} $\rightarrow$ \texttt{R32}, \texttt{if} $\rightarrow$ \texttt{R32}, \texttt{\}} $\rightarrow$ \texttt{R32}, \texttt{read} $\rightarrow$ \texttt{R32}, \texttt{\{} $\rightarrow$ \texttt{R32} & None \\ \hline
+315 & \texttt{read} $\rightarrow$ \texttt{S76}, \texttt{print} $\rightarrow$ \texttt{S77}, \texttt{if} $\rightarrow$ \texttt{S78}, \texttt{while} $\rightarrow$ \texttt{S74}, \texttt{\{} $\rightarrow$ \texttt{S68}, \texttt{;} $\rightarrow$ \texttt{S67}, \texttt{return} $\rightarrow$ \texttt{S70}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 69, \texttt{Block} $\rightarrow$ 75, \texttt{Statement} $\rightarrow$ 353 \\ \hline
+316 & \texttt{,} $\rightarrow$ \texttt{R62}, \texttt{)} $\rightarrow$ \texttt{R62} & None \\ \hline
+317 & \texttt{-} $\rightarrow$ \texttt{R67}, \texttt{,} $\rightarrow$ \texttt{R67}, \texttt{)} $\rightarrow$ \texttt{R67}, \texttt{+} $\rightarrow$ \texttt{R67} & None \\ \hline
+318 & \texttt{/} $\rightarrow$ \texttt{R82}, \texttt{,} $\rightarrow$ \texttt{R82}, \texttt{\%} $\rightarrow$ \texttt{R82}, \texttt{-} $\rightarrow$ \texttt{R82}, \texttt{)} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82}, \texttt{*} $\rightarrow$ \texttt{R82}, \texttt{+} $\rightarrow$ \texttt{R82} & None \\ \hline
+319 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S194}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S193}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{,} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 354 \\ \hline
+320 & \texttt{*} $\rightarrow$ \texttt{R47}, \texttt{+} $\rightarrow$ \texttt{R47}, \texttt{-} $\rightarrow$ \texttt{R47}, \texttt{)} $\rightarrow$ \texttt{R47}, \texttt{\%} $\rightarrow$ \texttt{R47}, \texttt{/} $\rightarrow$ \texttt{R47}, \texttt{,} $\rightarrow$ \texttt{R47} & None \\ \hline
+321 & \texttt{]} $\rightarrow$ \texttt{S355} & None \\ \hline
+322 & \texttt{-} $\rightarrow$ \texttt{S138}, \texttt{+} $\rightarrow$ \texttt{S137}, \texttt{)} $\rightarrow$ \texttt{R63} & \texttt{Addop} $\rightarrow$ 269, \texttt{Expr\_Tail} $\rightarrow$ 356 \\ \hline
+323 & \texttt{)} $\rightarrow$ \texttt{R76}, \texttt{\%} $\rightarrow$ \texttt{R76}, \texttt{/} $\rightarrow$ \texttt{R76}, \texttt{*} $\rightarrow$ \texttt{R76}, \texttt{+} $\rightarrow$ \texttt{R76}, \texttt{-} $\rightarrow$ \texttt{R76} & None \\ \hline
+324 & \texttt{*} $\rightarrow$ \texttt{S143}, \texttt{/} $\rightarrow$ \texttt{S144}, \texttt{\%} $\rightarrow$ \texttt{S145}, \texttt{+} $\rightarrow$ \texttt{R68}, \texttt{-} $\rightarrow$ \texttt{R68}, \texttt{)} $\rightarrow$ \texttt{R68} & \texttt{Term\_Tail} $\rightarrow$ 357, \texttt{Mulop} $\rightarrow$ 273 \\ \hline
+325 & \texttt{]} $\rightarrow$ \texttt{S358} & None \\ \hline
+326 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S274}, \texttt{.} $\rightarrow$ \texttt{S276}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 359 \\ \hline
+327 & \texttt{)} $\rightarrow$ \texttt{S360} & None \\ \hline
+328 & \texttt{-} $\rightarrow$ \texttt{S88}, \texttt{charConst} $\rightarrow$ \texttt{R61}, \texttt{(} $\rightarrow$ \texttt{R61}, \texttt{new} $\rightarrow$ \texttt{R61}, \texttt{number} $\rightarrow$ \texttt{R61}, \texttt{ident} $\rightarrow$ \texttt{R61} & \texttt{Expr\_Minus} $\rightarrow$ 115, \texttt{Expr} $\rightarrow$ 361 \\ \hline
+329 & \texttt{-} $\rightarrow$ \texttt{R75}, \texttt{)} $\rightarrow$ \texttt{R75}, \texttt{*} $\rightarrow$ \texttt{R75}, \texttt{+} $\rightarrow$ \texttt{R75}, \texttt{/} $\rightarrow$ \texttt{R75}, \texttt{\%} $\rightarrow$ \texttt{R75} & None \\ \hline
+330 & \texttt{-} $\rightarrow$ \texttt{R83}, \texttt{\%} $\rightarrow$ \texttt{R83}, \texttt{+} $\rightarrow$ \texttt{R83}, \texttt{;} $\rightarrow$ \texttt{R83}, \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{*} $\rightarrow$ \texttt{R83}, \texttt{/} $\rightarrow$ \texttt{R83} & None \\ \hline
+331 & \texttt{-} $\rightarrow$ \texttt{R79}, \texttt{;} $\rightarrow$ \texttt{R79}, \texttt{/} $\rightarrow$ \texttt{R79}, \texttt{\%} $\rightarrow$ \texttt{R79}, \texttt{*} $\rightarrow$ \texttt{R79}, \texttt{+} $\rightarrow$ \texttt{R79} & None \\ \hline
+332 & \texttt{]} $\rightarrow$ \texttt{R62} & None \\ \hline
+333 & \texttt{-} $\rightarrow$ \texttt{R67}, \texttt{]} $\rightarrow$ \texttt{R67}, \texttt{+} $\rightarrow$ \texttt{R67} & None \\ \hline
+334 & \texttt{[} $\rightarrow$ \texttt{S222}, \texttt{.} $\rightarrow$ \texttt{S224}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{]} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 362 \\ \hline
+335 & \texttt{/} $\rightarrow$ \texttt{R82}, \texttt{+} $\rightarrow$ \texttt{R82}, \texttt{\%} $\rightarrow$ \texttt{R82}, \texttt{]} $\rightarrow$ \texttt{R82}, \texttt{*} $\rightarrow$ \texttt{R82}, \texttt{-} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82} & None \\ \hline
+336 & \texttt{*} $\rightarrow$ \texttt{R47}, \texttt{+} $\rightarrow$ \texttt{R47}, \texttt{]} $\rightarrow$ \texttt{R47}, \texttt{-} $\rightarrow$ \texttt{R47}, \texttt{\%} $\rightarrow$ \texttt{R47}, \texttt{/} $\rightarrow$ \texttt{R47} & None \\ \hline
+337 & \texttt{]} $\rightarrow$ \texttt{S363} & None \\ \hline
+338 & \texttt{!=} $\rightarrow$ \texttt{R62}, \texttt{>=} $\rightarrow$ \texttt{R62}, \texttt{<} $\rightarrow$ \texttt{R62}, \texttt{>} $\rightarrow$ \texttt{R62}, \texttt{==} $\rightarrow$ \texttt{R62}, \texttt{<=} $\rightarrow$ \texttt{R62} & None \\ \hline
+339 & \texttt{<} $\rightarrow$ \texttt{R67}, \texttt{+} $\rightarrow$ \texttt{R67}, \texttt{<=} $\rightarrow$ \texttt{R67}, \texttt{!=} $\rightarrow$ \texttt{R67}, \texttt{-} $\rightarrow$ \texttt{R67}, \texttt{>=} $\rightarrow$ \texttt{R67}, \texttt{>} $\rightarrow$ \texttt{R67}, \texttt{==} $\rightarrow$ \texttt{R67} & None \\ \hline
+340 & \texttt{/} $\rightarrow$ \texttt{R82}, \texttt{<=} $\rightarrow$ \texttt{R82}, \texttt{!=} $\rightarrow$ \texttt{R82}, \texttt{\%} $\rightarrow$ \texttt{R82}, \texttt{>=} $\rightarrow$ \texttt{R82}, \texttt{-} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82}, \texttt{>} $\rightarrow$ \texttt{R82}, \texttt{==} $\rightarrow$ \texttt{R82}, \texttt{*} $\rightarrow$ \texttt{R82}, \texttt{+} $\rightarrow$ \texttt{R82}, \texttt{<} $\rightarrow$ \texttt{R82} & None \\ \hline
+341 & \texttt{[} $\rightarrow$ \texttt{S236}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{.} $\rightarrow$ \texttt{S235}, \texttt{<=} $\rightarrow$ \texttt{R84}, \texttt{>=} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{==} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{>} $\rightarrow$ \texttt{R84}, \texttt{<} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{!=} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 364 \\ \hline
+342 & \texttt{-} $\rightarrow$ \texttt{R47}, \texttt{!=} $\rightarrow$ \texttt{R47}, \texttt{>} $\rightarrow$ \texttt{R47}, \texttt{==} $\rightarrow$ \texttt{R47}, \texttt{<=} $\rightarrow$ \texttt{R47}, \texttt{*} $\rightarrow$ \texttt{R47}, \texttt{+} $\rightarrow$ \texttt{R47}, \texttt{<} $\rightarrow$ \texttt{R47}, \texttt{\%} $\rightarrow$ \texttt{R47}, \texttt{/} $\rightarrow$ \texttt{R47}, \texttt{>=} $\rightarrow$ \texttt{R47} & None \\ \hline
+343 & \texttt{]} $\rightarrow$ \texttt{S365} & None \\ \hline
+344 & \texttt{)} $\rightarrow$ \texttt{R83} & None \\ \hline
+345 & \texttt{\{} $\rightarrow$ \texttt{R28}, \texttt{else} $\rightarrow$ \texttt{R28}, \texttt{;} $\rightarrow$ \texttt{R28}, \texttt{ident} $\rightarrow$ \texttt{R28}, \texttt{while} $\rightarrow$ \texttt{R28}, \texttt{print} $\rightarrow$ \texttt{R28}, \texttt{return} $\rightarrow$ \texttt{R28}, \texttt{if} $\rightarrow$ \texttt{R28}, \texttt{\}} $\rightarrow$ \texttt{R28}, \texttt{read} $\rightarrow$ \texttt{R28} & None \\ \hline
+346 & \texttt{;} $\rightarrow$ \texttt{S366} & None \\ \hline
+347 & \texttt{if} $\rightarrow$ \texttt{R40}, \texttt{print} $\rightarrow$ \texttt{R40}, \texttt{\}} $\rightarrow$ \texttt{R40}, \texttt{read} $\rightarrow$ \texttt{R40}, \texttt{\{} $\rightarrow$ \texttt{R40}, \texttt{else} $\rightarrow$ \texttt{R40}, \texttt{ident} $\rightarrow$ \texttt{R40}, \texttt{while} $\rightarrow$ \texttt{R40}, \texttt{;} $\rightarrow$ \texttt{R40}, \texttt{return} $\rightarrow$ \texttt{R40} & None \\ \hline
+348 & \texttt{else} $\rightarrow$ \texttt{R34}, \texttt{print} $\rightarrow$ \texttt{R34}, \texttt{return} $\rightarrow$ \texttt{R34}, \texttt{\}} $\rightarrow$ \texttt{R34}, \texttt{if} $\rightarrow$ \texttt{R34}, \texttt{read} $\rightarrow$ \texttt{R34}, \texttt{ident} $\rightarrow$ \texttt{R34}, \texttt{\{} $\rightarrow$ \texttt{R34}, \texttt{;} $\rightarrow$ \texttt{R34}, \texttt{while} $\rightarrow$ \texttt{R34} & None \\ \hline
+349 & \texttt{)} $\rightarrow$ \texttt{S367} & None \\ \hline
+350 & \texttt{)} $\rightarrow$ \texttt{S368} & None \\ \hline
+351 & \texttt{)} $\rightarrow$ \texttt{S369} & None \\ \hline
+352 & \texttt{,} $\rightarrow$ \texttt{S185}, \texttt{)} $\rightarrow$ \texttt{R46} & \texttt{Print\_Opt} $\rightarrow$ 370 \\ \hline
+353 & \texttt{\{} $\rightarrow$ \texttt{R41}, \texttt{ident} $\rightarrow$ \texttt{R41}, \texttt{;} $\rightarrow$ \texttt{R41}, \texttt{while} $\rightarrow$ \texttt{R41}, \texttt{print} $\rightarrow$ \texttt{R41}, \texttt{\}} $\rightarrow$ \texttt{R41}, \texttt{return} $\rightarrow$ \texttt{R41}, \texttt{if} $\rightarrow$ \texttt{R41}, \texttt{read} $\rightarrow$ \texttt{R41} & None \\ \hline
+354 & \texttt{,} $\rightarrow$ \texttt{R83}, \texttt{\%} $\rightarrow$ \texttt{R83}, \texttt{)} $\rightarrow$ \texttt{R83}, \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{-} $\rightarrow$ \texttt{R83}, \texttt{*} $\rightarrow$ \texttt{R83}, \texttt{+} $\rightarrow$ \texttt{R83}, \texttt{/} $\rightarrow$ \texttt{R83} & None \\ \hline
+355 & \texttt{-} $\rightarrow$ \texttt{R79}, \texttt{)} $\rightarrow$ \texttt{R79}, \texttt{/} $\rightarrow$ \texttt{R79}, \texttt{\%} $\rightarrow$ \texttt{R79}, \texttt{,} $\rightarrow$ \texttt{R79}, \texttt{*} $\rightarrow$ \texttt{R79}, \texttt{+} $\rightarrow$ \texttt{R79} & None \\ \hline
+356 & \texttt{)} $\rightarrow$ \texttt{R62} & None \\ \hline
+357 & \texttt{-} $\rightarrow$ \texttt{R67}, \texttt{)} $\rightarrow$ \texttt{R67}, \texttt{+} $\rightarrow$ \texttt{R67} & None \\ \hline
+358 & \texttt{)} $\rightarrow$ \texttt{R84}, \texttt{[} $\rightarrow$ \texttt{S274}, \texttt{.} $\rightarrow$ \texttt{S276}, \texttt{*} $\rightarrow$ \texttt{R84}, \texttt{(} $\rightarrow$ \texttt{R84}, \texttt{-} $\rightarrow$ \texttt{R84}, \texttt{+} $\rightarrow$ \texttt{R84}, \texttt{/} $\rightarrow$ \texttt{R84}, \texttt{\%} $\rightarrow$ \texttt{R84} & \texttt{Designator\_Tail} $\rightarrow$ 371 \\ \hline
+359 & \texttt{/} $\rightarrow$ \texttt{R82}, \texttt{\%} $\rightarrow$ \texttt{R82}, \texttt{+} $\rightarrow$ \texttt{R82}, \texttt{*} $\rightarrow$ \texttt{R82}, \texttt{-} $\rightarrow$ \texttt{R82}, \texttt{)} $\rightarrow$ \texttt{R82}, \texttt{(} $\rightarrow$ \texttt{R82} & None \\ \hline
+360 & \texttt{*} $\rightarrow$ \texttt{R47}, \texttt{+} $\rightarrow$ \texttt{R47}, \texttt{-} $\rightarrow$ \texttt{R47}, \texttt{)} $\rightarrow$ \texttt{R47}, \texttt{\%} $\rightarrow$ \texttt{R47}, \texttt{/} $\rightarrow$ \texttt{R47} & None \\ \hline
+361 & \texttt{]} $\rightarrow$ \texttt{S372} & None \\ \hline
+362 & \texttt{-} $\rightarrow$ \texttt{R83}, \texttt{\%} $\rightarrow$ \texttt{R83}, \texttt{+} $\rightarrow$ \texttt{R83}, \texttt{*} $\rightarrow$ \texttt{R83}, \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{]} $\rightarrow$ \texttt{R83}, \texttt{/} $\rightarrow$ \texttt{R83} & None \\ \hline
+363 & \texttt{-} $\rightarrow$ \texttt{R79}, \texttt{/} $\rightarrow$ \texttt{R79}, \texttt{\%} $\rightarrow$ \texttt{R79}, \texttt{*} $\rightarrow$ \texttt{R79}, \texttt{+} $\rightarrow$ \texttt{R79}, \texttt{]} $\rightarrow$ \texttt{R79} & None \\ \hline
+364 & \texttt{<} $\rightarrow$ \texttt{R83}, \texttt{\%} $\rightarrow$ \texttt{R83}, \texttt{<=} $\rightarrow$ \texttt{R83}, \texttt{>=} $\rightarrow$ \texttt{R83}, \texttt{!=} $\rightarrow$ \texttt{R83}, \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{-} $\rightarrow$ \texttt{R83}, \texttt{>} $\rightarrow$ \texttt{R83}, \texttt{==} $\rightarrow$ \texttt{R83}, \texttt{*} $\rightarrow$ \texttt{R83}, \texttt{+} $\rightarrow$ \texttt{R83}, \texttt{/} $\rightarrow$ \texttt{R83} & None \\ \hline
+365 & \texttt{<} $\rightarrow$ \texttt{R79}, \texttt{/} $\rightarrow$ \texttt{R79}, \texttt{<=} $\rightarrow$ \texttt{R79}, \texttt{\%} $\rightarrow$ \texttt{R79}, \texttt{!=} $\rightarrow$ \texttt{R79}, \texttt{>=} $\rightarrow$ \texttt{R79}, \texttt{-} $\rightarrow$ \texttt{R79}, \texttt{>} $\rightarrow$ \texttt{R79}, \texttt{==} $\rightarrow$ \texttt{R79}, \texttt{*} $\rightarrow$ \texttt{R79}, \texttt{+} $\rightarrow$ \texttt{R79} & None \\ \hline
+366 & \texttt{print} $\rightarrow$ \texttt{R39}, \texttt{if} $\rightarrow$ \texttt{R39}, \texttt{read} $\rightarrow$ \texttt{R39}, \texttt{\{} $\rightarrow$ \texttt{R39}, \texttt{ident} $\rightarrow$ \texttt{R39}, \texttt{while} $\rightarrow$ \texttt{R39}, \texttt{;} $\rightarrow$ \texttt{R39}, \texttt{else} $\rightarrow$ \texttt{R39}, \texttt{\}} $\rightarrow$ \texttt{R39}, \texttt{return} $\rightarrow$ \texttt{R39} & None \\ \hline
+367 & \texttt{read} $\rightarrow$ \texttt{S256}, \texttt{print} $\rightarrow$ \texttt{S257}, \texttt{if} $\rightarrow$ \texttt{S253}, \texttt{while} $\rightarrow$ \texttt{S254}, \texttt{\{} $\rightarrow$ \texttt{S250}, \texttt{;} $\rightarrow$ \texttt{S249}, \texttt{return} $\rightarrow$ \texttt{S252}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 251, \texttt{Block} $\rightarrow$ 255, \texttt{Statement} $\rightarrow$ 373 \\ \hline
+368 & \texttt{read} $\rightarrow$ \texttt{S256}, \texttt{print} $\rightarrow$ \texttt{S257}, \texttt{if} $\rightarrow$ \texttt{S253}, \texttt{while} $\rightarrow$ \texttt{S254}, \texttt{\{} $\rightarrow$ \texttt{S250}, \texttt{;} $\rightarrow$ \texttt{S249}, \texttt{return} $\rightarrow$ \texttt{S252}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 251, \texttt{Block} $\rightarrow$ 255, \texttt{Statement} $\rightarrow$ 374 \\ \hline
+369 & \texttt{;} $\rightarrow$ \texttt{S375} & None \\ \hline
+370 & \texttt{)} $\rightarrow$ \texttt{S376} & None \\ \hline
+371 & \texttt{-} $\rightarrow$ \texttt{R83}, \texttt{\%} $\rightarrow$ \texttt{R83}, \texttt{+} $\rightarrow$ \texttt{R83}, \texttt{)} $\rightarrow$ \texttt{R83}, \texttt{(} $\rightarrow$ \texttt{R83}, \texttt{*} $\rightarrow$ \texttt{R83}, \texttt{/} $\rightarrow$ \texttt{R83} & None \\ \hline
+372 & \texttt{-} $\rightarrow$ \texttt{R79}, \texttt{)} $\rightarrow$ \texttt{R79}, \texttt{/} $\rightarrow$ \texttt{R79}, \texttt{\%} $\rightarrow$ \texttt{R79}, \texttt{*} $\rightarrow$ \texttt{R79}, \texttt{+} $\rightarrow$ \texttt{R79} & None \\ \hline
+373 & \texttt{return} $\rightarrow$ \texttt{R42}, \texttt{else} $\rightarrow$ \texttt{S378}, \texttt{if} $\rightarrow$ \texttt{R42}, \texttt{\}} $\rightarrow$ \texttt{R42}, \texttt{read} $\rightarrow$ \texttt{R42}, \texttt{\{} $\rightarrow$ \texttt{R42}, \texttt{ident} $\rightarrow$ \texttt{R42}, \texttt{;} $\rightarrow$ \texttt{R42}, \texttt{while} $\rightarrow$ \texttt{R42}, \texttt{print} $\rightarrow$ \texttt{R42} & \texttt{Else\_Opt} $\rightarrow$ 377 \\ \hline
+374 & \texttt{return} $\rightarrow$ \texttt{R33}, \texttt{if} $\rightarrow$ \texttt{R33}, \texttt{print} $\rightarrow$ \texttt{R33}, \texttt{\}} $\rightarrow$ \texttt{R33}, \texttt{;} $\rightarrow$ \texttt{R33}, \texttt{read} $\rightarrow$ \texttt{R33}, \texttt{\{} $\rightarrow$ \texttt{R33}, \texttt{ident} $\rightarrow$ \texttt{R33}, \texttt{while} $\rightarrow$ \texttt{R33}, \texttt{else} $\rightarrow$ \texttt{R33} & None \\ \hline
+375 & \texttt{read} $\rightarrow$ \texttt{R35}, \texttt{\{} $\rightarrow$ \texttt{R35}, \texttt{while} $\rightarrow$ \texttt{R35}, \texttt{else} $\rightarrow$ \texttt{R35}, \texttt{;} $\rightarrow$ \texttt{R35}, \texttt{ident} $\rightarrow$ \texttt{R35}, \texttt{print} $\rightarrow$ \texttt{R35}, \texttt{return} $\rightarrow$ \texttt{R35}, \texttt{if} $\rightarrow$ \texttt{R35}, \texttt{\}} $\rightarrow$ \texttt{R35} & None \\ \hline
+376 & \texttt{;} $\rightarrow$ \texttt{S379} & None \\ \hline
+377 & \texttt{else} $\rightarrow$ \texttt{R32}, \texttt{ident} $\rightarrow$ \texttt{R32}, \texttt{while} $\rightarrow$ \texttt{R32}, \texttt{;} $\rightarrow$ \texttt{R32}, \texttt{print} $\rightarrow$ \texttt{R32}, \texttt{return} $\rightarrow$ \texttt{R32}, \texttt{if} $\rightarrow$ \texttt{R32}, \texttt{\}} $\rightarrow$ \texttt{R32}, \texttt{read} $\rightarrow$ \texttt{R32}, \texttt{\{} $\rightarrow$ \texttt{R32} & None \\ \hline
+378 & \texttt{read} $\rightarrow$ \texttt{S256}, \texttt{print} $\rightarrow$ \texttt{S257}, \texttt{if} $\rightarrow$ \texttt{S253}, \texttt{while} $\rightarrow$ \texttt{S254}, \texttt{\{} $\rightarrow$ \texttt{S250}, \texttt{;} $\rightarrow$ \texttt{S249}, \texttt{return} $\rightarrow$ \texttt{S252}, \texttt{ident} $\rightarrow$ \texttt{S73} & \texttt{Designator} $\rightarrow$ 251, \texttt{Block} $\rightarrow$ 255, \texttt{Statement} $\rightarrow$ 380 \\ \hline
+379 & \texttt{read} $\rightarrow$ \texttt{R36}, \texttt{\{} $\rightarrow$ \texttt{R36}, \texttt{ident} $\rightarrow$ \texttt{R36}, \texttt{;} $\rightarrow$ \texttt{R36}, \texttt{while} $\rightarrow$ \texttt{R36}, \texttt{else} $\rightarrow$ \texttt{R36}, \texttt{print} $\rightarrow$ \texttt{R36}, \texttt{return} $\rightarrow$ \texttt{R36}, \texttt{\}} $\rightarrow$ \texttt{R36}, \texttt{if} $\rightarrow$ \texttt{R36} & None \\ \hline
+380 & \texttt{\{} $\rightarrow$ \texttt{R41}, \texttt{ident} $\rightarrow$ \texttt{R41}, \texttt{;} $\rightarrow$ \texttt{R41}, \texttt{while} $\rightarrow$ \texttt{R41}, \texttt{else} $\rightarrow$ \texttt{R41}, \texttt{print} $\rightarrow$ \texttt{R41}, \texttt{\}} $\rightarrow$ \texttt{R41}, \texttt{return} $\rightarrow$ \texttt{R41}, \texttt{if} $\rightarrow$ \texttt{R41}, \texttt{read} $\rightarrow$ \texttt{R41} & None \\ \hline
+\end{longtable}
+
+\subsection{Trace Segment for Declaration Statement: \texttt{int x;}}
+Below is a step-by-step trace showing the stack operations during the parsing of \texttt{int x;}:
+\begin{enumerate} 
+    \item \textbf{State 0}: Top of state stack is `0`. The current lookahead token is identifier `int`.
+    \item \textbf{Shift action}: The parser shifts `int` and transitions to **State 10**.
+    \item \textbf{State 10}: Top of stack is `10`. The current lookahead token is identifier `x`.
+    \item \textbf{Reduction}: The parser reduces `int` to type symbol $Type$ using rule:
+      $$Type \rightarrow \text{ident}$$
+      It pops one state (State 10) off the stack. The top state is now `0`. It checks GOTO table entry $\text{Goto}[0, Type] = 8$ and pushes **State 8**.
+    \item \textbf{State 8}: Top of stack is `8`. Lookahead token is `x`.
+    \item \textbf{Shift action}: Shift identifier `x` and transition to **State 14**.
+    \item \textbf{State 14}: Top of stack is `14`. Lookahead token is `;`.
+    \item \textbf{Shift action}: Shift punctuation `;` and transition to **State 25**.
+    \item \textbf{State 25}: Reduce by rule $VarDecl \rightarrow Type \, \text{ident} \, VarDecl\_Tail \, ;$. 
 \end{enumerate}
 
 \newpage
 
-\section{Compiler Error Handling and Panic Mode Recovery}
-A core requirement of compilation systems is recovering from syntax errors. This compiler implements panic-mode synchronization in all three of its parser engines:
+\section{Unified End-to-End Multiphase Execution Trace}
+This section displays the exact, raw compiler validation outputs for the \texttt{SimpleSum} program, demonstrating the integration of all five phases:
 
-\subsection{Recursive Descent Recovery}
-When a terminal matching fails, the parser triggers `reportError()`. It reports the line and column, increments the global error counter, and then skips tokens. It advances the lexer cursor until it finds one of the main structural synchronization boundaries:
-\begin{itemize}
-    \item A semicolon (`;`) representing statement ending.
-    \item A closing curly brace (`}`) indicating block ending.
-    \item The end of the file (`EOF`).
-\end{itemize}
-This prevents a single syntax error from throwing off the rest of the parsing steps.
-
-\subsection{LL(1) Top-down Recovery}
-The LL(1) stack parser recovers by skipping tokens until it finds a token that is in the `FOLLOW` set of the current failing non-terminal. It then pops that non-terminal off the stack and continues parsing. If it reaches EOF unexpectedly, it pops the stack directly to terminate compilation immediately without entering an infinite loop.
-
-\subsection{Canonical LR(1) Recovery}
-The LR(1) parser handles errors by looking up transitions. If no action exists for the current state and token, it prints a syntax error. It pops states off the parser stack until it finds a state that has a valid transition for the token or reaches EOF, at which point it halts to prevent hanging.
-
-\newpage
-
-\section{Appendix: Sample MicroJava Programs}
-Below are three standard valid programs which compile and execute successfully on the platform:
-
-\subsection{Program 1: Factorial Calculator}
-This program demonstrates conditions, recursive loops, inputs, outputs, and negative error checking.
-\begin{lstlisting}[caption=Factorial Calculator code]
-program Factorial
-{
-  void main()
-    int n, fact;
-  {
-    read(n);
-    if (n < 0) {
-      print('-'); 
-    } else {
-      fact = 1;
-      while (n > 1) {
-        fact = fact * n;
-        n = n - 1;
-      }
-      print(fact);
-    }
-  }
-}
-\end{lstlisting}
-
-\subsection{Program 2: Character Loop Control}
-This program demonstrates standard character arrays, character conversions, and iterative counts.
-\begin{lstlisting}[caption=Character Loop Control code]
-program ControlFlow
-  int count;
-  char letter;
+\subsection{Example MicroJava Source Program}
+Below is the complete MicroJava program (\texttt{SimpleSum.mj}) used for generating the execution traces:
+\begin{lstlisting}[language=Java, caption=Example MicroJava Program (SimpleSum)]
+program SimpleSum
+  int x;
+  int y;
+  int sum;
 {
   void main() {
-    count = 0;
-    while (count < 5) {
-      letter = chr(65 + count); 
-      print(letter);
-      count = count + 1;
-    }
+    x = 5;
+    y = 10;
+    sum = x + y;
+    print(sum);
   }
 }
 \end{lstlisting}
 
-\newpage
+\subsection{Phase 1: Lexical Analyzer Output Stream}
+\begin{verbatim}
++----------------------+----------------------------+---------+---------+
+| Token Type           | Lexeme                     | Line    | Column  |
++----------------------+----------------------------+---------+---------+
+| KW_PROGRAM           | program                    | 1       | 1       |
+| IDENTIFIER           | SimpleSum                  | 1       | 9       |
+| IDENTIFIER           | int                        | 3       | 3       |
+| IDENTIFIER           | x                          | 3       | 7       |
+| SEMICOLON            | ;                          | 3       | 8       |
+| IDENTIFIER           | int                        | 4       | 3       |
+| IDENTIFIER           | y                          | 4       | 7       |
+| SEMICOLON            | ;                          | 4       | 8       |
+| IDENTIFIER           | int                        | 5       | 3       |
+| IDENTIFIER           | sum                        | 5       | 7       |
+| SEMICOLON            | ;                          | 5       | 10      |
+| LBRACE               | {                          | 6       | 1       |
+| KW_VOID              | void                       | 7       | 3       |
+| IDENTIFIER           | main                       | 7       | 8       |
+| LPAREN               | (                          | 7       | 12      |
+| RPAREN               | )                          | 7       | 13      |
+| LBRACE               | {                          | 7       | 15      |
+| IDENTIFIER           | x                          | 8       | 5       |
+| ASSIGN               | =                          | 8       | 7       |
+| NUMBER               | 5                          | 8       | 9       |
+| SEMICOLON            | ;                          | 8       | 10      |
+| IDENTIFIER           | y                          | 9       | 5       |
+| ASSIGN               | =                          | 9       | 7       |
+| NUMBER               | 10                         | 9       | 9       |
+| SEMICOLON            | ;                          | 9       | 11      |
+| IDENTIFIER           | sum                        | 10      | 5       |
+| ASSIGN               | =                          | 10      | 9       |
+| IDENTIFIER           | x                          | 10      | 11      |
+| PLUS                 | +                          | 10      | 13      |
+| IDENTIFIER           | y                          | 10      | 15      |
+| SEMICOLON            | ;                          | 10      | 16      |
+| KW_PRINT             | print                      | 11      | 5       |
+| LPAREN               | (                          | 11      | 10      |
+| IDENTIFIER           | sum                        | 11      | 11      |
+| RPAREN               | )                          | 11      | 14      |
+| SEMICOLON            | ;                          | 11      | 15      |
+| RBRACE               | }                          | 12      | 3       |
+| RBRACE               | }                          | 13      | 1       |
+| EOF                  | EOF                        | 14      | 1       |
++----------------------+----------------------------+---------+---------+
+[SUCCESS] Lexical scan completed with 0 lexical errors. Total tokens: 39
+\end{verbatim}
 
-\subsection{Program 3: Array Maximum Finder}
-This program demonstrates class-less arrays, dynamic memory allocation via `new`, array indexing, and linear traversal logic.
-\begin{lstlisting}[caption=Array Maximum Finder code]
-program ArrayMax
-  int[] numbers;
-  int size;
-{
-  void main()
-    int i, max, val;
-  {
-    size = 5;
-    numbers = new int[size];
-    
-    // Read numbers from user input
-    i = 0;
-    while (i < size) {
-      read(val);
-      numbers[i] = val;
-      i = i + 1;
-    }
-    
-    // Find maximum
-    max = numbers[0];
-    i = 1;
-    while (i < size) {
-      if (numbers[i] > max) {
-        max = numbers[i];
-      }
-      i = i + 1;
-    }
-    
-    print(max);
-  }
-}
-\end{lstlisting}
+\subsection{Phase 2: Recursive Descent AST / Parse Tree}
+\begin{verbatim}
+├── Program (token: "program")
+│  ├── KW_PROGRAM (token: "program")
+│  ├── IDENTIFIER (token: "SimpleSum")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "x")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "y")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "sum")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── LBRACE (token: "{")
+│  ├── MethodDecl (token: "void")
+│  │  ├── KW_VOID (token: "void")
+│  │  ├── IDENTIFIER (token: "main")
+│  │  ├── LPAREN (token: "(")
+│  │  ├── RPAREN (token: ")")
+│  │  ├── Block (token: "{")
+│  │  │  ├── LBRACE (token: "{")
+│  │  │  ├── Statement (token: "x")
+│  │  │  │  ├── Designator (token: "x")
+│  │  │  │  │  ├── IDENTIFIER (token: "x")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "5")
+│  │  │  │  │  ├── Term (token: "5")
+│  │  │  │  │  │  ├── Factor (token: "5")
+│  │  │  │  │  │  │  ├── NUMBER (token: "5")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "y")
+│  │  │  │  ├── Designator (token: "y")
+│  │  │  │  │  ├── IDENTIFIER (token: "y")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "10")
+│  │  │  │  │  ├── Term (token: "10")
+│  │  │  │  │  │  ├── Factor (token: "10")
+│  │  │  │  │  │  │  ├── NUMBER (token: "10")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "sum")
+│  │  │  │  ├── Designator (token: "sum")
+│  │  │  │  │  ├── IDENTIFIER (token: "sum")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "x")
+│  │  │  │  │  ├── Term (token: "x")
+│  │  │  │  │  │  ├── Factor (token: "x")
+│  │  │  │  │  │  │  ├── Designator (token: "x")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "x")
+│  │  │  │  │  ├── Addop (token: "+")
+│  │  │  │  │  │  ├── PLUS (token: "+")
+│  │  │  │  │  ├── Term (token: "y")
+│  │  │  │  │  │  ├── Factor (token: "y")
+│  │  │  │  │  │  │  ├── Designator (token: "y")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "y")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "print")
+│  │  │  │  ├── KW_PRINT (token: "print")
+│  │  │  │  ├── LPAREN (token: "(")
+│  │  │  │  ├── Expr (token: "sum")
+│  │  │  │  │  ├── Term (token: "sum")
+│  │  │  │  │  │  ├── Factor (token: "sum")
+│  │  │  │  │  │  │  ├── Designator (token: "sum")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "sum")
+│  │  │  │  ├── RPAREN (token: ")")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── RBRACE (token: "}")
+│  ├── RBRACE (token: "}")
+------------------------------------------------------------------------------
+[SUCCESS] Recursive Descent Parsing completed with 0 errors.
+\end{verbatim}
+
+\subsection{Phase 3: Symbol Table Registry}
+\begin{verbatim}
++-------+----------------------+------------+----------------------------+------+
+| Scope | Symbol Name          | Kind       | Data Type                  | Line |
++-------+----------------------+------------+----------------------------+------+
+| 1     | main                 | METHOD     | void                       | 7    |
+| 1     | sum                  | VAR        | int                        | 5    |
+| 1     | y                    | VAR        | int                        | 4    |
+| 1     | x                    | VAR        | int                        | 3    |
+| 0     | SimpleSum            | CLASS      | void                       | 1    |
+| 0     | len                  | METHOD     | int                        | 0    |
+| 0     | ord                  | METHOD     | int                        | 0    |
+| 0     | chr                  | METHOD     | char                       | 0    |
++-------+----------------------+------------+----------------------------+------+
+\end{verbatim}
+
+\subsection{Phase 4: LL(1) Parsing Rules (Actions Only)}
+\begin{verbatim}
+Applied Rule Program -> program ident Program_Body { MethodDecls }
+Match token 'program'
+Match token 'ident'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> epsilon
+Match token '{'
+Applied Rule MethodDecls -> MethodDecl MethodDecls
+Applied Rule MethodDecl -> MethodType ident ( FormPars_Opt ) VarDecls Block
+Applied Rule MethodType -> void
+Match token 'void'
+Match token 'ident'
+Match token '('
+Applied Rule FormPars_Opt -> epsilon
+Match token ')'
+Applied Rule VarDecls -> epsilon
+Applied Rule Block -> { Statements }
+Match token '{'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> number
+Match token 'number'
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> number
+Match token 'number'
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> Addop Term Expr_Tail
+Applied Rule Addop -> +
+Match token '+'
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> print ( Expr Print_Opt ) ;
+Match token 'print'
+Match token '('
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Applied Rule Print_Opt -> epsilon
+Match token ')'
+Match token ';'
+Applied Rule Statements -> epsilon
+Match token '}'
+Applied Rule MethodDecls -> epsilon
+Match token '}'
+Match token '$'
+------------------------------------------------------------------------------
+[SUCCESS] LL(1) Parser completed with 0 errors.
+\end{verbatim}
+
+\subsection{Phase 5: Canonical LR(1) Actions (Actions Only)}
+\begin{verbatim}
+Shift 1
+Shift 3
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(3, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(3, VarDecl) = 7.
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
+Reduce (5) Program_Body. Pop 0 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(3, Program_Body) = 5.
+Shift 13
+Shift 21
+Reduce (19) MethodType. Pop 1 state. Push GOTO(13, MethodType) = 24.
+Shift 32
+Shift 40
+Reduce (21) FormPars_Opt. Pop 0 states. Push GOTO(40, FormPars_Opt) = 48.
+Shift 53
+Reduce (14) VarDecls. Pop 0 states. Push GOTO(53, VarDecls) = 58.
+Shift 64
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(64, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 107
+Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(64, Statement) = 72.
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 107
+Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 111
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
+Reduce (81) Designator. Pop 2 states. Push GOTO(86, Designator) = 112.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
+Reduce (72) Factor. Pop 2 states. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Shift 137
+Reduce (64) Addop. Pop 1 state. Push GOTO(106, Addop) = 139.
+Shift 111
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
+Reduce (81) Designator. Pop 2 states. Push GOTO(139, Designator) = 112.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
+Reduce (72) Factor. Pop 2 states. Push GOTO(139, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(139, Term) = 201.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(201, Expr_Tail) = 268.
+Reduce (62) Expr_Tail. Pop 3 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
+Shift 77
+Shift 97
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(97, Expr_Minus) = 101.
+Shift 130
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(130, Designator_Tail) = 195.
+Reduce (81) Designator. Pop 2 states. Push GOTO(101, Designator) = 131.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(131, Factor_Designator) = 196.
+Reduce (72) Factor. Pop 2 states. Push GOTO(101, Factor) = 129.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(129, Term_Tail) = 191.
+Reduce (66) Term. Pop 2 states. Push GOTO(101, Term) = 126.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(126, Expr_Tail) = 189.
+Reduce (59) Expr. Pop 3 states. Push GOTO(97, Expr) = 123.
+Reduce (46) Print_Opt. Pop 0 states. Push GOTO(123, Print_Opt) = 186.
+Shift 248
+Shift 304
+Reduce (36) Statement. Pop 6 states. Push GOTO(72, Statement) = 72.
+Reduce (30) Statements. Pop 0 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(64, Statements) = 71.
+Shift 90
+Reduce (28) Block. Pop 3 states. Push GOTO(58, Block) = 63.
+Reduce (17) MethodDecl. Pop 7 states. Push GOTO(13, MethodDecl) = 22.
+Reduce (16) MethodDecls. Pop 0 states. Push GOTO(22, MethodDecls) = 31.
+Reduce (15) MethodDecls. Pop 2 states. Push GOTO(13, MethodDecls) = 25.
+Shift 33
+Reduce (1) Program. Pop 6 states. Push GOTO(0, Program) = 2.
+Accept
+------------------------------------------------------------------------------
+[SUCCESS] Canonical LR(1) Parser completed with 0 errors.
+
+\end{verbatim}
 
 \newpage
+\section{Compiler Error Handling and Halt-on-Error Semantics}
+The compiler implements strict validation rules where **compilation halts immediately at the first syntax or semantic error**. 
+If the parser detects an invalid statement or mismatched token:
+\begin{itemize}
+    \item It raises an exception (`std::runtime_error`) inside the `reportError()` function.
+    \item This prints the error details (with line/column coordinate lookup) and aborts the parser call stack.
+    \item The console displays the successful parser output generated *prior* to the failure, ensuring clear visual separation between parsed structures and the error boundary.
+\end{itemize}
+
+\subsection{Error Handling Test Cases}
+Below are 5 representative test cases demonstrating the error-handling output when syntax or semantic violations occur, showcasing compiler halts:
+
+\begin{enumerate}
+    \item \textbf{Test Case 1: Lexical Error (Invalid Symbol)}
+    \begin{itemize}
+        \item \textbf{Source Segment}: \texttt{int x \# 5;}
+        \item \textbf{Behavior}: The double-buffered scanner encounters the invalid token \texttt{\#} and immediately reports:
+        \begin{verbatim}
+[LEXICAL ERROR] Line 3, Column 9: Unexpected character '#'
+        \end{verbatim}
+        \item \textbf{Halt}: Compiler execution aborts immediately, preventing further parsing.
+    \end{itemize}
+
+    \item \textbf{Test Case 2: Syntactic Error (Missing Semicolon)}
+    \begin{itemize}
+        \item \textbf{Source Segment}: \texttt{int x} (followed by \texttt{int y;})
+        \item \textbf{Behavior}: The recursive descent and LL(1) parsers expect a semicolon to terminate the declaration block. They report:
+        \begin{verbatim}
+[SYNTAX ERROR] Line 4, Column 3: Expected ';' but found 'int'
+        \end{verbatim}
+        \item \textbf{Halt}: The parse stacks are cleaned up and the compilation is terminated.
+    \end{itemize}
+
+    \item \textbf{Test Case 3: Syntactic Error (Mismatched Parenthesis)}
+    \begin{itemize}
+        \item \textbf{Source Segment}: \texttt{while (x > 0 \{ x = x - 1; \}}
+        \item \textbf{Behavior}: The parsers detect a missing closing parenthesis for the loop condition. They report:
+        \begin{verbatim}
+[SYNTAX ERROR] Line 12, Column 16: Expected ')' but found '{'
+        \end{verbatim}
+        \item \textbf{Halt}: Compiler execution is halted at the mismatched boundary.
+    \end{itemize}
+
+    \item \textbf{Test Case 4: Semantic Error (Duplicate Variable Declaration)}
+    \begin{itemize}
+        \item \textbf{Source Segment}: \texttt{int x; int x;}
+        \item \textbf{Behavior}: The compiler successfully parses both declarations syntactically. However, during symbol table insertion, scope duplicate verification fails:
+        \begin{verbatim}
+[SEMANTIC ERROR] Line 4, Column 7: Redeclaration of identifier 'x' in scope 1
+        \end{verbatim}
+        \item \textbf{Halt}: Symbol table insertion triggers an immediate semantic halt.
+    \end{itemize}
+
+    \item \textbf{Test Case 5: Semantic Error (Undeclared Identifier Lookup)}
+    \begin{itemize}
+        \item \textbf{Source Segment}: \texttt{sum = x + z;} (where \texttt{z} was never declared)
+        \item \textbf{Behavior}: During identifier resolution in the factor evaluation rules, the lookup inside the active symbol table stack returns null:
+        \begin{verbatim}
+[SEMANTIC ERROR] Line 10, Column 13: Identifier 'z' is undeclared in this scope
+        \end{verbatim}
+        \item \textbf{Halt}: The compiler halts immediately to prevent invalid type check cascades.
+    \end{itemize}
+\end{enumerate}
+
+
 
 \section{Conclusion}
-This compiler project combines a structured C++ compiler frontend with a modern, responsive web sandbox. The multi-threaded Python server connects the frontend with the C++ validation backend. 
-
-The modular design separates syntax validation from program execution, while the browser-side transpiler allows users to run their programs interactively in a simulated terminal environment. This architectural layout serves as a clear, practical model for studying programming language translation.
+This compiler playground combines a modular C++ validating core with a responsive sandbox. The integration of five compiling layers—synchronized to halt immediately on syntax failures—guarantees correct, deterministic evaluation of MicroJava code files, serving as an effective practical platform for syntax analysis.
 
 \end{document}
