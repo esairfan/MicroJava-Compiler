@@ -1,19 +1,19 @@
 /* Premium CSS for Compiler GUI */
 
 :root {
-    --bg-color: #0b0f19;
-    --card-bg: rgba(17, 24, 39, 0.7);
-    --border-color: rgba(255, 255, 255, 0.08);
-    --border-hover: rgba(255, 255, 255, 0.15);
+    --bg-color: #050505;
+    --card-bg: rgba(20, 20, 20, 0.75);
+    --border-color: rgba(255, 255, 255, 0.09);
+    --border-hover: rgba(255, 255, 255, 0.18);
     
-    --primary-color: #3b82f6;
-    --primary-glow: rgba(59, 130, 246, 0.4);
-    --accent-cyan: #06b6d4;
-    --accent-purple: #a855f7;
+    --primary-color: #ffffff;
+    --primary-glow: rgba(255, 255, 255, 0.2);
+    --accent-cyan: #e4e4e7;
+    --accent-purple: #a1a1aa;
     
-    --text-primary: #f3f4f6;
-    --text-secondary: #9ca3af;
-    --text-muted: #6b7280;
+    --text-primary: #f4f4f5;
+    --text-secondary: #a1a1aa;
+    --text-muted: #71717a;
     
     --success: #10b981;
     --success-glow: rgba(16, 185, 129, 0.25);
@@ -44,9 +44,9 @@ body {
     left: 0;
     right: 0;
     bottom: 0;
-    background: radial-gradient(circle at 10% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 40%),
-                radial-gradient(circle at 90% 80%, rgba(168, 85, 247, 0.08) 0%, transparent 40%),
-                radial-gradient(circle at 50% 50%, rgba(6, 182, 212, 0.05) 0%, transparent 60%);
+    background: radial-gradient(circle at 10% 20%, rgba(255, 255, 255, 0.03) 0%, transparent 40%),
+                radial-gradient(circle at 90% 80%, rgba(255, 255, 255, 0.02) 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.01) 0%, transparent 60%);
     z-index: -1;
 }
 
@@ -135,14 +135,14 @@ body {
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, var(--primary-color), #2563eb);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-color), #cccccc);
+    color: #000000;
     box-shadow: 0 0 15px var(--primary-glow);
 }
 
 .btn-primary:hover {
     transform: translateY(-1px);
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.35);
 }
 
 .btn-secondary {
@@ -363,7 +363,7 @@ th, td {
 th {
     color: var(--text-secondary);
     font-weight: 600;
-    background-color: #111827;
+    background-color: #121212;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -396,8 +396,8 @@ tr:hover td {
     font-family: 'Fira Code', monospace;
     font-size: 0.85rem;
     line-height: 1.6;
-    color: #38bdf8;
-    background: rgba(0, 0, 0, 0.3);
+    color: #e4e4e7;
+    background: rgba(0, 0, 0, 0.5);
     padding: 1rem;
     border-radius: 8px;
     border: 1px solid rgba(255, 255, 255, 0.05);
@@ -561,7 +561,7 @@ tr:hover td {
 .tree-controls .btn.active-toggle {
     background: var(--primary-color) !important;
     border-color: var(--primary-color) !important;
-    color: white !important;
+    color: #000000 !important;
     box-shadow: 0 0 10px var(--primary-glow);
 }
 
@@ -577,7 +577,7 @@ tr:hover td {
     font-size: 0.95rem;
     font-weight: 600;
     color: var(--text-primary);
-    background-color: #111827;
+    background-color: #121212;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -654,7 +654,7 @@ tr:hover td {
 }
 
 .goto-sym {
-    color: #60a5fa;
+    color: #a1a1aa;
     font-style: italic;
 }
 
@@ -670,7 +670,7 @@ tr:hover td {
 }
 
 .match-token {
-    color: #38bdf8;
+    color: #e4e4e7;
     font-weight: bold;
 }
 
