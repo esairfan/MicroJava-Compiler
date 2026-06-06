@@ -64,7 +64,7 @@ A complete, multi-stage compiler playground for the MicroJava language. It featu
 
 ## Documentation & Report
 For details on compiler component linkages, EBNF schemas, parse table mapping, and end-to-end execution traces of the 12-line `SimpleSum` example program, view the LaTeX documentation source at:
-👉 **[docs/report.tex](file:///c:/MAD%20projects/Compiler-Project/docs/report.tex)**
+👉 **[Project Report](https://github.com/esairfan/MicroJava-Compiler/blob/main/compiler%20report.pdf)**
 
 ## Key Bug Fixes & Refinements
 * **Parser Recovery**: Fixed an infinite loop in `parser_ll.cpp` at EOF by popping the stack if the lookup table misses at unexpected EOF.
