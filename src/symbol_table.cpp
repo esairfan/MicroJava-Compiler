@@ -47,6 +47,7 @@ void SymbolTable::enterScope() {
 
 void SymbolTable::exitScope() {
     if (!scopes.empty()) {
+        allScopes.push_back(scopes.back());
         scopes.pop_back();
         currentLevel--;
     }
@@ -97,6 +98,17 @@ SymbolInfo* SymbolTable::lookupLocal(const std::string& name) {
     return nullptr;
 }
 
+bool SymbolTable::remove(const std::string& name) {
+    if (scopes.empty()) return false;
+    auto& scopeTable = scopes.back().table;
+    auto it = scopeTable.find(name);
+    if (it != scopeTable.end()) {
+        scopeTable.erase(it);
+        return true;
+    }
+    return false;
+}
+
 void SymbolTable::printTable() const {
     std::cout << "\033[1;36m==============================================================================\033[0m\n";
     std::cout << "\033[1;36m                         PHASE 3: SYMBOL TABLE DUMP                           \033[0m\n";
@@ -104,15 +116,32 @@ void SymbolTable::printTable() const {
     std::cout << "+-------+----------------------+------------+----------------------------+------+\n";
     std::cout << "| Scope | Symbol Name          | Kind       | Data Type                  | Line |\n";
     std::cout << "+-------+----------------------+------------+----------------------------+------+\n";
-    for (int i = 0; i <= currentLevel; ++i) {
-        for (const auto& pair : scopes[i].table) {
+    
+    for (const auto& scope : allScopes) {
+        for (const auto& pair : scope.table) {
             const SymbolInfo& info = pair.second;
             std::string dt = typeToString(info.type, info.userType);
             if (info.kind == SymbolKind::ARRAY) {
                 dt += " of " + typeToString(info.elementType, info.elementUserType);
             }
             printf("| %-5d | %-20s | %-10s | %-26s | %-4d |\n",
-                   i,
+                   scope.level,
+                   info.name.c_str(),
+                   kindToString(info.kind).c_str(),
+                   dt.c_str(),
+                   info.line);
+        }
+    }
+    
+    for (const auto& scope : scopes) {
+        for (const auto& pair : scope.table) {
+            const SymbolInfo& info = pair.second;
+            std::string dt = typeToString(info.type, info.userType);
+            if (info.kind == SymbolKind::ARRAY) {
+                dt += " of " + typeToString(info.elementType, info.elementUserType);
+            }
+            printf("| %-5d | %-20s | %-10s | %-26s | %-4d |\n",
+                   scope.level,
                    info.name.c_str(),
                    kindToString(info.kind).c_str(),
                    dt.c_str(),

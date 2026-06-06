@@ -45,6 +45,7 @@ class SymbolTable {
 private:
     std::vector<Scope> scopes;
     int currentLevel;
+    std::vector<Scope> allScopes;
 
 public:
     SymbolTable();
@@ -61,12 +62,14 @@ public:
     // Look up only in current scope
     SymbolInfo* lookupLocal(const std::string& name);
 
+    // Delete a symbol from the current scope
+    bool remove(const std::string& name);
+
     void printTable() const;
     
     int getCurrentLevel() const { return currentLevel; }
 };
 
 std::string kindToString(SymbolKind kind);
-std::string typeToString(DataType type, const std::string& userType);
 
 #endif // SYMBOL_TABLE_H
