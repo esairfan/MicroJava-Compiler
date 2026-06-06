@@ -1,0 +1,1279 @@
+﻿[1;36m==============================================================================[0m
+[1;36m                      PHASE 1: LEXICAL ANALYSIS (LEXER)                       [0m
+[1;36m==============================================================================[0m
+Scanning source file: [1;33mtest/temp.mj[0m...
+
++----------------------+----------------------------+---------+---------+
+| Token Type           | Lexeme                     | Line    | Column  |
++----------------------+----------------------------+---------+---------+
+| KW_PROGRAM           | program                    | 1       | 1       |
+| IDENTIFIER           | Array                      | 1       | 9       |
+| IDENTIFIER           | int                        | 2       | 3       |
+| LBRACKET             | [                          | 2       | 6       |
+| RBRACKET             | ]                          | 2       | 7       |
+| IDENTIFIER           | numbers                    | 2       | 9       |
+| SEMICOLON            | ;                          | 2       | 16      |
+| IDENTIFIER           | int                        | 3       | 4       |
+| IDENTIFIER           | size                       | 3       | 8       |
+| SEMICOLON            | ;                          | 3       | 12      |
+| LBRACE               | {                          | 4       | 1       |
+| KW_VOID              | void                       | 5       | 3       |
+| IDENTIFIER           | main                       | 5       | 8       |
+| LPAREN               | (                          | 5       | 12      |
+| RPAREN               | )                          | 5       | 13      |
+| IDENTIFIER           | int                        | 6       | 5       |
+| IDENTIFIER           | i                          | 6       | 9       |
+| COMMA                | ,                          | 6       | 10      |
+| IDENTIFIER           | max                        | 6       | 12      |
+| COMMA                | ,                          | 6       | 15      |
+| IDENTIFIER           | val                        | 6       | 17      |
+| SEMICOLON            | ;                          | 6       | 20      |
+| LBRACE               | {                          | 7       | 3       |
+| IDENTIFIER           | size                       | 8       | 5       |
+| ASSIGN               | =                          | 8       | 10      |
+| NUMBER               | 5                          | 8       | 12      |
+| SEMICOLON            | ;                          | 8       | 13      |
+| IDENTIFIER           | numbers                    | 9       | 5       |
+| ASSIGN               | =                          | 9       | 13      |
+| KW_NEW               | new                        | 9       | 15      |
+| IDENTIFIER           | int                        | 9       | 19      |
+| LBRACKET             | [                          | 9       | 22      |
+| IDENTIFIER           | size                       | 9       | 23      |
+| RBRACKET             | ]                          | 9       | 27      |
+| SEMICOLON            | ;                          | 9       | 28      |
+| IDENTIFIER           | i                          | 12      | 5       |
+| ASSIGN               | =                          | 12      | 7       |
+| NUMBER               | 0                          | 12      | 9       |
+| SEMICOLON            | ;                          | 12      | 10      |
+| KW_WHILE             | while                      | 13      | 5       |
+| LPAREN               | (                          | 13      | 11      |
+| IDENTIFIER           | i                          | 13      | 12      |
+| LT                   | <                          | 13      | 14      |
+| IDENTIFIER           | size                       | 13      | 16      |
+| RPAREN               | )                          | 13      | 20      |
+| LBRACE               | {                          | 13      | 22      |
+| KW_READ              | read                       | 14      | 7       |
+| LPAREN               | (                          | 14      | 11      |
+| IDENTIFIER           | val                        | 14      | 12      |
+| RPAREN               | )                          | 14      | 15      |
+| SEMICOLON            | ;                          | 14      | 16      |
+| IDENTIFIER           | numbers                    | 15      | 7       |
+| LBRACKET             | [                          | 15      | 14      |
+| IDENTIFIER           | i                          | 15      | 15      |
+| RBRACKET             | ]                          | 15      | 16      |
+| ASSIGN               | =                          | 15      | 18      |
+| IDENTIFIER           | val                        | 15      | 20      |
+| SEMICOLON            | ;                          | 15      | 23      |
+| IDENTIFIER           | i                          | 16      | 7       |
+| ASSIGN               | =                          | 16      | 9       |
+| IDENTIFIER           | i                          | 16      | 11      |
+| PLUS                 | +                          | 16      | 13      |
+| NUMBER               | 1                          | 16      | 15      |
+| SEMICOLON            | ;                          | 16      | 16      |
+| RBRACE               | }                          | 17      | 5       |
+| IDENTIFIER           | max                        | 20      | 5       |
+| ASSIGN               | =                          | 20      | 9       |
+| IDENTIFIER           | numbers                    | 20      | 11      |
+| LBRACKET             | [                          | 20      | 18      |
+| NUMBER               | 0                          | 20      | 19      |
+| RBRACKET             | ]                          | 20      | 20      |
+| SEMICOLON            | ;                          | 20      | 21      |
+| IDENTIFIER           | i                          | 21      | 5       |
+| ASSIGN               | =                          | 21      | 7       |
+| NUMBER               | 1                          | 21      | 9       |
+| SEMICOLON            | ;                          | 21      | 10      |
+| KW_WHILE             | while                      | 22      | 5       |
+| LPAREN               | (                          | 22      | 11      |
+| IDENTIFIER           | i                          | 22      | 12      |
+| LT                   | <                          | 22      | 14      |
+| IDENTIFIER           | size                       | 22      | 16      |
+| RPAREN               | )                          | 22      | 20      |
+| LBRACE               | {                          | 22      | 22      |
+| KW_IF                | if                         | 23      | 7       |
+| LPAREN               | (                          | 23      | 10      |
+| IDENTIFIER           | numbers                    | 23      | 11      |
+| LBRACKET             | [                          | 23      | 18      |
+| IDENTIFIER           | i                          | 23      | 19      |
+| RBRACKET             | ]                          | 23      | 20      |
+| GT                   | >                          | 23      | 22      |
+| IDENTIFIER           | max                        | 23      | 24      |
+| RPAREN               | )                          | 23      | 27      |
+| LBRACE               | {                          | 23      | 29      |
+| IDENTIFIER           | max                        | 24      | 9       |
+| ASSIGN               | =                          | 24      | 13      |
+| IDENTIFIER           | numbers                    | 24      | 15      |
+| LBRACKET             | [                          | 24      | 22      |
+| IDENTIFIER           | i                          | 24      | 23      |
+| RBRACKET             | ]                          | 24      | 24      |
+| SEMICOLON            | ;                          | 24      | 25      |
+| RBRACE               | }                          | 25      | 7       |
+| IDENTIFIER           | i                          | 27      | 7       |
+| ASSIGN               | =                          | 27      | 9       |
+| IDENTIFIER           | i                          | 27      | 11      |
+| PLUS                 | +                          | 27      | 13      |
+| NUMBER               | 1                          | 27      | 15      |
+| SEMICOLON            | ;                          | 27      | 16      |
+| RBRACE               | }                          | 28      | 5       |
+| KW_PRINT             | print                      | 30      | 5       |
+| LPAREN               | (                          | 30      | 10      |
+| IDENTIFIER           | max                        | 30      | 11      |
+| RPAREN               | )                          | 30      | 14      |
+| SEMICOLON            | ;                          | 30      | 15      |
+| RBRACE               | }                          | 31      | 3       |
+| RBRACE               | }                          | 32      | 1       |
+| EOF                  | EOF                        | 32      | 60      |
++----------------------+----------------------------+---------+---------+
+[1;32m[SUCCESS] Lexical scan completed with 0 lexical errors. Total tokens: 116[0m
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 2: RECURSIVE DESCENT PARSE TREE                      [0m
+[1;36m==============================================================================[0m
+Γö£ΓöÇΓöÇ [1;33mProgram[0m (token: "program")
+Γöé  Γö£ΓöÇΓöÇ [1;33mVarDecl[0m (token: "int")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mType[0m (token: "int")
+Γöé  Γö£ΓöÇΓöÇ [1;33mVarDecl[0m (token: "int")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mType[0m (token: "int")
+Γöé  Γö£ΓöÇΓöÇ [1;33mMethodDecl[0m (token: "void")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mVarDecl[0m (token: "int")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mType[0m (token: "int")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mBlock[0m (token: "{")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "5")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "5")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "5")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "new")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "new")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "new")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "size")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "0")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "0")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "0")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "while")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mCondition[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mRelop[0m (token: "<")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mBlock[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "read")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "val")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "val")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "val")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "val")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "val")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mAddop[0m (token: "+")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "1")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "1")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "0")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "0")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "0")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "1")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "1")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "1")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "while")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mCondition[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mRelop[0m (token: "<")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "size")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mBlock[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "if")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mCondition[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mRelop[0m (token: ">")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mBlock[0m (token: "{")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "numbers")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "i")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mAddop[0m (token: "+")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "1")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "1")
+Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mStatement[0m (token: "print")
+Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mExpr[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mTerm[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mFactor[0m (token: "max")
+Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mDesignator[0m (token: "max")
+------------------------------------------------------------------------------
+[1;32m[SUCCESS] Recursive Descent Parsing completed with 0 errors.[0m
+
+[1;36m==============================================================================[0m
+[1;36m                         PHASE 3: SYMBOL TABLE DUMP                           [0m
+[1;36m==============================================================================[0m
++-------+----------------------+------------+----------------------------+------+
+| Scope | Symbol Name          | Kind       | Data Type                  | Line |
++-------+----------------------+------------+----------------------------+------+
+| 0     | Array                | CLASS      | none                       | 1    |
+| 0     | len                  | METHOD     | int                        | 0    |
+| 0     | ord                  | METHOD     | int                        | 0    |
+| 0     | chr                  | METHOD     | char                       | 0    |
+| 1     | main                 | METHOD     | void                       | 5    |
+| 1     | size                 | VAR        | int                        | 3    |
+| 1     | numbers              | ARRAY      | none of int                | 2    |
+| 2     | val                  | VAR        | int                        | 6    |
+| 2     | max                  | VAR        | int                        | 6    |
+| 2     | i                    | VAR        | int                        | 6    |
++-------+----------------------+------------+----------------------------+------+
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 4: LL(1) PREDICTIVE PARSER STEPS                     [0m
+[1;36m==============================================================================[0m
+Applied Rule: [1;35mProgram[0m -> program ident Program_Body { MethodDecls } 
+Applied Rule: [1;35mProgram_Body[0m -> VarDecl Program_Body 
+Applied Rule: [1;35mVarDecl[0m -> Type ident VarDecl_Tail ; 
+Applied Rule: [1;35mType[0m -> ident Type_Opt 
+Applied Rule: [1;35mType_Opt[0m -> [ ] 
+Applied Rule: [1;35mVarDecl_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mProgram_Body[0m -> VarDecl Program_Body 
+Applied Rule: [1;35mVarDecl[0m -> Type ident VarDecl_Tail ; 
+Applied Rule: [1;35mType[0m -> ident Type_Opt 
+Applied Rule: [1;35mType_Opt[0m -> [3mepsilon[0m
+Applied Rule: [1;35mVarDecl_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mProgram_Body[0m -> [3mepsilon[0m
+Applied Rule: [1;35mMethodDecls[0m -> MethodDecl MethodDecls 
+Applied Rule: [1;35mMethodDecl[0m -> MethodType ident ( FormPars_Opt ) VarDecls Block 
+Applied Rule: [1;35mMethodType[0m -> void 
+Applied Rule: [1;35mFormPars_Opt[0m -> [3mepsilon[0m
+Applied Rule: [1;35mVarDecls[0m -> VarDecl VarDecls 
+Applied Rule: [1;35mVarDecl[0m -> Type ident VarDecl_Tail ; 
+Applied Rule: [1;35mType[0m -> ident Type_Opt 
+Applied Rule: [1;35mType_Opt[0m -> [3mepsilon[0m
+Applied Rule: [1;35mVarDecl_Tail[0m -> , ident VarDecl_Tail 
+Applied Rule: [1;35mVarDecl_Tail[0m -> , ident VarDecl_Tail 
+Applied Rule: [1;35mVarDecl_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mVarDecls[0m -> [3mepsilon[0m
+Applied Rule: [1;35mBlock[0m -> { Statements } 
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> new ident Factor_New 
+Applied Rule: [1;35mFactor_New[0m -> [ Expr ] 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> while ( Condition ) Statement 
+Applied Rule: [1;35mCondition[0m -> Expr Relop Expr 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mRelop[0m -> < 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement[0m -> Block 
+Applied Rule: [1;35mBlock[0m -> { Statements } 
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> read ( Designator ) ; 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [ Expr ] Designator_Tail 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> Addop Term Expr_Tail 
+Applied Rule: [1;35mAddop[0m -> + 
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [ Expr ] Designator_Tail 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> while ( Condition ) Statement 
+Applied Rule: [1;35mCondition[0m -> Expr Relop Expr 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mRelop[0m -> < 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement[0m -> Block 
+Applied Rule: [1;35mBlock[0m -> { Statements } 
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> if ( Condition ) Statement Else_Opt 
+Applied Rule: [1;35mCondition[0m -> Expr Relop Expr 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [ Expr ] Designator_Tail 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mRelop[0m -> > 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement[0m -> Block 
+Applied Rule: [1;35mBlock[0m -> { Statements } 
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [ Expr ] Designator_Tail 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> [3mepsilon[0m
+Applied Rule: [1;35mElse_Opt[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> Designator Statement_AssignOrCall 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatement_AssignOrCall[0m -> = Expr ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> Addop Term Expr_Tail 
+Applied Rule: [1;35mAddop[0m -> + 
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> number 
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> Statement Statements 
+Applied Rule: [1;35mStatement[0m -> print ( Expr Print_Opt ) ; 
+Applied Rule: [1;35mExpr[0m -> Expr_Minus Term Expr_Tail 
+Applied Rule: [1;35mExpr_Minus[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm[0m -> Factor Term_Tail 
+Applied Rule: [1;35mFactor[0m -> Designator Factor_Designator 
+Applied Rule: [1;35mDesignator[0m -> ident Designator_Tail 
+Applied Rule: [1;35mDesignator_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mFactor_Designator[0m -> [3mepsilon[0m
+Applied Rule: [1;35mTerm_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mExpr_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mPrint_Opt[0m -> [3mepsilon[0m
+Applied Rule: [1;35mStatements[0m -> [3mepsilon[0m
+Applied Rule: [1;35mMethodDecls[0m -> [3mepsilon[0m
+------------------------------------------------------------------------------
+[1;32m[SUCCESS] LL(1) Parser completed with 0 errors.[0m
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 5: CANONICAL LR(1) PARSER ACTIONS                    [0m
+[1;36m==============================================================================[0m
+Action: [1;34mSHIFT[0m to State 1 (Token: "program")
+Action: [1;34mSHIFT[0m to State 3 (Token: "Array")
+Action: [1;34mSHIFT[0m to State 6 (Token: "int")
+Action: [1;34mSHIFT[0m to State 15 (Token: "[")
+Action: [1;34mSHIFT[0m to State 26 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mType_Opt[0m (length 2)
+  -> GOTO State 14
+Action: [1;35mREDUCE[0m by rule [1;33mType[0m (length 2)
+  -> GOTO State 8
+Action: [1;34mSHIFT[0m to State 17 (Token: "numbers")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 0)
+  -> GOTO State 27
+Action: [1;34mSHIFT[0m to State 34 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl[0m (length 4)
+  -> GOTO State 7
+Action: [1;34mSHIFT[0m to State 6 (Token: "int")
+Action: [1;35mREDUCE[0m by rule [1;33mType_Opt[0m (length 0)
+  -> GOTO State 14
+Action: [1;35mREDUCE[0m by rule [1;33mType[0m (length 2)
+  -> GOTO State 8
+Action: [1;34mSHIFT[0m to State 17 (Token: "size")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 0)
+  -> GOTO State 27
+Action: [1;34mSHIFT[0m to State 34 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl[0m (length 4)
+  -> GOTO State 7
+Action: [1;35mREDUCE[0m by rule [1;33mProgram_Body[0m (length 0)
+  -> GOTO State 16
+Action: [1;35mREDUCE[0m by rule [1;33mProgram_Body[0m (length 2)
+  -> GOTO State 16
+Action: [1;35mREDUCE[0m by rule [1;33mProgram_Body[0m (length 2)
+  -> GOTO State 5
+Action: [1;34mSHIFT[0m to State 13 (Token: "{")
+Action: [1;34mSHIFT[0m to State 21 (Token: "void")
+Action: [1;35mREDUCE[0m by rule [1;33mMethodType[0m (length 1)
+  -> GOTO State 24
+Action: [1;34mSHIFT[0m to State 32 (Token: "main")
+Action: [1;34mSHIFT[0m to State 40 (Token: "(")
+Action: [1;35mREDUCE[0m by rule [1;33mFormPars_Opt[0m (length 0)
+  -> GOTO State 48
+Action: [1;34mSHIFT[0m to State 53 (Token: ")")
+Action: [1;34mSHIFT[0m to State 6 (Token: "int")
+Action: [1;35mREDUCE[0m by rule [1;33mType_Opt[0m (length 0)
+  -> GOTO State 14
+Action: [1;35mREDUCE[0m by rule [1;33mType[0m (length 2)
+  -> GOTO State 57
+Action: [1;34mSHIFT[0m to State 62 (Token: "i")
+Action: [1;34mSHIFT[0m to State 28 (Token: ",")
+Action: [1;34mSHIFT[0m to State 35 (Token: "max")
+Action: [1;34mSHIFT[0m to State 28 (Token: ",")
+Action: [1;34mSHIFT[0m to State 35 (Token: "val")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 0)
+  -> GOTO State 41
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 3)
+  -> GOTO State 41
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 3)
+  -> GOTO State 66
+Action: [1;34mSHIFT[0m to State 80 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl[0m (length 4)
+  -> GOTO State 56
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecls[0m (length 0)
+  -> GOTO State 61
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecls[0m (length 2)
+  -> GOTO State 58
+Action: [1;34mSHIFT[0m to State 64 (Token: "{")
+Action: [1;34mSHIFT[0m to State 73 (Token: "size")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 107 (Token: "5")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "numbers")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 113 (Token: "new")
+Action: [1;34mSHIFT[0m to State 154 (Token: "int")
+Action: [1;34mSHIFT[0m to State 215 (Token: "[")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 115
+Action: [1;34mSHIFT[0m to State 160 (Token: "size")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 223
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 161
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 225
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 159
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 220
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 156
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 218
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 285
+Action: [1;34mSHIFT[0m to State 331 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_New[0m (length 3)
+  -> GOTO State 216
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 3)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 107 (Token: "0")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 74 (Token: "while")
+Action: [1;34mSHIFT[0m to State 95 (Token: "(")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 118
+Action: [1;34mSHIFT[0m to State 170 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 237
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 171
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 238
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 169
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 233
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 166
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 231
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 120
+Action: [1;34mSHIFT[0m to State 180 (Token: "<")
+Action: [1;35mREDUCE[0m by rule [1;33mRelop[0m (length 1)
+  -> GOTO State 175
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 141
+Action: [1;34mSHIFT[0m to State 207 (Token: "size")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 275
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 208
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 277
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 206
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 272
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 203
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 270
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 243
+Action: [1;35mREDUCE[0m by rule [1;33mCondition[0m (length 3)
+  -> GOTO State 119
+Action: [1;34mSHIFT[0m to State 173 (Token: ")")
+Action: [1;34mSHIFT[0m to State 68 (Token: "{")
+Action: [1;34mSHIFT[0m to State 76 (Token: "read")
+Action: [1;34mSHIFT[0m to State 96 (Token: "(")
+Action: [1;34mSHIFT[0m to State 122 (Token: "val")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 184
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 121
+Action: [1;34mSHIFT[0m to State 181 (Token: ")")
+Action: [1;34mSHIFT[0m to State 244 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 5)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "numbers")
+Action: [1;34mSHIFT[0m to State 92 (Token: "[")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 115
+Action: [1;34mSHIFT[0m to State 160 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 223
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 161
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 225
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 159
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 220
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 156
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 218
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 116
+Action: [1;34mSHIFT[0m to State 163 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 229
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 4)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 111 (Token: "val")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 149
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 112
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 151
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 111 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 149
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 112
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 151
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;34mSHIFT[0m to State 137 (Token: "+")
+Action: [1;35mREDUCE[0m by rule [1;33mAddop[0m (length 1)
+  -> GOTO State 139
+Action: [1;34mSHIFT[0m to State 107 (Token: "1")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 201
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 268
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 3)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 0)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 81
+Action: [1;34mSHIFT[0m to State 100 (Token: "}")
+Action: [1;35mREDUCE[0m by rule [1;33mBlock[0m (length 3)
+  -> GOTO State 75
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 1)
+  -> GOTO State 242
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 5)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "max")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 111 (Token: "numbers")
+Action: [1;34mSHIFT[0m to State 148 (Token: "[")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 115
+Action: [1;34mSHIFT[0m to State 155 (Token: "0")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 159
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 220
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 156
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 218
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 212
+Action: [1;34mSHIFT[0m to State 282 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 330
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 4)
+  -> GOTO State 149
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 112
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 151
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 107 (Token: "1")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 74 (Token: "while")
+Action: [1;34mSHIFT[0m to State 95 (Token: "(")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 118
+Action: [1;34mSHIFT[0m to State 170 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 237
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 171
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 238
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 169
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 233
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 166
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 231
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 120
+Action: [1;34mSHIFT[0m to State 180 (Token: "<")
+Action: [1;35mREDUCE[0m by rule [1;33mRelop[0m (length 1)
+  -> GOTO State 175
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 141
+Action: [1;34mSHIFT[0m to State 207 (Token: "size")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 275
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 208
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 277
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 206
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 272
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 203
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 270
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 243
+Action: [1;35mREDUCE[0m by rule [1;33mCondition[0m (length 3)
+  -> GOTO State 119
+Action: [1;34mSHIFT[0m to State 173 (Token: ")")
+Action: [1;34mSHIFT[0m to State 68 (Token: "{")
+Action: [1;34mSHIFT[0m to State 78 (Token: "if")
+Action: [1;34mSHIFT[0m to State 98 (Token: "(")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 118
+Action: [1;34mSHIFT[0m to State 170 (Token: "numbers")
+Action: [1;34mSHIFT[0m to State 236 (Token: "[")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 115
+Action: [1;34mSHIFT[0m to State 160 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 223
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 161
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 225
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 159
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 220
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 156
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 218
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 298
+Action: [1;34mSHIFT[0m to State 341 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 364
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 4)
+  -> GOTO State 237
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 171
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 238
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 169
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 233
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 166
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 231
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 120
+Action: [1;34mSHIFT[0m to State 178 (Token: ">")
+Action: [1;35mREDUCE[0m by rule [1;33mRelop[0m (length 1)
+  -> GOTO State 175
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 141
+Action: [1;34mSHIFT[0m to State 207 (Token: "max")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 275
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 208
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 277
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 206
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 272
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 203
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 270
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 243
+Action: [1;35mREDUCE[0m by rule [1;33mCondition[0m (length 3)
+  -> GOTO State 124
+Action: [1;34mSHIFT[0m to State 187 (Token: ")")
+Action: [1;34mSHIFT[0m to State 250 (Token: "{")
+Action: [1;34mSHIFT[0m to State 73 (Token: "max")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 111 (Token: "numbers")
+Action: [1;34mSHIFT[0m to State 148 (Token: "[")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 115
+Action: [1;34mSHIFT[0m to State 160 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 223
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 161
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 225
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 159
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 220
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 156
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 218
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 212
+Action: [1;34mSHIFT[0m to State 282 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 330
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 4)
+  -> GOTO State 149
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 112
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 151
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 0)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 305
+Action: [1;34mSHIFT[0m to State 345 (Token: "}")
+Action: [1;35mREDUCE[0m by rule [1;33mBlock[0m (length 3)
+  -> GOTO State 255
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 1)
+  -> GOTO State 258
+Action: [1;35mREDUCE[0m by rule [1;33mElse_Opt[0m (length 0)
+  -> GOTO State 314
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 6)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 73 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 93
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 69
+Action: [1;34mSHIFT[0m to State 84 (Token: "=")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 86
+Action: [1;34mSHIFT[0m to State 111 (Token: "i")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 149
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 112
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 151
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 106
+Action: [1;34mSHIFT[0m to State 137 (Token: "+")
+Action: [1;35mREDUCE[0m by rule [1;33mAddop[0m (length 1)
+  -> GOTO State 139
+Action: [1;34mSHIFT[0m to State 107 (Token: "1")
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 1)
+  -> GOTO State 110
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 146
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 201
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 268
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 3)
+  -> GOTO State 140
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 104
+Action: [1;34mSHIFT[0m to State 136 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement_AssignOrCall[0m (length 3)
+  -> GOTO State 82
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 2)
+  -> GOTO State 72
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 0)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 81
+Action: [1;34mSHIFT[0m to State 100 (Token: "}")
+Action: [1;35mREDUCE[0m by rule [1;33mBlock[0m (length 3)
+  -> GOTO State 75
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 1)
+  -> GOTO State 242
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 5)
+  -> GOTO State 72
+Action: [1;34mSHIFT[0m to State 77 (Token: "print")
+Action: [1;34mSHIFT[0m to State 97 (Token: "(")
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Minus[0m (length 0)
+  -> GOTO State 101
+Action: [1;34mSHIFT[0m to State 130 (Token: "max")
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator_Tail[0m (length 0)
+  -> GOTO State 195
+Action: [1;35mREDUCE[0m by rule [1;33mDesignator[0m (length 2)
+  -> GOTO State 131
+Action: [1;35mREDUCE[0m by rule [1;33mFactor_Designator[0m (length 0)
+  -> GOTO State 196
+Action: [1;35mREDUCE[0m by rule [1;33mFactor[0m (length 2)
+  -> GOTO State 129
+Action: [1;35mREDUCE[0m by rule [1;33mTerm_Tail[0m (length 0)
+  -> GOTO State 191
+Action: [1;35mREDUCE[0m by rule [1;33mTerm[0m (length 2)
+  -> GOTO State 126
+Action: [1;35mREDUCE[0m by rule [1;33mExpr_Tail[0m (length 0)
+  -> GOTO State 189
+Action: [1;35mREDUCE[0m by rule [1;33mExpr[0m (length 3)
+  -> GOTO State 123
+Action: [1;35mREDUCE[0m by rule [1;33mPrint_Opt[0m (length 0)
+  -> GOTO State 186
+Action: [1;34mSHIFT[0m to State 248 (Token: ")")
+Action: [1;34mSHIFT[0m to State 304 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mStatement[0m (length 6)
+  -> GOTO State 72
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 0)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 91
+Action: [1;35mREDUCE[0m by rule [1;33mStatements[0m (length 2)
+  -> GOTO State 71
+Action: [1;34mSHIFT[0m to State 90 (Token: "}")
+Action: [1;35mREDUCE[0m by rule [1;33mBlock[0m (length 3)
+  -> GOTO State 63
+Action: [1;35mREDUCE[0m by rule [1;33mMethodDecl[0m (length 7)
+  -> GOTO State 22
+Action: [1;35mREDUCE[0m by rule [1;33mMethodDecls[0m (length 0)
+  -> GOTO State 31
+Action: [1;35mREDUCE[0m by rule [1;33mMethodDecls[0m (length 2)
+  -> GOTO State 25
+Action: [1;34mSHIFT[0m to State 33 (Token: "}")
+Action: [1;35mREDUCE[0m by rule [1;33mProgram[0m (length 6)
+  -> GOTO State 2
+Action: [1;32mACCEPT[0m
+------------------------------------------------------------------------------
+[1;32m[SUCCESS] Canonical LR(1) Parser completed with 0 errors.[0m
+

@@ -1,0 +1,383 @@
+=== P1 ===
++----------------------+----------------------------+---------+---------+
+| Token Type           | Lexeme                     | Line    | Column  |
++----------------------+----------------------------+---------+---------+
+| KW_PROGRAM           | program                    | 1       | 1       |
+| IDENTIFIER           | SimpleSum                  | 1       | 9       |
+| IDENTIFIER           | int                        | 3       | 3       |
+| IDENTIFIER           | x                          | 3       | 7       |
+| SEMICOLON            | ;                          | 3       | 8       |
+| IDENTIFIER           | int                        | 4       | 3       |
+| IDENTIFIER           | y                          | 4       | 7       |
+| SEMICOLON            | ;                          | 4       | 8       |
+| IDENTIFIER           | int                        | 5       | 3       |
+| IDENTIFIER           | sum                        | 5       | 7       |
+| SEMICOLON            | ;                          | 5       | 10      |
+| LBRACE               | {                          | 6       | 1       |
+| KW_VOID              | void                       | 7       | 3       |
+| IDENTIFIER           | main                       | 7       | 8       |
+| LPAREN               | (                          | 7       | 12      |
+| RPAREN               | )                          | 7       | 13      |
+| LBRACE               | {                          | 7       | 15      |
+| IDENTIFIER           | x                          | 8       | 5       |
+| ASSIGN               | =                          | 8       | 7       |
+| NUMBER               | 5                          | 8       | 9       |
+| SEMICOLON            | ;                          | 8       | 10      |
+| IDENTIFIER           | y                          | 9       | 5       |
+| ASSIGN               | =                          | 9       | 7       |
+| NUMBER               | 10                         | 9       | 9       |
+| SEMICOLON            | ;                          | 9       | 11      |
+| IDENTIFIER           | sum                        | 10      | 5       |
+| ASSIGN               | =                          | 10      | 9       |
+| IDENTIFIER           | x                          | 10      | 11      |
+| PLUS                 | +                          | 10      | 13      |
+| IDENTIFIER           | y                          | 10      | 15      |
+| SEMICOLON            | ;                          | 10      | 16      |
+| KW_PRINT             | print                      | 11      | 5       |
+| LPAREN               | (                          | 11      | 10      |
+| IDENTIFIER           | sum                        | 11      | 11      |
+| RPAREN               | )                          | 11      | 14      |
+| SEMICOLON            | ;                          | 11      | 15      |
+| RBRACE               | }                          | 12      | 3       |
+| RBRACE               | }                          | 13      | 1       |
+| EOF                  | EOF                        | 14      | 1       |
++----------------------+----------------------------+---------+---------+
+[SUCCESS] Lexical scan completed with 0 lexical errors. Total tokens: 39
+
+=== P2 ===
+├── Program (token: "program")
+│  ├── KW_PROGRAM (token: "program")
+│  ├── IDENTIFIER (token: "SimpleSum")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "x")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "y")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── VarDecl (token: "int")
+│  │  ├── Type (token: "int")
+│  │  │  ├── IDENTIFIER (token: "int")
+│  │  ├── IDENTIFIER (token: "sum")
+│  │  ├── SEMICOLON (token: ";")
+│  ├── LBRACE (token: "{")
+│  ├── MethodDecl (token: "void")
+│  │  ├── KW_VOID (token: "void")
+│  │  ├── IDENTIFIER (token: "main")
+│  │  ├── LPAREN (token: "(")
+│  │  ├── RPAREN (token: ")")
+│  │  ├── Block (token: "{")
+│  │  │  ├── LBRACE (token: "{")
+│  │  │  ├── Statement (token: "x")
+│  │  │  │  ├── Designator (token: "x")
+│  │  │  │  │  ├── IDENTIFIER (token: "x")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "5")
+│  │  │  │  │  ├── Term (token: "5")
+│  │  │  │  │  │  ├── Factor (token: "5")
+│  │  │  │  │  │  │  ├── NUMBER (token: "5")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "y")
+│  │  │  │  ├── Designator (token: "y")
+│  │  │  │  │  ├── IDENTIFIER (token: "y")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "10")
+│  │  │  │  │  ├── Term (token: "10")
+│  │  │  │  │  │  ├── Factor (token: "10")
+│  │  │  │  │  │  │  ├── NUMBER (token: "10")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "sum")
+│  │  │  │  ├── Designator (token: "sum")
+│  │  │  │  │  ├── IDENTIFIER (token: "sum")
+│  │  │  │  ├── ASSIGN (token: "=")
+│  │  │  │  ├── Expr (token: "x")
+│  │  │  │  │  ├── Term (token: "x")
+│  │  │  │  │  │  ├── Factor (token: "x")
+│  │  │  │  │  │  │  ├── Designator (token: "x")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "x")
+│  │  │  │  │  ├── Addop (token: "+")
+│  │  │  │  │  │  ├── PLUS (token: "+")
+│  │  │  │  │  ├── Term (token: "y")
+│  │  │  │  │  │  ├── Factor (token: "y")
+│  │  │  │  │  │  │  ├── Designator (token: "y")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "y")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── Statement (token: "print")
+│  │  │  │  ├── KW_PRINT (token: "print")
+│  │  │  │  ├── LPAREN (token: "(")
+│  │  │  │  ├── Expr (token: "sum")
+│  │  │  │  │  ├── Term (token: "sum")
+│  │  │  │  │  │  ├── Factor (token: "sum")
+│  │  │  │  │  │  │  ├── Designator (token: "sum")
+│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "sum")
+│  │  │  │  ├── RPAREN (token: ")")
+│  │  │  │  ├── SEMICOLON (token: ";")
+│  │  │  ├── RBRACE (token: "}")
+│  ├── RBRACE (token: "}")
+------------------------------------------------------------------------------
+[SUCCESS] Recursive Descent Parsing completed with 0 errors.
+
+=== P3 ===
++-------+----------------------+------------+----------------------------+------+
+| Scope | Symbol Name          | Kind       | Data Type                  | Line |
++-------+----------------------+------------+----------------------------+------+
+| 1     | main                 | METHOD     | void                       | 7    |
+| 1     | sum                  | VAR        | int                        | 5    |
+| 1     | y                    | VAR        | int                        | 4    |
+| 1     | x                    | VAR        | int                        | 3    |
+| 0     | SimpleSum            | CLASS      | void                       | 1    |
+| 0     | len                  | METHOD     | int                        | 0    |
+| 0     | ord                  | METHOD     | int                        | 0    |
+| 0     | chr                  | METHOD     | char                       | 0    |
++-------+----------------------+------------+----------------------------+------+
+
+=== P4 ===
+Applied Rule Program -> program ident Program_Body { MethodDecls }
+Match token 'program'
+Match token 'ident'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> VarDecl Program_Body
+Applied Rule VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule Type -> ident Type_Opt
+Match token 'ident'
+Applied Rule Type_Opt -> epsilon
+Match token 'ident'
+Applied Rule VarDecl_Tail -> epsilon
+Match token ';'
+Applied Rule Program_Body -> epsilon
+Match token '{'
+Applied Rule MethodDecls -> MethodDecl MethodDecls
+Applied Rule MethodDecl -> MethodType ident ( FormPars_Opt ) VarDecls Block
+Applied Rule MethodType -> void
+Match token 'void'
+Match token 'ident'
+Match token '('
+Applied Rule FormPars_Opt -> epsilon
+Match token ')'
+Applied Rule VarDecls -> epsilon
+Applied Rule Block -> { Statements }
+Match token '{'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> number
+Match token 'number'
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> number
+Match token 'number'
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> Designator Statement_AssignOrCall
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Statement_AssignOrCall -> = Expr ;
+Match token '='
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> Addop Term Expr_Tail
+Applied Rule Addop -> +
+Match token '+'
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Match token ';'
+Applied Rule Statements -> Statement Statements
+Applied Rule Statement -> print ( Expr Print_Opt ) ;
+Match token 'print'
+Match token '('
+Applied Rule Expr -> Expr_Minus Term Expr_Tail
+Applied Rule Expr_Minus -> epsilon
+Applied Rule Term -> Factor Term_Tail
+Applied Rule Factor -> Designator Factor_Designator
+Applied Rule Designator -> ident Designator_Tail
+Match token 'ident'
+Applied Rule Designator_Tail -> epsilon
+Applied Rule Factor_Designator -> epsilon
+Applied Rule Term_Tail -> epsilon
+Applied Rule Expr_Tail -> epsilon
+Applied Rule Print_Opt -> epsilon
+Match token ')'
+Match token ';'
+Applied Rule Statements -> epsilon
+Match token '}'
+Applied Rule MethodDecls -> epsilon
+Match token '}'
+Match token '$'
+------------------------------------------------------------------------------
+[SUCCESS] LL(1) Parser completed with 0 errors.
+
+=== P5 ===
+Shift 1
+Shift 3
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(3, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(3, VarDecl) = 7.
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
+Shift 6
+Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
+Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Shift 17
+Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
+Shift 34
+Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
+Reduce (5) Program_Body. Pop 0 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
+Reduce (3) Program_Body. Pop 2 states. Push GOTO(3, Program_Body) = 5.
+Shift 13
+Shift 21
+Reduce (19) MethodType. Pop 1 state. Push GOTO(13, MethodType) = 24.
+Shift 32
+Shift 40
+Reduce (21) FormPars_Opt. Pop 0 states. Push GOTO(40, FormPars_Opt) = 48.
+Shift 53
+Reduce (14) VarDecls. Pop 0 states. Push GOTO(53, VarDecls) = 58.
+Shift 64
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(64, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 107
+Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(64, Statement) = 72.
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 107
+Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
+Shift 73
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
+Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
+Shift 84
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Shift 111
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
+Reduce (81) Designator. Pop 2 states. Push GOTO(86, Designator) = 112.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
+Reduce (72) Factor. Pop 2 states. Push GOTO(86, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
+Shift 137
+Reduce (64) Addop. Pop 1 state. Push GOTO(106, Addop) = 139.
+Shift 111
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
+Reduce (81) Designator. Pop 2 states. Push GOTO(139, Designator) = 112.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
+Reduce (72) Factor. Pop 2 states. Push GOTO(139, Factor) = 110.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term. Pop 2 states. Push GOTO(139, Term) = 201.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(201, Expr_Tail) = 268.
+Reduce (62) Expr_Tail. Pop 3 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Shift 136
+Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
+Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
+Shift 77
+Shift 97
+Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(97, Expr_Minus) = 101.
+Shift 130
+Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(130, Designator_Tail) = 195.
+Reduce (81) Designator. Pop 2 states. Push GOTO(101, Designator) = 131.
+Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(131, Factor_Designator) = 196.
+Reduce (72) Factor. Pop 2 states. Push GOTO(101, Factor) = 129.
+Reduce (68) Term_Tail. Pop 0 states. Push GOTO(129, Term_Tail) = 191.
+Reduce (66) Term. Pop 2 states. Push GOTO(101, Term) = 126.
+Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(126, Expr_Tail) = 189.
+Reduce (59) Expr. Pop 3 states. Push GOTO(97, Expr) = 123.
+Reduce (46) Print_Opt. Pop 0 states. Push GOTO(123, Print_Opt) = 186.
+Shift 248
+Shift 304
+Reduce (36) Statement. Pop 6 states. Push GOTO(72, Statement) = 72.
+Reduce (30) Statements. Pop 0 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
+Reduce (29) Statements. Pop 2 states. Push GOTO(64, Statements) = 71.
+Shift 90
+Reduce (28) Block. Pop 3 states. Push GOTO(58, Block) = 63.
+Reduce (17) MethodDecl. Pop 7 states. Push GOTO(13, MethodDecl) = 22.
+Reduce (16) MethodDecls. Pop 0 states. Push GOTO(22, MethodDecls) = 31.
+Reduce (15) MethodDecls. Pop 2 states. Push GOTO(13, MethodDecls) = 25.
+Shift 33
+Reduce (1) Program. Pop 6 states. Push GOTO(0, Program) = 2.
+Accept
+------------------------------------------------------------------------------
+[SUCCESS] Canonical LR(1) Parser completed with 0 errors.

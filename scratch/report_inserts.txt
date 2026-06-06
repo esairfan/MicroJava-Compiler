@@ -1,0 +1,169 @@
+=== FIRST SETS ===
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Non-Terminal} & \textbf{FIRST Set} \\ \hline
+\texttt{ActPars} & \texttt{(} \\ \hline
+\texttt{ActPars\_List} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{ActPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{Addop} & \texttt{+}, \texttt{-} \\ \hline
+\texttt{Block} & \texttt{\{} \\ \hline
+\texttt{ClassDecl} & \texttt{class} \\ \hline
+\texttt{Condition} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{ConstDecl} & \texttt{final} \\ \hline
+\texttt{ConstValue} & \texttt{charConst}, \texttt{number} \\ \hline
+\texttt{Designator} & \texttt{ident} \\ \hline
+\texttt{Designator\_Tail} & $\epsilon$, \texttt{.}, \texttt{[} \\ \hline
+\texttt{Else\_Opt} & $\epsilon$, \texttt{else} \\ \hline
+\texttt{Expr} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Minus} & $\epsilon$, \texttt{-} \\ \hline
+\texttt{Expr\_Opt} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Tail} & $\epsilon$, \texttt{+}, \texttt{-} \\ \hline
+\texttt{Factor} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Factor\_Designator} & $\epsilon$, \texttt{(} \\ \hline
+\texttt{Factor\_New} & $\epsilon$, \texttt{[} \\ \hline
+\texttt{FormPars} & \texttt{ident} \\ \hline
+\texttt{FormPars\_Opt} & $\epsilon$, \texttt{ident} \\ \hline
+\texttt{FormPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{MethodDecl} & \texttt{ident}, \texttt{void} \\ \hline
+\texttt{MethodDecls} & $\epsilon$, \texttt{ident}, \texttt{void} \\ \hline
+\texttt{MethodType} & \texttt{ident}, \texttt{void} \\ \hline
+\texttt{Mulop} & \texttt{%}, \texttt{*}, \texttt{/} \\ \hline
+\texttt{Print\_Opt} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{Program} & \texttt{program} \\ \hline
+\texttt{Program\_Body} & $\epsilon$, \texttt{class}, \texttt{final}, \texttt{ident} \\ \hline
+\texttt{Relop} & \texttt{!=}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=} \\ \hline
+\texttt{Statement} & \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
+\texttt{Statement\_AssignOrCall} & \texttt{(}, \texttt{=} \\ \hline
+\texttt{Statements} & $\epsilon$, \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
+\texttt{Term} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Term\_Tail} & $\epsilon$, \texttt{%}, \texttt{*}, \texttt{/} \\ \hline
+\texttt{Type} & \texttt{ident} \\ \hline
+\texttt{Type\_Opt} & $\epsilon$, \texttt{[} \\ \hline
+\texttt{VarDecl} & \texttt{ident} \\ \hline
+\texttt{VarDecl\_Tail} & $\epsilon$, \texttt{,} \\ \hline
+\texttt{VarDecls} & $\epsilon$, \texttt{ident} \\ \hline
+\end{tabular}
+
+=== FOLLOW SETS ===
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Non-Terminal} & \textbf{FOLLOW Set} \\ \hline
+\texttt{ActPars} & \texttt{!=}, \texttt{%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{ActPars\_List} & \texttt{)} \\ \hline
+\texttt{ActPars\_Tail} & \texttt{)} \\ \hline
+\texttt{Addop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Block} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{void}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{ClassDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
+\texttt{Condition} & \texttt{)} \\ \hline
+\texttt{ConstDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
+\texttt{ConstValue} & \texttt{;} \\ \hline
+\texttt{Designator} & \texttt{!=}, \texttt{%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Designator\_Tail} & \texttt{!=}, \texttt{%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Else\_Opt} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Expr} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Expr\_Minus} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Expr\_Opt} & \texttt{;} \\ \hline
+\texttt{Expr\_Tail} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor} & \texttt{!=}, \texttt{%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor\_Designator} & \texttt{!=}, \texttt{%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Factor\_New} & \texttt{!=}, \texttt{%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{FormPars} & \texttt{)} \\ \hline
+\texttt{FormPars\_Opt} & \texttt{)} \\ \hline
+\texttt{FormPars\_Tail} & \texttt{)} \\ \hline
+\texttt{MethodDecl} & \texttt{ident}, \texttt{void}, \texttt{\}} \\ \hline
+\texttt{MethodDecls} & \texttt{\}} \\ \hline
+\texttt{MethodType} & \texttt{ident} \\ \hline
+\texttt{Mulop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Print\_Opt} & \texttt{)} \\ \hline
+\texttt{Program} & \texttt{$} \\ \hline
+\texttt{Program\_Body} & \texttt{\{} \\ \hline
+\texttt{Relop} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
+\texttt{Statement} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Statement\_AssignOrCall} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{Statements} & \texttt{\}} \\ \hline
+\texttt{Term} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Term\_Tail} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
+\texttt{Type} & \texttt{ident} \\ \hline
+\texttt{Type\_Opt} & \texttt{ident} \\ \hline
+\texttt{VarDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{}, \texttt{\}} \\ \hline
+\texttt{VarDecl\_Tail} & \texttt{;} \\ \hline
+\texttt{VarDecls} & \texttt{\{}, \texttt{\}} \\ \hline
+\end{tabular}
+
+=== LL1 TABLE ===
+\begin{tabular}{|l|l|p{8cm}|}
+\hline
+\textbf{Non-Terminal} & \textbf{Input Token} & \textbf{Applied Rule} \\ \hline
+\texttt{ActPars} & \texttt{(} & $ActPars \rightarrow ( ActPars\_List )$ \\ \hline
+\texttt{ActPars\_List} & \texttt{(} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{)} & $ActPars\_List \rightarrow \epsilon$ \\ \hline
+\texttt{ActPars\_List} & \texttt{-} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{charConst} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{ident} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{new} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_List} & \texttt{number} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
+\texttt{ActPars\_Tail} & \texttt{)} & $ActPars\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{ActPars\_Tail} & \texttt{,} & $ActPars\_Tail \rightarrow , Expr ActPars\_Tail$ \\ \hline
+\texttt{Addop} & \texttt{+} & $Addop \rightarrow +$ \\ \hline
+\texttt{Addop} & \texttt{-} & $Addop \rightarrow -$ \\ \hline
+\texttt{Block} & \texttt{{} & $Block \rightarrow \{ Statements \}$ \\ \hline
+\texttt{ClassDecl} & \texttt{class} & $ClassDecl \rightarrow class ident \{ VarDecls \}$ \\ \hline
+\texttt{Condition} & \texttt{(} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{-} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{charConst} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{ident} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{new} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{Condition} & \texttt{number} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
+\texttt{ConstDecl} & \texttt{final} & $ConstDecl \rightarrow final Type ident = ConstValue ;$ \\ \hline
+\texttt{ConstValue} & \texttt{charConst} & $ConstValue \rightarrow charConst$ \\ \hline
+\texttt{ConstValue} & \texttt{number} & $ConstValue \rightarrow number$ \\ \hline
+\texttt{Designator} & \texttt{ident} & $Designator \rightarrow ident Designator\_Tail$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{!=} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{%} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{(} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{)} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{*} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{+} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{,} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{-} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{.} & $Designator\_Tail \rightarrow . ident Designator\_Tail$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{/} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{;} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{<} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{<=} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{=} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{==} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{>} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{>=} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{[} & $Designator\_Tail \rightarrow [ Expr ] Designator\_Tail$ \\ \hline
+\texttt{Designator\_Tail} & \texttt{]} & $Designator\_Tail \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{;} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{else} & $Else\_Opt \rightarrow else Statement$ \\ \hline
+\texttt{Else\_Opt} & \texttt{ident} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{if} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{print} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{read} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{return} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{while} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{{} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Else\_Opt} & \texttt{}} & $Else\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Expr} & \texttt{(} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr} & \texttt{-} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr} & \texttt{charConst} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr} & \texttt{ident} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr} & \texttt{new} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr} & \texttt{number} & $Expr \rightarrow Expr\_Minus Term Expr\_Tail$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{(} & $Expr\_Minus \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{-} & $Expr\_Minus \rightarrow -$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{charConst} & $Expr\_Minus \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{ident} & $Expr\_Minus \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{new} & $Expr\_Minus \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Minus} & \texttt{number} & $Expr\_Minus \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{(} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{-} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{;} & $Expr\_Opt \rightarrow \epsilon$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{charConst} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{ident} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{new} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\texttt{Expr\_Opt} & \texttt{number} & $Expr\_Opt \rightarrow Expr$ \\ \hline
+\end{tabular}

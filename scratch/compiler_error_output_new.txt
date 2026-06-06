@@ -1,0 +1,187 @@
+﻿[1;36m==============================================================================[0m
+[1;36m                      PHASE 1: LEXICAL ANALYSIS (LEXER)                       [0m
+[1;36m==============================================================================[0m
+Scanning source file: [1;33mscratch/temp_error.mj[0m...
+
++----------------------+----------------------------+---------+---------+
+| Token Type           | Lexeme                     | Line    | Column  |
++----------------------+----------------------------+---------+---------+
+| KW_PROGRAM           | program                    | 1       | 1       |
+| IDENTIFIER           | Array                      | 1       | 9       |
+| IDENTIFIER           | int                        | 3       | 3       |
+| LBRACKET             | [                          | 3       | 6       |
+| RBRACKET             | ]                          | 3       | 7       |
+| IDENTIFIER           | numbers                    | 3       | 9       |
+| SEMICOLON            | ;                          | 3       | 16      |
+| IDENTIFIER           | size                       | 4       | 5       |
+| SEMICOLON            | ;                          | 4       | 9       |
+| LBRACE               | {                          | 5       | 1       |
+| KW_VOID              | void                       | 6       | 3       |
+| IDENTIFIER           | main                       | 6       | 8       |
+| LPAREN               | (                          | 6       | 12      |
+| RPAREN               | )                          | 6       | 13      |
+| IDENTIFIER           | int                        | 7       | 5       |
+| IDENTIFIER           | i                          | 7       | 9       |
+| COMMA                | ,                          | 7       | 10      |
+| IDENTIFIER           | max                        | 7       | 12      |
+| COMMA                | ,                          | 7       | 15      |
+| IDENTIFIER           | val                        | 7       | 17      |
+| SEMICOLON            | ;                          | 7       | 20      |
+| LBRACE               | {                          | 8       | 3       |
+| IDENTIFIER           | size                       | 9       | 5       |
+| ASSIGN               | =                          | 9       | 10      |
+| NUMBER               | 5                          | 9       | 12      |
+| SEMICOLON            | ;                          | 9       | 13      |
+| IDENTIFIER           | numbers                    | 10      | 5       |
+| ASSIGN               | =                          | 10      | 13      |
+| KW_NEW               | new                        | 10      | 15      |
+| IDENTIFIER           | int                        | 10      | 19      |
+| LBRACKET             | [                          | 10      | 22      |
+| IDENTIFIER           | size                       | 10      | 23      |
+| RBRACKET             | ]                          | 10      | 27      |
+| SEMICOLON            | ;                          | 10      | 28      |
+| IDENTIFIER           | i                          | 13      | 5       |
+| ASSIGN               | =                          | 13      | 7       |
+| NUMBER               | 0                          | 13      | 9       |
+| SEMICOLON            | ;                          | 13      | 10      |
+| KW_WHILE             | while                      | 14      | 5       |
+| LPAREN               | (                          | 14      | 11      |
+| IDENTIFIER           | i                          | 14      | 12      |
+| LT                   | <                          | 14      | 14      |
+| IDENTIFIER           | size                       | 14      | 16      |
+| RPAREN               | )                          | 14      | 20      |
+| LBRACE               | {                          | 14      | 22      |
+| KW_READ              | read                       | 15      | 7       |
+| LPAREN               | (                          | 15      | 11      |
+| IDENTIFIER           | val                        | 15      | 12      |
+| RPAREN               | )                          | 15      | 15      |
+| SEMICOLON            | ;                          | 15      | 16      |
+| IDENTIFIER           | numbers                    | 16      | 7       |
+| LBRACKET             | [                          | 16      | 14      |
+| IDENTIFIER           | i                          | 16      | 15      |
+| RBRACKET             | ]                          | 16      | 16      |
+| ASSIGN               | =                          | 16      | 18      |
+| IDENTIFIER           | val                        | 16      | 20      |
+| SEMICOLON            | ;                          | 16      | 23      |
+| IDENTIFIER           | i                          | 17      | 7       |
+| ASSIGN               | =                          | 17      | 9       |
+| IDENTIFIER           | i                          | 17      | 11      |
+| PLUS                 | +                          | 17      | 13      |
+| NUMBER               | 1                          | 17      | 15      |
+| SEMICOLON            | ;                          | 17      | 16      |
+| RBRACE               | }                          | 18      | 5       |
+| IDENTIFIER           | max                        | 21      | 5       |
+| ASSIGN               | =                          | 21      | 9       |
+| IDENTIFIER           | numbers                    | 21      | 11      |
+| LBRACKET             | [                          | 21      | 18      |
+| NUMBER               | 0                          | 21      | 19      |
+| RBRACKET             | ]                          | 21      | 20      |
+| SEMICOLON            | ;                          | 21      | 21      |
+| IDENTIFIER           | i                          | 22      | 5       |
+| ASSIGN               | =                          | 22      | 7       |
+| NUMBER               | 1                          | 22      | 9       |
+| SEMICOLON            | ;                          | 22      | 10      |
+| KW_WHILE             | while                      | 23      | 5       |
+| LPAREN               | (                          | 23      | 11      |
+| IDENTIFIER           | i                          | 23      | 12      |
+| LT                   | <                          | 23      | 14      |
+| IDENTIFIER           | size                       | 23      | 16      |
+| RPAREN               | )                          | 23      | 20      |
+| LBRACE               | {                          | 23      | 22      |
+| KW_IF                | if                         | 24      | 7       |
+| LPAREN               | (                          | 24      | 10      |
+| IDENTIFIER           | numbers                    | 24      | 11      |
+| LBRACKET             | [                          | 24      | 18      |
+| IDENTIFIER           | i                          | 24      | 19      |
+| RBRACKET             | ]                          | 24      | 20      |
+| GT                   | >                          | 24      | 22      |
+| IDENTIFIER           | max                        | 24      | 24      |
+| RPAREN               | )                          | 24      | 27      |
+| LBRACE               | {                          | 24      | 29      |
+| IDENTIFIER           | max                        | 25      | 9       |
+| ASSIGN               | =                          | 25      | 13      |
+| IDENTIFIER           | numbers                    | 25      | 15      |
+| LBRACKET             | [                          | 25      | 22      |
+| IDENTIFIER           | i                          | 25      | 23      |
+| RBRACKET             | ]                          | 25      | 24      |
+| SEMICOLON            | ;                          | 25      | 25      |
+| RBRACE               | }                          | 26      | 7       |
+| IDENTIFIER           | i                          | 28      | 7       |
+| ASSIGN               | =                          | 28      | 9       |
+| IDENTIFIER           | i                          | 28      | 11      |
+| PLUS                 | +                          | 28      | 13      |
+| NUMBER               | 1                          | 28      | 15      |
+| SEMICOLON            | ;                          | 28      | 16      |
+| RBRACE               | }                          | 29      | 5       |
+| KW_PRINT             | print                      | 31      | 5       |
+| LPAREN               | (                          | 31      | 10      |
+| IDENTIFIER           | max                        | 31      | 11      |
+| RPAREN               | )                          | 31      | 14      |
+| SEMICOLON            | ;                          | 31      | 15      |
+| RBRACE               | }                          | 32      | 3       |
+| RBRACE               | }                          | 33      | 1       |
+| EOF                  | EOF                        | 34      | 1       |
++----------------------+----------------------------+---------+---------+
+[1;32m[SUCCESS] Lexical scan completed with 0 lexical errors. Total tokens: 115[0m
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 2: RECURSIVE DESCENT PARSE TREE                      [0m
+[1;36m==============================================================================[0m
+Γö£ΓöÇΓöÇ [1;33mProgram[0m (token: "program")
+Γöé  Γö£ΓöÇΓöÇ [1;33mVarDecl[0m (token: "int")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mType[0m (token: "int")
+Γöé  Γö£ΓöÇΓöÇ [1;33mVarDecl[0m (token: "size")
+Γöé  Γöé  Γö£ΓöÇΓöÇ [1;33mType[0m (token: "size")
+------------------------------------------------------------------------------
+[1;31m[FAILED] Recursive Descent Parsing finished with 1 errors.[0m
+
+[1;36m==============================================================================[0m
+[1;36m                         PHASE 3: SYMBOL TABLE DUMP                           [0m
+[1;36m==============================================================================[0m
++-------+----------------------+------------+----------------------------+------+
+| Scope | Symbol Name          | Kind       | Data Type                  | Line |
++-------+----------------------+------------+----------------------------+------+
+| 0     | Array                | CLASS      | none                       | 1    |
+| 0     | len                  | METHOD     | int                        | 0    |
+| 0     | ord                  | METHOD     | int                        | 0    |
+| 0     | chr                  | METHOD     | char                       | 0    |
+| 1     | numbers              | ARRAY      | none of int                | 3    |
++-------+----------------------+------------+----------------------------+------+
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 4: LL(1) PREDICTIVE PARSER STEPS                     [0m
+[1;36m==============================================================================[0m
+Applied Rule: [1;35mProgram[0m -> program ident Program_Body { MethodDecls } 
+Applied Rule: [1;35mProgram_Body[0m -> VarDecl Program_Body 
+Applied Rule: [1;35mVarDecl[0m -> Type ident VarDecl_Tail ; 
+Applied Rule: [1;35mType[0m -> ident Type_Opt 
+Applied Rule: [1;35mType_Opt[0m -> [ ] 
+Applied Rule: [1;35mVarDecl_Tail[0m -> [3mepsilon[0m
+Applied Rule: [1;35mProgram_Body[0m -> VarDecl Program_Body 
+Applied Rule: [1;35mVarDecl[0m -> Type ident VarDecl_Tail ; 
+Applied Rule: [1;35mType[0m -> ident Type_Opt 
+------------------------------------------------------------------------------
+[1;31m[FAILED] LL(1) Parser finished with 1 errors.[0m
+
+[1;36m==============================================================================[0m
+[1;36m                   PHASE 5: CANONICAL LR(1) PARSER ACTIONS                    [0m
+[1;36m==============================================================================[0m
+Action: [1;34mSHIFT[0m to State 1 (Token: "program")
+Action: [1;34mSHIFT[0m to State 3 (Token: "Array")
+Action: [1;34mSHIFT[0m to State 6 (Token: "int")
+Action: [1;34mSHIFT[0m to State 15 (Token: "[")
+Action: [1;34mSHIFT[0m to State 26 (Token: "]")
+Action: [1;35mREDUCE[0m by rule [1;33mType_Opt[0m (length 2)
+  -> GOTO State 14
+Action: [1;35mREDUCE[0m by rule [1;33mType[0m (length 2)
+  -> GOTO State 8
+Action: [1;34mSHIFT[0m to State 17 (Token: "numbers")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl_Tail[0m (length 0)
+  -> GOTO State 27
+Action: [1;34mSHIFT[0m to State 34 (Token: ";")
+Action: [1;35mREDUCE[0m by rule [1;33mVarDecl[0m (length 4)
+  -> GOTO State 7
+Action: [1;34mSHIFT[0m to State 6 (Token: "size")
+------------------------------------------------------------------------------
+[1;31m[FAILED] Canonical LR(1) Parser finished with 1 errors.[0m
+

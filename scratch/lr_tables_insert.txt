@@ -1,0 +1,34 @@
+\begin{tabular}{|c|p{7cm}|p{6cm}|}
+\hline
+\textbf{State} & \textbf{Action Transitions (Terminal $\rightarrow$ Action)} & \textbf{GOTO Transitions (Non-Terminal $\rightarrow$ State)} \\ \hline
+0 & \texttt{program} $\rightarrow$ \texttt{S1} & \texttt{Program} $\rightarrow$ 2 \\ \hline
+1 & \texttt{ident} $\rightarrow$ \texttt{S3} & None \\ \hline
+2 & \texttt{\$} $\rightarrow$ \texttt{acc} & None \\ \hline
+3 & \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{ConstDecl} $\rightarrow$ 11, \texttt{Program\_Body} $\rightarrow$ 5, \texttt{Type} $\rightarrow$ 8, \texttt{VarDecl} $\rightarrow$ 7 \\ \hline
+4 & \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{ConstDecl} $\rightarrow$ 11, \texttt{Program\_Body} $\rightarrow$ 12, \texttt{Type} $\rightarrow$ 8, \texttt{VarDecl} $\rightarrow$ 7 \\ \hline
+5 & \texttt{{} $\rightarrow$ \texttt{S13} & None \\ \hline
+6 & \texttt{[} $\rightarrow$ \texttt{S15}, \texttt{ident} $\rightarrow$ \texttt{R27} & \texttt{Type\_Opt} $\rightarrow$ 14 \\ \hline
+7 & \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{ConstDecl} $\rightarrow$ 11, \texttt{Program\_Body} $\rightarrow$ 16, \texttt{Type} $\rightarrow$ 8, \texttt{VarDecl} $\rightarrow$ 7 \\ \hline
+8 & \texttt{ident} $\rightarrow$ \texttt{S17} & None \\ \hline
+9 & \texttt{ident} $\rightarrow$ \texttt{S6} & \texttt{Type} $\rightarrow$ 18 \\ \hline
+10 & \texttt{ident} $\rightarrow$ \texttt{S19} & None \\ \hline
+11 & \texttt{class} $\rightarrow$ \texttt{S10}, \texttt{final} $\rightarrow$ \texttt{S9}, \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{{} $\rightarrow$ \texttt{R5} & \texttt{ClassDecl} $\rightarrow$ 4, \texttt{ConstDecl} $\rightarrow$ 11, \texttt{Program\_Body} $\rightarrow$ 20, \texttt{Type} $\rightarrow$ 8, \texttt{VarDecl} $\rightarrow$ 7 \\ \hline
+12 & \texttt{{} $\rightarrow$ \texttt{R4} & None \\ \hline
+13 & \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{void} $\rightarrow$ \texttt{S21}, \texttt{}} $\rightarrow$ \texttt{R16} & \texttt{MethodDecl} $\rightarrow$ 22, \texttt{MethodDecls} $\rightarrow$ 25, \texttt{MethodType} $\rightarrow$ 24, \texttt{Type} $\rightarrow$ 23 \\ \hline
+14 & \texttt{ident} $\rightarrow$ \texttt{R25} & None \\ \hline
+15 & \texttt{]} $\rightarrow$ \texttt{S26} & None \\ \hline
+16 & \texttt{{} $\rightarrow$ \texttt{R3} & None \\ \hline
+17 & \texttt{,} $\rightarrow$ \texttt{S28}, \texttt{;} $\rightarrow$ \texttt{R11} & \texttt{VarDecl\_Tail} $\rightarrow$ 27 \\ \hline
+18 & \texttt{ident} $\rightarrow$ \texttt{S29} & None \\ \hline
+19 & \texttt{{} $\rightarrow$ \texttt{S30} & None \\ \hline
+20 & \texttt{{} $\rightarrow$ \texttt{R2} & None \\ \hline
+21 & \texttt{ident} $\rightarrow$ \texttt{R19} & None \\ \hline
+22 & \texttt{ident} $\rightarrow$ \texttt{S6}, \texttt{void} $\rightarrow$ \texttt{S21}, \texttt{}} $\rightarrow$ \texttt{R16} & \texttt{MethodDecl} $\rightarrow$ 22, \texttt{MethodDecls} $\rightarrow$ 31, \texttt{MethodType} $\rightarrow$ 24, \texttt{Type} $\rightarrow$ 23 \\ \hline
+23 & \texttt{ident} $\rightarrow$ \texttt{R18} & None \\ \hline
+24 & \texttt{ident} $\rightarrow$ \texttt{S32} & None \\ \hline
+25 & \texttt{}} $\rightarrow$ \texttt{S33} & None \\ \hline
+26 & \texttt{ident} $\rightarrow$ \texttt{R26} & None \\ \hline
+27 & \texttt{;} $\rightarrow$ \texttt{S34} & None \\ \hline
+28 & \texttt{ident} $\rightarrow$ \texttt{S35} & None \\ \hline
+29 & \texttt{=} $\rightarrow$ \texttt{S36} & None \\ \hline
+\end{tabular}
