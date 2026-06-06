@@ -15,6 +15,8 @@ private:
     int errorCount;
     std::vector<int> stateStack;
     std::vector<std::string> symbolStack;
+    std::vector<Token> allTokens;
+    size_t tokenIndex;
 
     void advance();
     void reportError(const std::string& message);

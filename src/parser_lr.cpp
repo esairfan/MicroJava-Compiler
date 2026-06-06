@@ -3,16 +3,25 @@
 
 LR1Parser::LR1Parser(Lexer& lex, SymbolTable& st)
     : lexer(lex), symTable(st), errorCount(0) {
-    // Initialize tables
     init_tables();
-    advance();
+    Token t;
+    do {
+        t = lexer.getNextToken();
+        allTokens.push_back(t);
+    } while (t.type != TokenType::END_OF_FILE);
+    tokenIndex = 0;
+    currentToken = allTokens[0];
 }
 
 void LR1Parser::advance() {
-    currentToken = lexer.getNextToken();
-    while (currentToken.type == TokenType::ERROR) {
-        reportError("Lexical error: " + currentToken.lexeme);
-        currentToken = lexer.getNextToken();
+    if (tokenIndex < allTokens.size() - 1) {
+        tokenIndex++;
+        currentToken = allTokens[tokenIndex];
+        while (currentToken.type == TokenType::ERROR && tokenIndex < allTokens.size() - 1) {
+            reportError("Lexical error: " + currentToken.lexeme);
+            tokenIndex++;
+            currentToken = allTokens[tokenIndex];
+        }
     }
 }
 
@@ -70,15 +79,27 @@ void LR1Parser::parse() {
         int state = stateStack.back();
         std::string sym = tokenToGrammarSymbol(currentToken);
         
+        // Build stateStack string:
+        std::string stackStr = "";
+        for (size_t i = 0; i < stateStack.size(); ++i) {
+            stackStr += std::to_string(stateStack[i]) + (i + 1 < stateStack.size() ? " " : "");
+        }
+        
+        // Build inputStr:
+        std::string inputStr = "";
+        for (size_t i = tokenIndex; i < allTokens.size(); ++i) {
+            inputStr += allTokens[i].lexeme + (i + 1 < allTokens.size() ? " " : "");
+        }
+        
         if (lr1_action.find(state) != lr1_action.end() && lr1_action[state].find(sym) != lr1_action[state].end()) {
             std::string action = lr1_action[state][sym];
             
             if (action == "acc") {
-                std::cout << "Action: \033[1;32mACCEPT\033[0m\n";
+                std::cout << "[LR_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Accept\n";
                 break;
             } else if (action[0] == 'S') {
                 int next_state = std::stoi(action.substr(1));
-                std::cout << "Action: \033[1;34mSHIFT\033[0m to State " << next_state << " (Token: \"" << currentToken.lexeme << "\")\n";
+                std::cout << "[LR_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Shift " << next_state << "\n";
                 symbolStack.push_back(sym);
                 stateStack.push_back(next_state);
                 advance();
@@ -86,7 +107,16 @@ void LR1Parser::parse() {
                 int rule_idx = std::stoi(action.substr(1));
                 const auto& rule = lr1_rules[rule_idx];
                 
-                std::cout << "Action: \033[1;35mREDUCE\033[0m by rule \033[1;33m" << rule.lhs << "\033[0m (length " << rule.len << ")\n";
+                int top_state_before = stateStack[stateStack.size() - 1 - rule.len];
+                
+                int next_goto = -1;
+                if (lr1_goto.find(top_state_before) != lr1_goto.end() && lr1_goto[top_state_before].find(rule.lhs) != lr1_goto[top_state_before].end()) {
+                    next_goto = lr1_goto[top_state_before][rule.lhs];
+                }
+                
+                std::string actionMsg = "Reduce (" + std::to_string(rule_idx) + ") " + rule.lhs + ". Pop " + std::to_string(rule.len) + " state" + (rule.len == 1 ? "" : "s") + ". Push GOTO(" + std::to_string(top_state_before) + ", " + rule.lhs + ") = " + std::to_string(next_goto) + ".";
+                
+                std::cout << "[LR_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: " << actionMsg << "\n";
                 
                 for (int i = 0; i < rule.len; ++i) {
                     symbolStack.pop_back();
@@ -96,9 +126,7 @@ void LR1Parser::parse() {
                 symbolStack.push_back(rule.lhs);
                 int top_state = stateStack.back();
                 
-                if (lr1_goto.find(top_state) != lr1_goto.end() && lr1_goto[top_state].find(rule.lhs) != lr1_goto[top_state].end()) {
-                    int next_goto = lr1_goto[top_state][rule.lhs];
-                    std::cout << "  -> GOTO State " << next_goto << "\n";
+                if (next_goto != -1) {
                     stateStack.push_back(next_goto);
                 } else {
                     reportError("GOTO table missing entry after reduction");
@@ -106,12 +134,8 @@ void LR1Parser::parse() {
                 }
             }
         } else {
-            // Error
+            std::cout << "[LR_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Syntax error while parsing " << sym << "\n";
             reportError("Syntax error, unexpected token '" + sym + "'");
-            
-            // Panic mode recovery for LR: pop states until we find one that can shift the current token
-            // In a real compiler we'd look for a state that can shift "error" and then pop tokens.
-            // Since we didn't add the "error" non-terminal to the grammar script, we'll just skip the token
             if (currentToken.type == TokenType::END_OF_FILE) {
                 break;
             }
