@@ -28,7 +28,7 @@ A complete, multi-stage compiler playground for the MicroJava language. It featu
 * `include/` - C++ compiler header definitions.
 * `gui/` - Web playground assets (`index.html`, `style.css`, `app.js`).
 * `docs/` - Academic reporting directory, including the comprehensive 500+ line project details report (`report.tex`).
-* `test/` - Sample MicroJava test programs (`sample.mj`, `temp.mj`).
+* `test/` - Sample MicroJava test programs (`sample.mj`, `temp.mj`, `simplesum.mj`).
 * `server.py` - Threaded HTTP server handler.
 * `grammar_tool.py` - Script generating LL(1) parse tables.
 * `lr1_generator.py` - Script computing LR(1) state transitions.
@@ -63,10 +63,13 @@ A complete, multi-stage compiler playground for the MicroJava language. It featu
 ---
 
 ## Documentation & Report
-For details on compiler component linkages, TikZ flowcharts, EBNF schemas, and parse table mapping, view the LaTeX documentation source at:
-👉 **[docs/report.tex](file:///c:/Users/ibrah/OneDrive/Desktop/Compiler-Project/docs/report.tex)**
+For details on compiler component linkages, EBNF schemas, parse table mapping, and end-to-end execution traces of the 12-line `SimpleSum` example program, view the LaTeX documentation source at:
+👉 **[docs/report.tex](file:///c:/MAD%20projects/Compiler-Project/docs/report.tex)**
 
 ## Key Bug Fixes & Refinements
 * **Parser Recovery**: Fixed an infinite loop in `parser_ll.cpp` at EOF by popping the stack if the lookup table misses at unexpected EOF.
 * **Vertical Alignment**: Fixed a sidebar numbering drift in `style.css` by locking both the gutter and textarea line heights to exactly `1.5rem`.
 * **Multi-threading**: Upgraded the Python server in `server.py` to be multi-threaded, preventing Keep-Alive browser requests from blocking connections.
+* **Action-Only Trace Outputs**: Simplified LL(1) and LR(1) parser traces in the report to display action steps only, making execution traces clear and readable.
+* **Halt-on-Error Validation**: Added 5 detailed syntax and semantic error test cases showcasing coordinate recovery and graceful halt-on-error compilation.
+
