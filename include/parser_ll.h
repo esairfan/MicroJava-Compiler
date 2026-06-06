@@ -14,6 +14,8 @@ private:
     Token currentToken;
     int errorCount;
     std::stack<std::string> parseStack;
+    std::vector<Token> allTokens;
+    size_t tokenIndex;
 
     void advance();
     void reportError(const std::string& message);

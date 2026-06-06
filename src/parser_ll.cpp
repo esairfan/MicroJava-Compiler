@@ -3,16 +3,25 @@
 
 LL1Parser::LL1Parser(Lexer& lex, SymbolTable& st)
     : lexer(lex), symTable(st), errorCount(0) {
-    // Initialize tables
     init_tables();
-    advance();
+    Token t;
+    do {
+        t = lexer.getNextToken();
+        allTokens.push_back(t);
+    } while (t.type != TokenType::END_OF_FILE);
+    tokenIndex = 0;
+    currentToken = allTokens[0];
 }
 
 void LL1Parser::advance() {
-    currentToken = lexer.getNextToken();
-    while (currentToken.type == TokenType::ERROR) {
-        reportError("Lexical error: " + currentToken.lexeme);
-        currentToken = lexer.getNextToken();
+    if (tokenIndex < allTokens.size() - 1) {
+        tokenIndex++;
+        currentToken = allTokens[tokenIndex];
+        while (currentToken.type == TokenType::ERROR && tokenIndex < allTokens.size() - 1) {
+            reportError("Lexical error: " + currentToken.lexeme);
+            tokenIndex++;
+            currentToken = allTokens[tokenIndex];
+        }
     }
 }
 
@@ -71,7 +80,26 @@ void LL1Parser::parse() {
         std::string top = parseStack.top();
         std::string sym = tokenToGrammarSymbol(currentToken);
 
+        // Get Stack Representation
+        std::stack<std::string> tempStack = parseStack;
+        std::vector<std::string> stackElems;
+        while (!tempStack.empty()) {
+            stackElems.push_back(tempStack.top());
+            tempStack.pop();
+        }
+        std::string stackStr = "";
+        for (auto it = stackElems.rbegin(); it != stackElems.rend(); ++it) {
+            stackStr += *it + (it + 1 != stackElems.rend() ? " " : "");
+        }
+
+        // Get Input Buffer Representation
+        std::string inputStr = "";
+        for (size_t i = tokenIndex; i < allTokens.size(); ++i) {
+            inputStr += allTokens[i].lexeme + (i + 1 < allTokens.size() ? " " : "");
+        }
+
         if (top == sym) {
+            std::cout << "[LL_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Match token '" << sym << "'\n";
             parseStack.pop();
             if (sym != "$") {
                 advance();
@@ -84,35 +112,31 @@ void LL1Parser::parse() {
                    top == "!=" || top == ">" || top == ">=" || top == "<" || top == "<=" || 
                    top == "(" || top == ")" || top == "[" || top == "]" || top == "{" || 
                    top == "}" || top == "=" || top == ";" || top == "," || top == ".") {
-            // It's a terminal but doesn't match
+            std::cout << "[LL_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Mismatch Error: Expected '" << top << "' but found '" << sym << "'\n";
             reportError("Expected '" + top + "' but found '" + sym + "'");
-            // Panic mode recovery: pop stack
             parseStack.pop();
         } else {
-            // It's a non-terminal
             if (ll1_table.find(top) != ll1_table.end() && ll1_table[top].find(sym) != ll1_table[top].end()) {
                 int rule_idx = ll1_table[top][sym];
-                parseStack.pop();
-                
                 const auto& rule = ll1_rules[rule_idx];
                 
-                std::cout << "Applied Rule: \033[1;35m" << rule.lhs << "\033[0m -> ";
+                std::string ruleStr = rule.lhs + " -> ";
                 if (rule.rhs.empty()) {
-                    std::cout << "\033[3mepsilon\033[0m";
+                    ruleStr += "epsilon";
                 } else {
                     for (const auto& r_sym : rule.rhs) {
-                        std::cout << r_sym << " ";
+                        ruleStr += r_sym + " ";
                     }
                 }
-                std::cout << "\n";
-
-                // Push right hand side in reverse order
+                std::cout << "[LL_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Applied Rule " << ruleStr << "\n";
+                
+                parseStack.pop();
                 for (auto it = rule.rhs.rbegin(); it != rule.rhs.rend(); ++it) {
                     parseStack.push(*it);
                 }
             } else {
+                std::cout << "[LL_STEP] Stack: " << stackStr << " | Input: " << inputStr << " | Action: Syntax error while parsing " << top << "\n";
                 reportError("Syntax error, unexpected token '" + sym + "' while parsing " + top);
-                // Panic mode recovery: skip token or pop stack if at EOF to avoid infinite loop
                 if (sym == "$") {
                     parseStack.pop();
                 } else {
