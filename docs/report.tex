@@ -1,409 +1,663 @@
 \documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
 \usepackage{geometry}
-\geometry{margin=1in}
+\geometry{margin=1in, top=1.2in, bottom=1.2in}
 \usepackage{hyperref}
+\hypersetup{colorlinks=true, linkcolor=black, urlcolor=black}
 \usepackage{listings}
 \usepackage{xcolor}
-% % \usepackage{tikz}
-% % \usetikzlibrary{shapes.geometric, arrows, positioning}
 \usepackage{amsmath}
 \usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{tabularx}
+\usepackage{mdframed}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins, breakable}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
 
-% Color definitions for code blocks
-\definecolor{codegreen}{rgb}{0,0.6,0}
-\definecolor{codegray}{rgb}{0.5,0.5,0.5}
-\definecolor{codepurple}{rgb}{0.58,0,0.82}
-\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
 
-% Code snippet styling config
+\usepackage{forest}
+\usepackage{tikz}
+\usetikzlibrary{trees}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{setspace}
+
+% ─── COLOURS ───────────────────────────────────────────────────────────────────
+\definecolor{PrimaryBlack}{RGB}{0,0,0}
+\definecolor{LightBlack}{RGB}{235,235,235}
+\definecolor{AccentBlack}{RGB}{20,20,20}
+\definecolor{DarkGray}{RGB}{50,50,50}
+\definecolor{MidGray}{RGB}{120,120,120}
+\definecolor{LightGray}{RGB}{245,245,245}
+\definecolor{CodeBg}{RGB}{248,248,244}
+\definecolor{codegreen}{RGB}{0,128,0}
+\definecolor{codegray}{RGB}{128,128,128}
+\definecolor{codepurple}{RGB}{100,0,160}
+\definecolor{RuleColor}{RGB}{0,0,0}
+\definecolor{SuccessGreen}{RGB}{0,128,64}
+\definecolor{ErrorRed}{RGB}{180,0,0}
+\definecolor{WarnOrange}{RGB}{200,100,0}
+\definecolor{TreeBg}{RGB}{250,250,250}
+% Define custom tcolorbox styles to match your snippets
+\tcbset{
+  treebox/.style={
+    colback=white,
+    colframe=gray!60,
+    boxrule=1pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries
+  },
+  successbox/.style={
+    colback=SuccessGreen!10,
+    colframe=SuccessGreen,
+    boxrule=1pt,
+    arc=4pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+  }
+}
+
+% ─── SECTION STYLING ───────────────────────────────────────────────────────────
+\titleformat{\section}
+  {\Large\bfseries\color{PrimaryBlack}}
+  {\thesection}{1em}{}[\vspace{-4pt}\rule{\linewidth}{1.2pt}\vspace{4pt}]
+
+\titleformat{\subsection}
+  {\large\bfseries\color{AccentBlack}}
+  {\thesubsection}{1em}{}
+
+\titleformat{\subsubsection}
+  {\normalsize\bfseries\color{DarkGray}}
+  {\thesubsubsection}{1em}{}
+
+\titlespacing*{\section}{0pt}{18pt}{8pt}
+\titlespacing*{\subsection}{0pt}{12pt}{6pt}
+\titlespacing*{\subsubsection}{0pt}{8pt}{4pt}
+
+% ─── HEADER / FOOTER ───────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\small\color{MidGray}MicroJava Mini-Compiler}
+\fancyhead[R]{\small\color{MidGray}UET Lahore — CS Department}
+\fancyfoot[C]{\small\color{MidGray}Page \thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0pt}
+
+% ─── CODE LISTING STYLE ────────────────────────────────────────────────────────
 \lstdefinestyle{mystyle}{
-    backgroundcolor=\color{backcolour},   
-    commentstyle=\color{codegreen},
-    keywordstyle=\color{magenta},
+    backgroundcolor=\color{CodeBg},
+    commentstyle=\color{codegreen}\itshape,
+    keywordstyle=\color{PrimaryBlack}\bfseries,
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle={\small\ttfamily},
-    breakatwhitespace=false,         
-    breaklines=true,                 
-    captionpos=b,                    
-    keepspaces=true,                 
-    numbers=left,                    
-    numbersep=5pt,                  
-    showspaces=false,                
+    basicstyle={\small\ttfamily\color{DarkGray}},
+    breakatwhitespace=false,
+    breaklines=true,
+    captionpos=b,
+    keepspaces=true,
+    numbers=left,
+    numbersep=8pt,
+    showspaces=false,
     showstringspaces=false,
-    showtabs=false,                  
-    tabsize=2
+    showtabs=false,
+    tabsize=2,
+    frame=single,
+    rulecolor=\color{PrimaryBlack!40},
+    xleftmargin=15pt,
+    xrightmargin=5pt,
+    aboveskip=8pt,
+    belowskip=8pt,
 }
 \lstset{style=mystyle}
 
-% Flowchart styles
-% % \tikzstyle{startstop} = [rectangle, rounded corners, minimum width=3cm, minimum height=1cm,text centered, draw=black, fill=red!30]
-% % \tikzstyle{io} = [trapezium, trapezium left angle=70, trapezium right angle=110, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=blue!30]
-% % \tikzstyle{process} = [rectangle, minimum width=3cm, minimum height=1cm, text centered, draw=black, fill=orange!30]
-% % \tikzstyle{decision} = [diamond, minimum width=3.5cm, minimum height=1cm, text centered, draw=black, fill=green!30]
-% % \tikzstyle{arrow} = [thick,->,>=stealth]
+% ─── VERBATIM / OUTPUT STYLE ───────────────────────────────────────────────────
+\lstdefinestyle{outputstyle}{
+    backgroundcolor=\color{DarkGray!8},
+    basicstyle={\footnotesize\ttfamily\color{DarkGray}},
+    breaklines=true,
+    breakatwhitespace=false,
+    frame=single,
+    rulecolor=\color{MidGray!60},
+    xleftmargin=10pt,
+    xrightmargin=5pt,
+    numbers=none,
+    aboveskip=6pt,
+    belowskip=6pt,
+}
 
-\title{MicroJava Mini-Compiler Project \\ \large Comprehensive Architectural Flow, Component Linkage, and Implementation Report}
-\author{ESA irfan (2023-cs-104) \and Hamdan Aleem (2023-cs-107) \\
-\vspace{0.3cm} \\
-Department of Computer Science \\
-University of Engineering and Technology (UET), Lahore \\
-\vspace{0.5cm} \\
-Instructor: Ms. Aaliya}
-\date{\today}
+% ─── TCOLORBOX ENVIRONMENTS ────────────────────────────────────────────────────
+\tcbset{
+  infobox/.style={
+    enhanced, breakable,
+    colback=LightBlack!40,
+    colframe=PrimaryBlack,
+    fonttitle=\bfseries\color{white},
+    coltitle=white,
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=PrimaryBlack, rounded corners},
+    arc=3pt, boxrule=0.6pt,
+    left=6pt, right=6pt, top=6pt, bottom=6pt,
+  },
+  successbox/.style={
+    enhanced,
+    colback=SuccessGreen!8,
+    colframe=SuccessGreen,
+    fonttitle=\bfseries\color{SuccessGreen},
+    arc=2pt, boxrule=0.8pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+  },
+  errorbox/.style={
+    enhanced, breakable,
+    colback=ErrorRed!6,
+    colframe=ErrorRed,
+    fonttitle=\bfseries\color{ErrorRed},
+    arc=2pt, boxrule=0.8pt,
+    left=6pt, right=6pt, top=4pt, bottom=4pt,
+  },
+  treebox/.style={
+    enhanced, breakable,
+    colback=TreeBg,
+    colframe=PrimaryBlack!50,
+    arc=3pt, boxrule=0.6pt,
+    left=4pt, right=4pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries\small\color{PrimaryBlack},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=PrimaryBlack!80, rounded corners},
+  },
+  testcase/.style={
+    enhanced, breakable,
+    colback=white,
+    colframe=PrimaryBlack!40,
+    arc=3pt, boxrule=0.6pt,
+    left=8pt, right=8pt, top=6pt, bottom=6pt,
+    fonttitle=\bfseries\small\color{white},
+    attach boxed title to top left={yshift=-2mm, xshift=6mm},
+    boxed title style={colback=PrimaryBlack, rounded corners},
+  }
+}
 
+% ─── TABLE STYLING HELPERS ─────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+
+\newcommand{\theadcell}[1]{\textbf{\color{white}#1}}
+\newcommand{\tablehead}[1]{\rowcolor{PrimaryBlack}\color{white}\textbf{#1}}
+
+% ─── MISC ──────────────────────────────────────────────────────────────────────
+\setlist[itemize]{itemsep=2pt, parsep=0pt, topsep=4pt}
+\setlist[enumerate]{itemsep=2pt, parsep=0pt, topsep=4pt}
+
+\usepackage{colortbl}
+\arrayrulecolor{PrimaryBlack!30}
+
+% ═══════════════════════════════════════════════════════════════════════════════
 \begin{document}
 
-\maketitle
+\begin{center}
+    \vspace*{1cm}
+    {\Huge\textbf{MicroJava Compiler}}\\[1.5cm]
+    
+    % Note: Ensure 'download.png' is in your project folder or comment this out
+    \includegraphics[width=0.3\textwidth]{PDC Assignment/download.png}\\[0.7cm]
+    
+    {\large\textbf{Session 2023 - 2027}}\\[1.2cm]
 
+    {\Large\textbf{Submitted by:}}\\[0.8cm]
+    \begin{center}
+        \textbf{Esa Irfan}\space\space\space\space\space\space\space\space\space\space 2023-CS-104 
+    \end{center}
+    \begin{center} 
+        \textbf{Hamdan Aleem}\space\space\space\space\space\space\space\space\space\space 2023-CS-107
+    \end{center}
+
+
+    \vspace{0.5cm}
+    {\Large\textbf{Supervised by:}}\\[0.5cm]
+    \textbf{Aaliya Farooq}\\[1.2cm]
+    
+    {\Large\textbf{Course:}}\\[0.5cm]
+    Compiler Construction \\[1.5cm]
+    
+    \textbf{Department of Computer Science}\\[0.5cm]
+    {\Large\textbf{University of Engineering and Technology Lahore}}\\[0.5cm]
+    {\Large\textbf{Lahore Pakistan}}\\
+\end{center}
+
+
+% ─── ABSTRACT ──────────────────────────────────────────────────────────────────
 \newpage
-\begin{abstract}
-This report details the design and implementation of a multi-stage syntax validator and execution engine for the MicroJava language. The compiler incorporates five core phases: double-buffered lexical analysis, recursive descent parsing with dynamic ASCII tree visualization, chained-scope symbol table management, LL(1) non-recursive predictive parsing using an explicit stack, and Canonical LR(1) bottom-up parsing. We explore grammar transformations required to resolve left recursion and left factoring for LL(1) predictive parsing. We also justify the choice of Canonical LR(1) for bottom-up parsing and present end-to-end execution traces mapping input source code through every compilation compiler layer.
-\end{abstract}
+\begin{tcolorbox}[infobox, title={Abstract}]
+This report details the design and implementation of a multi-stage syntax validator and execution engine for the \textbf{MicroJava} language. The compiler incorporates five core phases: double-buffered lexical analysis, recursive descent parsing with dynamic ASCII tree visualization, chained-scope symbol table management, LL(1) non-recursive predictive parsing using an explicit stack, and Canonical LR(1) bottom-up parsing. We explore grammar transformations required to resolve left recursion and left factoring for LL(1) predictive parsing. We also justify the choice of Canonical LR(1) for bottom-up parsing and present end-to-end execution traces mapping input source code through every compilation layer.
+\end{tcolorbox}
 
 \newpage
 \tableofcontents
 \newpage
 
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Introduction and Language Overview}
+
 \subsection{Introduction to MicroJava}
-MicroJava is a subset of Java designed for compiler construction courses. It is a strongly-typed, object-oriented language that supports basic data types (integers and characters), constants, arrays, static class-like structures, methods, nested scopes, and control flow statements (such as conditional execution and loops). 
+MicroJava is a subset of Java designed for compiler construction courses. It is a strongly-typed, object-oriented language that supports basic data types (integers and characters), constants, arrays, static class-like structures, methods, nested scopes, and control flow statements such as conditional execution and loops.
 
 \subsection{Key Implementation Features}
-The compiler implementation described in this report incorporates the following architectural highlights:
+The compiler implementation incorporates the following architectural highlights:
+
 \begin{itemize}
-    \item \textbf{C++17 Compiler Core}: Highly performant binary execution layer supporting five synchronized analysis phases.
-    \item \textbf{Single-Error Termination}: In compliance with robust validator rules, all three parser engines stop execution immediately at the first lexical, syntax, or semantic error, preventing cascading errors.
-    \item \textbf{Visual Representation}: The Recursive Descent parser outputs a colored ASCII concrete tree illustrating exact scope nesting and grammar expansions.
+  \item \textbf{C++17 Compiler Core:} Highly performant binary execution layer supporting five synchronized analysis phases.
+  \item \textbf{Single-Error Termination:} All three parser engines stop execution immediately at the first lexical, syntax, or semantic error, preventing cascading failures.
+  \item \textbf{Visual Representation:} The Recursive Descent parser outputs a colored ASCII concrete syntax tree illustrating exact scope nesting and grammar expansions.
 \end{itemize}
 
-
-
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Compiler Project Code Files and Linkage}
 The project consists of multiple header files, C++ source modules, Python scripts, and frontend assets. They are linked together logically to form the compiler suite.
 
+% ═══════════════════════════════════════════════════════════════════════════════
 \newpage
-
 \section{MicroJava EBNF Grammar Specification}
+
 The parser expects code written in accordance with the Context-Free Grammar (CFG) rules below:
 
-\begin{lstlisting}[language=HTML, caption=MicroJava EBNF Grammar]
-Program = "program" ident {ConstDecl | VarDecl | ClassDecl} "{" {MethodDecl} "}".
-ConstDecl = "final" Type ident "=" (number | charConst) ";".
-VarDecl = Type ident {"," ident} ";".
-ClassDecl = "class" ident "{" {VarDecl} "}".
+\begin{lstlisting}[language=HTML, caption={MicroJava EBNF Grammar}]
+Program    = "program" ident {ConstDecl | VarDecl | ClassDecl} "{" {MethodDecl} "}".
+ConstDecl  = "final" Type ident "=" (number | charConst) ";".
+VarDecl    = Type ident {"," ident} ";".
+ClassDecl  = "class" ident "{" {VarDecl} "}".
 MethodDecl = (Type | "void") ident "(" [FormPars] ")" {VarDecl} Block.
-FormPars = Type ident {"," Type ident}.
-Type = ident ["[" "]"].
-Block = "{" {Statement} "}".
-Statement = Designator ("=" Expr | ActPars) ";"
-          | "if" "(" Condition ")" Statement ["else" Statement]
-          | "while" "(" Condition ")" Statement
-          | "return" [Expr] ";"
-          | "read" "(" Designator ")" ";"
-          | "print" "(" Expr ["," number] ")" ";"
-          | Block
-          | ";".
-ActPars = "(" [Expr {"," Expr}] ")".
-Condition = Expr Relop Expr.
-Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
-Expr = ["-"] Term {Addop Term}.
-Addop = "+" | "-".
-Term = Factor {Mulop Factor}.
-Mulop = "*" | "/" | "%".
-Factor = Designator [ActPars]
-       | number
-       | charConst
-       | "new" ident ["[" Expr "]"]
-       | "(" Expr ")".
+FormPars   = Type ident {"," Type ident}.
+Type       = ident ["[" "]"].
+Block      = "{" {Statement} "}".
+Statement  = Designator ("=" Expr | ActPars) ";"
+           | "if" "(" Condition ")" Statement ["else" Statement]
+           | "while" "(" Condition ")" Statement
+           | "return" [Expr] ";"
+           | "read" "(" Designator ")" ";"
+           | "print" "(" Expr ["," number] ")" ";"
+           | Block
+           | ";".
+ActPars    = "(" [Expr {"," Expr}] ")".
+Condition  = Expr Relop Expr.
+Relop      = "==" | "!=" | ">" | ">=" | "<" | "<=".
+Expr       = ["-"] Term {Addop Term}.
+Addop      = "+" | "-".
+Term       = Factor {Mulop Factor}.
+Mulop      = "*" | "/" | "%".
+Factor     = Designator [ActPars]
+           | number
+           | charConst
+           | "new" ident ["[" Expr "]"]
+           | "(" Expr ")".
 Designator = ident {"." ident | "[" Expr "]"}.
 \end{lstlisting}
 
+% ─── LEFT RECURSION & LEFT FACTORING ──────────────────────────────────────────
 \subsection{Left Recursion and Left Factoring Solutions}
-To build a top-down parser like LL(1) or Recursive Descent, the grammar must be free from:
+
+To build a top-down parser such as LL(1) or Recursive Descent, the grammar must be free from:
+
 \begin{enumerate}
-    \item \textbf{Left Recursion}: Rules like $A \rightarrow A\,\alpha \mid \beta$ cause infinite recursion.
-    \item \textbf{Common Prefixes}: Rules like $A \rightarrow \alpha\,\beta_1 \mid \alpha\,\beta_2$ prevent deterministic lookahead.
+  \item \textbf{Left Recursion:} Rules of the form $A \rightarrow A\,\alpha \mid \beta$ cause infinite recursion in top-down parsers.
+  \item \textbf{Common Prefixes:} Rules of the form $A \rightarrow \alpha\,\beta_1 \mid \alpha\,\beta_2$ prevent deterministic single-token lookahead.
 \end{enumerate}
 
-\subsubsection{Left Recursion Solution}
-We eliminate direct left recursion using the transformation:
-$$A \rightarrow A\,\alpha \mid \beta \quad \Longrightarrow \quad A \rightarrow \beta\,A' \quad \text{and} \quad A' \rightarrow \alpha\,A' \mid \epsilon$$
-*Example Application (Expression rules)*:
-Original expression grammar:
-$$\text{Expr} \rightarrow \text{Expr} \,\, \text{Addop} \,\, \text{Term} \mid \text{Term}$$
-We transform this into:
-$$\text{Expr} \rightarrow \text{Term} \,\, \text{Expr'}$$
-$$\text{Expr'} \rightarrow \text{Addop} \,\, \text{Term} \,\, \text{Expr'} \mid \epsilon$$
+\subsubsection{Eliminating Left Recursion}
 
-\subsubsection{Left Factoring Solution}
-Where rules share a common prefix, we delay the decision by moving the factor out:
-$$A \rightarrow \alpha\,\beta_1 \mid \alpha\,\beta_2 \quad \Longrightarrow \quad A \rightarrow \alpha\,A' \quad \text{and} \quad A' \rightarrow \beta_1 \mid \beta_2$$
-*Example Application (Designator Tail)*:
-$$\text{Designator} \rightarrow \text{ident} \cdot \text{ident} \mid \text{ident} \, [ \text{Expr} ] \mid \text{ident}$$
-We factor out $\text{ident}$:
-$$\text{Designator} \rightarrow \text{ident} \,\, \text{Designator\_Tail}$$
-$$\text{Designator\_Tail} \rightarrow \text{.} \, \text{ident} \, \text{Designator\_Tail} \mid \text{[} \, \text{Expr} \, \text{]} \, \text{Designator\_Tail} \mid \epsilon$$
+Direct left recursion is eliminated using the standard transformation:
 
+\begin{tcolorbox}[colback=LightBlack!30, colframe=PrimaryBlack, arc=3pt, boxrule=0.6pt]
+\textbf{General Rule:}
+\[
+  A \;\rightarrow\; A\,\alpha \;\mid\; \beta
+  \qquad\Longrightarrow\qquad
+  A \;\rightarrow\; \beta\,A' \qquad A' \;\rightarrow\; \alpha\,A' \;\mid\; \varepsilon
+\]
+\end{tcolorbox}
+
+\medskip
+\textbf{Example — Expression Grammar:}
+
+\noindent\textit{Original (left-recursive):}
+\[
+  \textit{Expr} \;\rightarrow\; \textit{Expr}\;\textit{Addop}\;\textit{Term} \;\mid\; \textit{Term}
+\]
+
+\noindent\textit{Transformed:}
+\[
+  \textit{Expr}  \;\rightarrow\; \textit{Term}\;\textit{Expr}'
+  \qquad
+  \textit{Expr}' \;\rightarrow\; \textit{Addop}\;\textit{Term}\;\textit{Expr}' \;\mid\; \varepsilon
+\]
+
+\subsubsection{Left Factoring}
+
+Common prefixes are factored out to allow deterministic parsing:
+
+\begin{tcolorbox}[colback=LightBlack!30, colframe=PrimaryBlack, arc=3pt, boxrule=0.6pt]
+\textbf{General Rule:}
+\[
+  A \;\rightarrow\; \alpha\,\beta_1 \;\mid\; \alpha\,\beta_2
+  \qquad\Longrightarrow\qquad
+  A \;\rightarrow\; \alpha\,A' \qquad A' \;\rightarrow\; \beta_1 \;\mid\; \beta_2
+\]
+\end{tcolorbox}
+
+\medskip
+\textbf{Example — Designator Tail:}
+
+\noindent\textit{Original:}
+\[
+  \textit{Designator} \;\rightarrow\; \textit{ident}\,.\,\textit{ident}
+    \;\mid\; \textit{ident}\,[\,\textit{Expr}\,]
+    \;\mid\; \textit{ident}
+\]
+
+\noindent\textit{Transformed:}
+\[
+  \textit{Designator}      \;\rightarrow\; \textit{ident}\;\textit{Designator\_Tail}
+\]
+\[
+  \textit{Designator\_Tail} \;\rightarrow\;
+    \mathtt{.}\;\textit{ident}\;\textit{Designator\_Tail}
+    \;\mid\; \mathtt{[}\;\textit{Expr}\;\mathtt{]}\;\textit{Designator\_Tail}
+    \;\mid\; \varepsilon
+\]
+
+% ─── FULL LL(1) GRAMMAR ────────────────────────────────────────────────────────
 \subsection{Full Transformed LL(1) Grammar}
+
 Below is the complete, transformed MicroJava grammar after removing all left recursions and applying left factoring:
-\begin{lstlisting}[language=HTML, caption=Full Transformed LL(1) Grammar]
-Program = "program" ident Program_Body "{" MethodDecls "}".
-Program_Body = {ConstDecl | VarDecl | ClassDecl}.
-ConstDecl = "final" Type ident "=" ConstValue ";".
-ConstValue = number | charConst.
-VarDecl = Type ident VarDecl_Tail ";".
-VarDecl_Tail = {"," ident}.
-ClassDecl = "class" ident "{" VarDecls "}".
-VarDecls = {VarDecl}.
-MethodDecls = {MethodDecl}.
-MethodDecl = MethodType ident "(" FormPars_Opt ")" VarDecls Block.
-MethodType = Type | "void".
-FormPars_Opt = [FormPars].
-FormPars = Type ident FormPars_Tail.
-FormPars_Tail = {"," Type ident}.
-Type = ident Type_Opt.
-Type_Opt = ["[" "]"].
-Block = "{" Statements "}".
-Statements = {Statement}.
-Statement = Designator Statement_AssignOrCall ";"
-          | "if" "(" Condition ")" Statement Else_Opt
-          | "while" "(" Condition ")" Statement
-          | "return" Expr_Opt ";"
-          | "read" "(" Designator ")" ";"
-          | "print" "(" Expr Print_Opt ")" ";"
-          | Block
-          | ";".
+
+\begin{lstlisting}[language=HTML, caption={Full Transformed LL(1) Grammar}]
+Program              = "program" ident Program_Body "{" MethodDecls "}".
+Program_Body         = {ConstDecl | VarDecl | ClassDecl}.
+ConstDecl            = "final" Type ident "=" ConstValue ";".
+ConstValue           = number | charConst.
+VarDecl              = Type ident VarDecl_Tail ";".
+VarDecl_Tail         = {"," ident}.
+ClassDecl            = "class" ident "{" VarDecls "}".
+VarDecls             = {VarDecl}.
+MethodDecls          = {MethodDecl}.
+MethodDecl           = MethodType ident "(" FormPars_Opt ")" VarDecls Block.
+MethodType           = Type | "void".
+FormPars_Opt         = [FormPars].
+FormPars             = Type ident FormPars_Tail.
+FormPars_Tail        = {"," Type ident}.
+Type                 = ident Type_Opt.
+Type_Opt             = ["[" "]"].
+Block                = "{" Statements "}".
+Statements           = {Statement}.
+Statement            = Designator Statement_AssignOrCall ";"
+                     | "if" "(" Condition ")" Statement Else_Opt
+                     | "while" "(" Condition ")" Statement
+                     | "return" Expr_Opt ";"
+                     | "read" "(" Designator ")" ";"
+                     | "print" "(" Expr Print_Opt ")" ";"
+                     | Block
+                     | ";".
 Statement_AssignOrCall = "=" Expr | ActPars.
-Else_Opt = ["else" Statement].
-Expr_Opt = [Expr].
-Print_Opt = ["," number].
-ActPars = "(" ActPars_List ")".
-ActPars_List = [Expr ActPars_Tail].
-ActPars_Tail = {"," Expr}.
-Condition = Expr Relop Expr.
-Relop = "==" | "!=" | ">" | ">=" | "<" | "<=".
-Expr = Expr_Minus Term Expr_Tail.
-Expr_Minus = ["-"].
-Expr_Tail = {Addop Term}.
-Addop = "+" | "-".
-Term = Factor Term_Tail.
-Term_Tail = {Mulop Factor}.
-Mulop = "*" | "/" | "%".
-Factor = Designator Factor_Designator
-       | number
-       | charConst
-       | "new" ident Factor_New
-       | "(" Expr ")".
-Factor_Designator = [ActPars].
-Factor_New = ["[" Expr "]"].
-Designator = ident Designator_Tail.
-Designator_Tail = {"." ident | "[" Expr "]"}.
+Else_Opt             = ["else" Statement].
+Expr_Opt             = [Expr].
+Print_Opt            = ["," number].
+ActPars              = "(" ActPars_List ")".
+ActPars_List         = [Expr ActPars_Tail].
+ActPars_Tail         = {"," Expr}.
+Condition            = Expr Relop Expr.
+Relop                = "==" | "!=" | ">" | ">=" | "<" | "<=".
+Expr                 = Expr_Minus Term Expr_Tail.
+Expr_Minus           = ["-"].
+Expr_Tail            = {Addop Term}.
+Addop                = "+" | "-".
+Term                 = Factor Term_Tail.
+Term_Tail            = {Mulop Factor}.
+Mulop                = "*" | "/" | "%".
+Factor               = Designator Factor_Designator
+                     | number
+                     | charConst
+                     | "new" ident Factor_New
+                     | "(" Expr ")".
+Factor_Designator    = [ActPars].
+Factor_New           = ["[" Expr "]"].
+Designator           = ident Designator_Tail.
+Designator_Tail      = {"." ident | "[" Expr "]"}.
 \end{lstlisting}
 
 \newpage
-
-\section{Theoretical Logic and Implementation details}
+% ═══════════════════════════════════════════════════════════════════════════════
+\section{Theoretical Logic and Implementation Details}
 
 \subsection{Lexical Analyzer (Lexer)}
+
 \subsubsection{Theoretical Logic}
-The lexer converts a sequence of characters into a sequence of tokens. It reads characters from a file stream and partitions them based on the regular definitions of the vocabulary:
+The lexer converts a sequence of characters into a sequence of tokens, reading from a file stream and partitioning them based on regular definitions of the vocabulary:
+
 \begin{itemize}
-    \item $\text{Keyword} = \textbf{program} \mid \textbf{class} \mid \textbf{void} \mid \textbf{final} \mid \textbf{new} \mid \textbf{if} \mid \textbf{else} \mid \textbf{while} \mid \textbf{read} \mid \textbf{print} \mid \textbf{return}$
-    \item $\text{Identifier} = \text{letter} \, (\text{letter} \mid \text{digit})^*$
-    \item $\text{Number} = \text{digit}^+$
-    \item $\text{CharConst} = \text{'`'} \, \text{any\_printable\_char} \, \text{'`'}$
+  \item $\textit{Keyword} = \mathbf{program} \mid \mathbf{class} \mid \mathbf{void} \mid \mathbf{final} \mid \mathbf{new} \mid \mathbf{if} \mid \mathbf{else} \mid \mathbf{while} \mid \mathbf{read} \mid \mathbf{print} \mid \mathbf{return}$
+  \item $\textit{Identifier} = \text{letter}\,(\text{letter} \mid \text{digit})^*$
+  \item $\textit{Number} = \text{digit}^+$
+  \item $\textit{CharConst} = \texttt{'}\;\text{any\_printable\_char}\;\texttt{'}$
 \end{itemize}
-It uses a double-buffering scheme to process characters efficiently and keeps track of character coordinates (line and column numbers) to pinpoint lexical errors.
+
+It uses a \textbf{double-buffering scheme} to process characters efficiently and tracks character coordinates (line and column numbers) to pinpoint lexical errors.
 
 \subsection{Recursive Descent Parser \& Tree Logic}
+
 \subsubsection{Theoretical Logic}
-The Recursive Descent (RD) parser is a top-down validation system. It matches the sequence of tokens by recursively calling parsing functions corresponding to each non-terminal. 
+The Recursive Descent (RD) parser is a top-down validation system that matches the token sequence by recursively calling parsing functions corresponding to each non-terminal.
 
 \subsubsection{Tree Generation Logic}
-The parser outputs a text-based representation of the Concrete Syntax Tree (CST) by tracking the call stack depth using a nesting counter variable:
+The parser outputs a text-based Concrete Syntax Tree (CST) by tracking the call stack depth via a nesting counter:
+
 \begin{itemize}
-    \item When a parsing function (e.g., `parseVarDecl()`) is entered, `indentLevel` is incremented.
-    \item A branch node name is printed prefixed by vertical lines ($\text{indentLevel} \times \text{``│ ''}$).
-    \item When the function returns, `indentLevel` is decremented.
+  \item When a parsing function (e.g., \texttt{parseVarDecl()}) is entered, \texttt{indentLevel} is incremented.
+  \item A branch node name is printed prefixed by vertical lines ($\texttt{indentLevel} \times \texttt{|\ }$).
+  \item When the function returns, \texttt{indentLevel} is decremented.
 \end{itemize}
-Because this tree corresponds exactly to the parser's active execution stack, it represents the leftmost derivation hierarchy of the program.
+
+Because this tree corresponds exactly to the parser's active execution stack, it represents the leftmost derivation hierarchy of the input program.
 
 \subsection{Non-Recursive LL(1) Stack Parser}
+
 \subsubsection{Theoretical Logic}
-Unlike recursive descent, the LL(1) parser uses a non-recursive predictive parsing model with an explicit stack. It looks up transitions in the 2D parser table $M[A, a]$:
+The LL(1) parser uses a non-recursive predictive parsing model with an explicit stack. It looks up transitions in the 2-D parser table $M[A,\,a]$:
+
 \begin{itemize}
-    \item If the top of the stack is a terminal and matches the lookahead token, it pops and advances.
-    \item If the top is a non-terminal $A$, it queries the table $M[A, a]$ to retrieve rule $A \rightarrow Y_1 Y_2 \dots Y_k$. It pops $A$ and pushes the right-hand symbols onto the stack in reverse order: $Y_k$, then $Y_{k-1}$ down to $Y_1$.
+  \item If the top of the stack is a terminal matching the lookahead token, it pops and advances.
+  \item If the top is a non-terminal $A$, it queries $M[A, a]$ to retrieve rule $A \rightarrow Y_1 Y_2 \dots Y_k$, pops $A$, and pushes $Y_k, Y_{k-1}, \dots, Y_1$ onto the stack in reverse order.
 \end{itemize}
 
 \subsection{Canonical LR(1) Parser}
-\subsubsection{Theoretical Logic and Choice Justification}
-The LR(1) parser is a bottom-up shift-reduce syntax validator. We chose the **Canonical LR(1)** model for our bottom-up parser. 
 
-\subsubsection{Justification for Canonical LR(1)}
-We preferred Canonical LR(1) over LR(0), SLR(1), or LALR(1) due to the following reasons:
+\subsubsection{Theoretical Logic and Choice Justification}
+The LR(1) parser is a bottom-up shift-reduce syntax validator. \textbf{Canonical LR(1)} was selected over LR(0), SLR(1), or LALR(1) for the following reasons:
+
 \begin{enumerate}
-    \item \textbf{Explicit Lookahead handling}: LR(1) embeds lookahead items $[A \rightarrow \alpha \cdot \beta, a]$ directly within states, resolving shift/reduce conflicts that SLR(1) cannot handle due to its reliance on FOLLOW sets.
-    \item \textbf{No Conflict Merging}: Unlike LALR(1), which merges states with the same core items but different lookaheads (sometimes introducing reduce-reduce conflicts), Canonical LR(1) keeps these states split, guaranteeing strict parsing correctness.
-    \item \textbf{Handles Complex Subsets}: MicroJava contains nested expression boundaries and variable scopes where shift-reduce decisions depend heavily on the lookahead. LR(1) guarantees unambiguous transitions.
+  \item \textbf{Explicit Lookahead Handling:} LR(1) embeds lookahead items $[A \rightarrow \alpha \cdot \beta,\; a]$ directly within states, resolving shift/reduce conflicts that SLR(1) cannot handle via FOLLOW sets alone.
+  \item \textbf{No Conflict Merging:} Unlike LALR(1), which merges states with the same core items but different lookaheads, Canonical LR(1) keeps these states split, guaranteeing strict parsing correctness.
+  \item \textbf{Handles Complex Subsets:} MicroJava contains nested expression boundaries and variable scopes where shift-reduce decisions depend heavily on the lookahead; LR(1) guarantees unambiguous transitions.
 \end{enumerate}
 
 \subsubsection{Standard Shift-Reduce Algorithm}
-The parser maintains a stack of states $s_0 s_1 \dots s_m$ and a stack of symbols $X_1 X_2 \dots X_m$. 
-For each step, let $s$ be the state at the top of the stack, and $a$ be the current lookahead token. It queries $\text{Action}[s, a]$:
+The parser maintains a stack of states $s_0\,s_1\,\dots\,s_m$ and a corresponding symbol stack $X_1\,X_2\,\dots\,X_m$. For each step, let $s$ be the top state and $a$ the current lookahead. It queries $\textsc{Action}[s,\,a]$:
+
 \begin{enumerate}
-    \item \textbf{Shift to state $s'$}: Push $a$ onto the symbol stack, push $s'$ onto the state stack, and fetch the next token.
-    \item \textbf{Reduce by rule $A \rightarrow \beta$}: Pop $r = |\beta|$ symbols and states off the stacks. Let the new top state be $s''$. Query the GOTO table entry $s_{new} = \text{Goto}[s'', A]$. Push symbol $A$ and state $s_{new}$ onto the stacks.
-    \item \textbf{Accept}: Terminate parsing with success.
-    \item \textbf{Error}: Stop parsing immediately and print the line and column numbers.
+  \item \textbf{Shift to state $s'$:} Push $a$ onto the symbol stack, push $s'$ onto the state stack, fetch the next token.
+  \item \textbf{Reduce by $A \rightarrow \beta$:} Pop $r = |\beta|$ symbols and states. Let the new top state be $s''$. Query $s_{\text{new}} = \textsc{Goto}[s'',\,A]$; push $A$ and $s_{\text{new}}$.
+  \item \textbf{Accept:} Terminate with success.
+  \item \textbf{Error:} Halt immediately; print line and column number.
 \end{enumerate}
 
 \newpage
-
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Grammar Parsing Sets and Representative Tables}
 
 \subsection{FIRST Sets}
+
 \begin{center}
-\begin{tabular}{|l|p{10cm}|}
+\rowcolors{2}{LightGray}{white}
+\begin{tabular}{|L{3.8cm}|L{10.6cm}|}
 \hline
-\textbf{Non-Terminal} & \textbf{FIRST Set} \\ \hline
-\texttt{ActPars} & \texttt{(} \\ \hline
-\texttt{ActPars\_List} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{ActPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
-\texttt{Addop} & \texttt{+}, \texttt{-} \\ \hline
-\texttt{Block} & \texttt{\{} \\ \hline
-\texttt{ClassDecl} & \texttt{class} \\ \hline
-\texttt{Condition} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{ConstDecl} & \texttt{final} \\ \hline
-\texttt{ConstValue} & \texttt{charConst}, \texttt{number} \\ \hline
-\texttt{Designator} & \texttt{ident} \\ \hline
-\texttt{Designator\_Tail} & $\epsilon$, \texttt{.}, \texttt{[} \\ \hline
-\texttt{Else\_Opt} & $\epsilon$, \texttt{else} \\ \hline
-\texttt{Expr} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Expr\_Minus} & $\epsilon$, \texttt{-} \\ \hline
-\texttt{Expr\_Opt} & $\epsilon$, \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Expr\_Tail} & $\epsilon$, \texttt{+}, \texttt{-} \\ \hline
-\texttt{Factor} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Factor\_Designator} & $\epsilon$, \texttt{(} \\ \hline
-\texttt{Factor\_New} & $\epsilon$, \texttt{[} \\ \hline
-\texttt{FormPars} & \texttt{ident} \\ \hline
-\texttt{FormPars\_Opt} & $\epsilon$, \texttt{ident} \\ \hline
-\texttt{FormPars\_Tail} & $\epsilon$, \texttt{,} \\ \hline
-\texttt{MethodDecl} & \texttt{ident}, \texttt{void} \\ \hline
-\texttt{MethodDecls} & $\epsilon$, \texttt{ident}, \texttt{void} \\ \hline
-\texttt{MethodType} & \texttt{ident}, \texttt{void} \\ \hline
-\texttt{Mulop} & \texttt{\%}, \texttt{*}, \texttt{/} \\ \hline
-\texttt{Print\_Opt} & $\epsilon$, \texttt{,} \\ \hline
-\texttt{Program} & \texttt{program} \\ \hline
-\texttt{Program\_Body} & $\epsilon$, \texttt{class}, \texttt{final}, \texttt{ident} \\ \hline
-\texttt{Relop} & \texttt{!=}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=} \\ \hline
-\texttt{Statement} & \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
-\texttt{Statement\_AssignOrCall} & \texttt{(}, \texttt{=} \\ \hline
-\texttt{Statements} & $\epsilon$, \texttt{;}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{} \\ \hline
-\texttt{Term} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Term\_Tail} & $\epsilon$, \texttt{\%}, \texttt{*}, \texttt{/} \\ \hline
-\texttt{Type} & \texttt{ident} \\ \hline
-\texttt{Type\_Opt} & $\epsilon$, \texttt{[} \\ \hline
-\texttt{VarDecl} & \texttt{ident} \\ \hline
-\texttt{VarDecl\_Tail} & $\epsilon$, \texttt{,} \\ \hline
-\texttt{VarDecls} & $\epsilon$, \texttt{ident} \\ \hline
+\rowcolor{PrimaryBlack}
+\theadcell{Non-Terminal} & \theadcell{FIRST Set} \\
+\hline
+\texttt{ActPars} & \texttt{(} \\
+\texttt{ActPars\_List} & $\varepsilon$,\ \texttt{(},\ \texttt{-},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{ActPars\_Tail} & $\varepsilon$,\ \texttt{,} \\
+\texttt{Addop} & \texttt{+},\ \texttt{-} \\
+\texttt{Block} & \texttt{\{} \\
+\texttt{ClassDecl} & \texttt{class} \\
+\texttt{Condition} & \texttt{(},\ \texttt{-},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{ConstDecl} & \texttt{final} \\
+\texttt{ConstValue} & \texttt{charConst},\ \texttt{number} \\
+\texttt{Designator} & \texttt{ident} \\
+\texttt{Designator\_Tail} & $\varepsilon$,\ \texttt{.},\ \texttt{[} \\
+\texttt{Else\_Opt} & $\varepsilon$,\ \texttt{else} \\
+\texttt{Expr} & \texttt{(},\ \texttt{-},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Expr\_Minus} & $\varepsilon$,\ \texttt{-} \\
+\texttt{Expr\_Opt} & $\varepsilon$,\ \texttt{(},\ \texttt{-},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Expr\_Tail} & $\varepsilon$,\ \texttt{+},\ \texttt{-} \\
+\texttt{Factor} & \texttt{(},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Factor\_Designator} & $\varepsilon$,\ \texttt{(} \\
+\texttt{Factor\_New} & $\varepsilon$,\ \texttt{[} \\
+\texttt{FormPars} & \texttt{ident} \\
+\texttt{FormPars\_Opt} & $\varepsilon$,\ \texttt{ident} \\
+\texttt{FormPars\_Tail} & $\varepsilon$,\ \texttt{,} \\
+\texttt{MethodDecl} & \texttt{ident},\ \texttt{void} \\
+\texttt{MethodDecls} & $\varepsilon$,\ \texttt{ident},\ \texttt{void} \\
+\texttt{MethodType} & \texttt{ident},\ \texttt{void} \\
+\texttt{Mulop} & \texttt{\%},\ \texttt{*},\ \texttt{/} \\
+\texttt{Print\_Opt} & $\varepsilon$,\ \texttt{,} \\
+\texttt{Program} & \texttt{program} \\
+\texttt{Program\_Body} & $\varepsilon$,\ \texttt{class},\ \texttt{final},\ \texttt{ident} \\
+\texttt{Relop} & \texttt{!=},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=} \\
+\texttt{Statement} & \texttt{;},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{while},\ \texttt{\{} \\
+\texttt{Statement\_AssignOrCall} & \texttt{(},\ \texttt{=} \\
+\texttt{Statements} & $\varepsilon$,\ \texttt{;},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{while},\ \texttt{\{} \\
+\texttt{Term} & \texttt{(},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Term\_Tail} & $\varepsilon$,\ \texttt{\%},\ \texttt{*},\ \texttt{/} \\
+\texttt{Type} & \texttt{ident} \\
+\texttt{Type\_Opt} & $\varepsilon$,\ \texttt{[} \\
+\texttt{VarDecl} & \texttt{ident} \\
+\texttt{VarDecl\_Tail} & $\varepsilon$,\ \texttt{,} \\
+\texttt{VarDecls} & $\varepsilon$,\ \texttt{ident} \\
+\hline
 \end{tabular}
 \end{center}
 
 \subsection{FOLLOW Sets}
+
 \begin{center}
-\begin{tabular}{|l|p{10cm}|}
+\rowcolors{2}{LightGray}{white}
+\begin{tabular}{|L{3.8cm}|L{10.6cm}|}
 \hline
-\textbf{Non-Terminal} & \textbf{FOLLOW Set} \\ \hline
-\texttt{ActPars} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{ActPars\_List} & \texttt{)} \\ \hline
-\texttt{ActPars\_Tail} & \texttt{)} \\ \hline
-\texttt{Addop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Block} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{void}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
-\texttt{ClassDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
-\texttt{Condition} & \texttt{)} \\ \hline
-\texttt{ConstDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{} \\ \hline
-\texttt{ConstValue} & \texttt{;} \\ \hline
-\texttt{Designator} & \texttt{!=}, \texttt{\%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Designator\_Tail} & \texttt{!=}, \texttt{\%}, \texttt{(}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Else\_Opt} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
-\texttt{Expr} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Expr\_Minus} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Expr\_Opt} & \texttt{;} \\ \hline
-\texttt{Expr\_Tail} & \texttt{!=}, \texttt{)}, \texttt{,}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Factor} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Factor\_Designator} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Factor\_New} & \texttt{!=}, \texttt{\%}, \texttt{)}, \texttt{*}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{/}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{FormPars} & \texttt{)} \\ \hline
-\texttt{FormPars\_Opt} & \texttt{)} \\ \hline
-\texttt{FormPars\_Tail} & \texttt{)} \\ \hline
-\texttt{MethodDecl} & \texttt{ident}, \texttt{void}, \texttt{\}} \\ \hline
-\texttt{MethodDecls} & \texttt{\}} \\ \hline
-\texttt{MethodType} & \texttt{ident} \\ \hline
-\texttt{Mulop} & \texttt{(}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Print\_Opt} & \texttt{)} \\ \hline
-\texttt{Program} & \texttt{\$} \\ \hline
-\texttt{Program\_Body} & \texttt{\{} \\ \hline
-\texttt{Relop} & \texttt{(}, \texttt{-}, \texttt{charConst}, \texttt{ident}, \texttt{new}, \texttt{number} \\ \hline
-\texttt{Statement} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
-\texttt{Statement\_AssignOrCall} & \texttt{;}, \texttt{else}, \texttt{ident}, \texttt{if}, \texttt{print}, \texttt{read}, \texttt{return}, \texttt{while}, \texttt{\{}, \texttt{\}} \\ \hline
-\texttt{Statements} & \texttt{\}} \\ \hline
-\texttt{Term} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Term\_Tail} & \texttt{!=}, \texttt{)}, \texttt{+}, \texttt{,}, \texttt{-}, \texttt{;}, \texttt{<}, \texttt{<=}, \texttt{==}, \texttt{>}, \texttt{>=}, \texttt{]} \\ \hline
-\texttt{Type} & \texttt{ident} \\ \hline
-\texttt{Type\_Opt} & \texttt{ident} \\ \hline
-\texttt{VarDecl} & \texttt{class}, \texttt{final}, \texttt{ident}, \texttt{\{}, \texttt{\}} \\ \hline
-\texttt{VarDecl\_Tail} & \texttt{;} \\ \hline
-\texttt{VarDecls} & \texttt{\{}, \texttt{\}} \\ \hline
+\rowcolor{PrimaryBlack}
+\theadcell{Non-Terminal} & \theadcell{FOLLOW Set} \\
+\hline
+\texttt{ActPars} & \texttt{!=},\ \texttt{\%},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{ActPars\_List} & \texttt{)} \\
+\texttt{ActPars\_Tail} & \texttt{)} \\
+\texttt{Addop} & \texttt{(},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Block} & \texttt{;},\ \texttt{else},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{void},\ \texttt{while},\ \texttt{\{},\ \texttt{\}} \\
+\texttt{ClassDecl} & \texttt{class},\ \texttt{final},\ \texttt{ident},\ \texttt{\{} \\
+\texttt{Condition} & \texttt{)} \\
+\texttt{ConstDecl} & \texttt{class},\ \texttt{final},\ \texttt{ident},\ \texttt{\{} \\
+\texttt{ConstValue} & \texttt{;} \\
+\texttt{Designator} & \texttt{!=},\ \texttt{\%},\ \texttt{(},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Designator\_Tail} & \texttt{!=},\ \texttt{\%},\ \texttt{(},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Else\_Opt} & \texttt{;},\ \texttt{else},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{while},\ \texttt{\{},\ \texttt{\}} \\
+\texttt{Expr} & \texttt{!=},\ \texttt{)},\ \texttt{,},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Expr\_Minus} & \texttt{(},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Expr\_Opt} & \texttt{;} \\
+\texttt{Expr\_Tail} & \texttt{!=},\ \texttt{)},\ \texttt{,},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Factor} & \texttt{!=},\ \texttt{\%},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Factor\_Designator} & \texttt{!=},\ \texttt{\%},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Factor\_New} & \texttt{!=},\ \texttt{\%},\ \texttt{)},\ \texttt{*},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{/},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{FormPars} & \texttt{)} \\
+\texttt{FormPars\_Opt} & \texttt{)} \\
+\texttt{FormPars\_Tail} & \texttt{)} \\
+\texttt{MethodDecl} & \texttt{ident},\ \texttt{void},\ \texttt{\}} \\
+\texttt{MethodDecls} & \texttt{\}} \\
+\texttt{MethodType} & \texttt{ident} \\
+\texttt{Mulop} & \texttt{(},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Print\_Opt} & \texttt{)} \\
+\texttt{Program} & \texttt{\$} \\
+\texttt{Program\_Body} & \texttt{\{} \\
+\texttt{Relop} & \texttt{(},\ \texttt{-},\ \texttt{charConst},\ \texttt{ident},\ \texttt{new},\ \texttt{number} \\
+\texttt{Statement} & \texttt{;},\ \texttt{else},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{while},\ \texttt{\{},\ \texttt{\}} \\
+\texttt{Statement\_AssignOrCall} & \texttt{;},\ \texttt{else},\ \texttt{ident},\ \texttt{if},\ \texttt{print},\ \texttt{read},\ \texttt{return},\ \texttt{while},\ \texttt{\{},\ \texttt{\}} \\
+\texttt{Statements} & \texttt{\}} \\
+\texttt{Term} & \texttt{!=},\ \texttt{)},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Term\_Tail} & \texttt{!=},\ \texttt{)},\ \texttt{+},\ \texttt{,},\ \texttt{-},\ \texttt{;},\ \texttt{<},\ \texttt{<=},\ \texttt{==},\ \texttt{>},\ \texttt{>=},\ \texttt{]} \\
+\texttt{Type} & \texttt{ident} \\
+\texttt{Type\_Opt} & \texttt{ident} \\
+\texttt{VarDecl} & \texttt{class},\ \texttt{final},\ \texttt{ident},\ \texttt{\{},\ \texttt{\}} \\
+\texttt{VarDecl\_Tail} & \texttt{;} \\
+\texttt{VarDecls} & \texttt{\{},\ \texttt{\}} \\
+\hline
 \end{tabular}
 \end{center}
 
 \subsection{LL(1) Predictive Parsing Table (Representative Subset)}
+
 \begin{center}
-\begin{tabular}{|l|l|p{8cm}|}
+\rowcolors{2}{LightGray}{white}
+\begin{tabular}{|L{3.8cm}|L{2.4cm}|L{8.2cm}|}
 \hline
-\textbf{Non-Terminal} & \textbf{Input Token} & \textbf{Applied Rule} \\ \hline
-\texttt{ActPars} & \texttt{(} & $ActPars \rightarrow ( ActPars\_List )$ \\ \hline
-\texttt{ActPars\_List} & \texttt{(} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_List} & \texttt{)} & $ActPars\_List \rightarrow \epsilon$ \\ \hline
-\texttt{ActPars\_List} & \texttt{-} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_List} & \texttt{charConst} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_List} & \texttt{ident} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_List} & \texttt{new} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_List} & \texttt{number} & $ActPars\_List \rightarrow Expr ActPars\_Tail$ \\ \hline
-\texttt{ActPars\_Tail} & \texttt{)} & $ActPars\_Tail \rightarrow \epsilon$ \\ \hline
-\texttt{ActPars\_Tail} & \texttt{,} & $ActPars\_Tail \rightarrow , Expr ActPars\_Tail$ \\ \hline
-\texttt{Addop} & \texttt{+} & $Addop \rightarrow +$ \\ \hline
-\texttt{Addop} & \texttt{-} & $Addop \rightarrow -$ \\ \hline
-\texttt{Block} & \texttt{\{} & $Block \rightarrow \{ Statements \}$ \\ \hline
-\texttt{ClassDecl} & \texttt{class} & $ClassDecl \rightarrow class ident \{ VarDecls \}$ \\ \hline
-\texttt{Condition} & \texttt{(} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{Condition} & \texttt{-} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{Condition} & \texttt{charConst} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{Condition} & \texttt{ident} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{Condition} & \texttt{new} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{Condition} & \texttt{number} & $Condition \rightarrow Expr Relop Expr$ \\ \hline
-\texttt{ConstDecl} & \texttt{final} & $ConstDecl \rightarrow final Type ident = ConstValue ;$ \\ \hline
-\texttt{ConstValue} & \texttt{charConst} & $ConstValue \rightarrow charConst$ \\ \hline
-\texttt{ConstValue} & \texttt{number} & $ConstValue \rightarrow number$ \\ \hline
-\texttt{Designator} & \texttt{ident} & $Designator \rightarrow ident Designator\_Tail$ \\ \hline
+\rowcolor{PrimaryBlack}
+\theadcell{Non-Terminal} & \theadcell{Input Token} & \theadcell{Applied Production Rule} \\
+\hline
+\texttt{ActPars} & \texttt{(} & $\textit{ActPars} \rightarrow \texttt{(}\;\textit{ActPars\_List}\;\texttt{)}$ \\
+\texttt{ActPars\_List} & \texttt{(} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_List} & \texttt{)} & $\textit{ActPars\_List} \rightarrow \varepsilon$ \\
+\texttt{ActPars\_List} & \texttt{-} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_List} & \texttt{charConst} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_List} & \texttt{ident} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_List} & \texttt{new} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_List} & \texttt{number} & $\textit{ActPars\_List} \rightarrow \textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{ActPars\_Tail} & \texttt{)} & $\textit{ActPars\_Tail} \rightarrow \varepsilon$ \\
+\texttt{ActPars\_Tail} & \texttt{,} & $\textit{ActPars\_Tail} \rightarrow \texttt{,}\;\textit{Expr}\;\textit{ActPars\_Tail}$ \\
+\texttt{Addop} & \texttt{+} & $\textit{Addop} \rightarrow \texttt{+}$ \\
+\texttt{Addop} & \texttt{-} & $\textit{Addop} \rightarrow \texttt{-}$ \\
+\texttt{Block} & \texttt{\{} & $\textit{Block} \rightarrow \texttt{\{}\;\textit{Statements}\;\texttt{\}}$ \\
+\texttt{ClassDecl} & \texttt{class} & $\textit{ClassDecl} \rightarrow \texttt{class}\;\textit{ident}\;\texttt{\{}\;\textit{VarDecls}\;\texttt{\}}$ \\
+\texttt{Condition} & \texttt{(} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{Condition} & \texttt{-} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{Condition} & \texttt{charConst} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{Condition} & \texttt{ident} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{Condition} & \texttt{new} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{Condition} & \texttt{number} & $\textit{Condition} \rightarrow \textit{Expr}\;\textit{Relop}\;\textit{Expr}$ \\
+\texttt{ConstDecl} & \texttt{final} & $\textit{ConstDecl} \rightarrow \texttt{final}\;\textit{Type}\;\textit{ident}\;\texttt{=}\;\textit{ConstValue}\;\texttt{;}$ \\
+\texttt{ConstValue} & \texttt{charConst} & $\textit{ConstValue} \rightarrow \texttt{charConst}$ \\
+\texttt{ConstValue} & \texttt{number} & $\textit{ConstValue} \rightarrow \texttt{number}$ \\
+\texttt{Designator} & \texttt{ident} & $\textit{Designator} \rightarrow \textit{ident}\;\textit{Designator\_Tail}$ \\
+\hline
 \end{tabular}
 \end{center}
 
 \newpage
-
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Canonical LR(1) Action, GOTO, and Trace Output}
-The Canonical LR(1) parser generates 381 states. Below is the representative subset of the generated Action and Goto tables for the first 30 states, followed by an execution stack trace.
 
-\subsection{Action and Goto Tables (All 381 States)}
-\begin{longtable}{|c|p{7.5cm}|p{6.5cm}|}
+The Canonical LR(1) parser generates \textbf{381 states}. Below is the representative subset of the generated Action and GOTO tables for all 381 states, followed by an execution stack trace.
+
+\subsection{Action and GOTO Tables}
+
+\begin{longtable}{|C{1cm}|L{7.5cm}|L{5.8cm}|}
 \hline
-\textbf{State} & \textbf{Action Transitions (Terminal $\rightarrow$ Action)} & \textbf{GOTO Transitions (Non-Terminal $\rightarrow$ State)} \\ \hline
+\rowcolor{PrimaryBlack}
+\theadcell{State} & \theadcell{Action Transitions (Terminal $\to$ Action)} & \theadcell{GOTO Transitions (Non-Terminal $\to$ State)} \\
+\hline
 \endfirsthead
 \hline
-\textbf{State} & \textbf{Action Transitions (Terminal $\rightarrow$ Action)} & \textbf{GOTO Transitions (Non-Terminal $\rightarrow$ State)} \\ \hline
+\rowcolor{PrimaryBlack}
+\theadcell{State} & \theadcell{Action Transitions} & \theadcell{GOTO Transitions} \\
+\hline
 \endhead
 \hline
 \endfoot
@@ -792,30 +1046,32 @@ The Canonical LR(1) parser generates 381 states. Below is the representative sub
 380 & \texttt{\{} $\rightarrow$ \texttt{R41}, \texttt{ident} $\rightarrow$ \texttt{R41}, \texttt{;} $\rightarrow$ \texttt{R41}, \texttt{while} $\rightarrow$ \texttt{R41}, \texttt{else} $\rightarrow$ \texttt{R41}, \texttt{print} $\rightarrow$ \texttt{R41}, \texttt{\}} $\rightarrow$ \texttt{R41}, \texttt{return} $\rightarrow$ \texttt{R41}, \texttt{if} $\rightarrow$ \texttt{R41}, \texttt{read} $\rightarrow$ \texttt{R41} & None \\ \hline
 \end{longtable}
 
+% ─── LR(1) TRACE ──────────────────────────────────────────────────────────────
 \subsection{Trace Segment for Declaration Statement: \texttt{int x;}}
-Below is a step-by-step trace showing the stack operations during the parsing of \texttt{int x;}:
-\begin{enumerate} 
-    \item \textbf{State 0}: Top of state stack is `0`. The current lookahead token is identifier `int`.
-    \item \textbf{Shift action}: The parser shifts `int` and transitions to **State 10**.
-    \item \textbf{State 10}: Top of stack is `10`. The current lookahead token is identifier `x`.
-    \item \textbf{Reduction}: The parser reduces `int` to type symbol $Type$ using rule:
-      $$Type \rightarrow \text{ident}$$
-      It pops one state (State 10) off the stack. The top state is now `0`. It checks GOTO table entry $\text{Goto}[0, Type] = 8$ and pushes **State 8**.
-    \item \textbf{State 8}: Top of stack is `8`. Lookahead token is `x`.
-    \item \textbf{Shift action}: Shift identifier `x` and transition to **State 14**.
-    \item \textbf{State 14}: Top of stack is `14`. Lookahead token is `;`.
-    \item \textbf{Shift action}: Shift punctuation `;` and transition to **State 25**.
-    \item \textbf{State 25}: Reduce by rule $VarDecl \rightarrow Type \, \text{ident} \, VarDecl\_Tail \, ;$. 
+
+\begin{tcolorbox}[colback=LightBlack!20, colframe=PrimaryBlack, arc=3pt, boxrule=0.6pt,
+  title={\small\textbf{Step-by-Step LR(1) Stack Trace — \texttt{int x;}}}]
+\begin{enumerate}[leftmargin=*, label=\textbf{Step \arabic*.}]
+  \item \textbf{State 0.} Top of state stack: \texttt{0}. Lookahead: identifier \texttt{int}.
+  \item \textbf{Shift.} Shift \texttt{int} $\Rightarrow$ transition to \textbf{State 10}.
+  \item \textbf{State 10.} Top: \texttt{10}. Lookahead: identifier \texttt{x}.
+  \item \textbf{Reduce R25.} Reduce \texttt{int} $\Rightarrow$ $Type$ using rule $Type \rightarrow \textit{ident}$. Pop 1 state. New top: \texttt{0}. $\textsc{Goto}[0, Type] = 8$ $\Rightarrow$ push \textbf{State 8}.
+  \item \textbf{State 8.} Top: \texttt{8}. Lookahead: \texttt{x}.
+  \item \textbf{Shift.} Shift identifier \texttt{x} $\Rightarrow$ transition to \textbf{State 17}.
+  \item \textbf{State 17.} Top: \texttt{17}. Lookahead: \texttt{;}.
+  \item \textbf{Reduce R11.} $VarDecl\_Tail \rightarrow \varepsilon$. Pop 0 states. $\textsc{Goto}[17, VarDecl\_Tail] = 27$ $\Rightarrow$ push \textbf{State 27}.
+  \item \textbf{State 27.} Top: \texttt{27}. Shift \texttt{;} $\Rightarrow$ \textbf{State 34}.
+  \item \textbf{State 34.} \textbf{Reduce R9.} $VarDecl \rightarrow Type\;\textit{ident}\;VarDecl\_Tail\;\texttt{;}$. Pop 4 states.
 \end{enumerate}
+\end{tcolorbox}
 
 \newpage
-
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Unified End-to-End Multiphase Execution Trace}
-This section displays the exact, raw compiler validation outputs for the \texttt{SimpleSum} program, demonstrating the integration of all five phases:
 
 \subsection{Example MicroJava Source Program}
-Below is the complete MicroJava program (\texttt{SimpleSum.mj}) used for generating the execution traces:
-\begin{lstlisting}[language=Java, caption=Example MicroJava Program (SimpleSum)]
+
+\begin{lstlisting}[language=Java, caption={Example MicroJava Program — \texttt{SimpleSum.mj}}]
 program SimpleSum
   int x;
   int y;
@@ -830,469 +1086,518 @@ program SimpleSum
 }
 \end{lstlisting}
 
+% ─── PHASE 1: LEXER ───────────────────────────────────────────────────────────
 \subsection{Phase 1: Lexical Analyzer Output Stream}
-\begin{verbatim}
-+----------------------+----------------------------+---------+---------+
-| Token Type           | Lexeme                     | Line    | Column  |
-+----------------------+----------------------------+---------+---------+
-| KW_PROGRAM           | program                    | 1       | 1       |
-| IDENTIFIER           | SimpleSum                  | 1       | 9       |
-| IDENTIFIER           | int                        | 3       | 3       |
-| IDENTIFIER           | x                          | 3       | 7       |
-| SEMICOLON            | ;                          | 3       | 8       |
-| IDENTIFIER           | int                        | 4       | 3       |
-| IDENTIFIER           | y                          | 4       | 7       |
-| SEMICOLON            | ;                          | 4       | 8       |
-| IDENTIFIER           | int                        | 5       | 3       |
-| IDENTIFIER           | sum                        | 5       | 7       |
-| SEMICOLON            | ;                          | 5       | 10      |
-| LBRACE               | {                          | 6       | 1       |
-| KW_VOID              | void                       | 7       | 3       |
-| IDENTIFIER           | main                       | 7       | 8       |
-| LPAREN               | (                          | 7       | 12      |
-| RPAREN               | )                          | 7       | 13      |
-| LBRACE               | {                          | 7       | 15      |
-| IDENTIFIER           | x                          | 8       | 5       |
-| ASSIGN               | =                          | 8       | 7       |
-| NUMBER               | 5                          | 8       | 9       |
-| SEMICOLON            | ;                          | 8       | 10      |
-| IDENTIFIER           | y                          | 9       | 5       |
-| ASSIGN               | =                          | 9       | 7       |
-| NUMBER               | 10                         | 9       | 9       |
-| SEMICOLON            | ;                          | 9       | 11      |
-| IDENTIFIER           | sum                        | 10      | 5       |
-| ASSIGN               | =                          | 10      | 9       |
-| IDENTIFIER           | x                          | 10      | 11      |
-| PLUS                 | +                          | 10      | 13      |
-| IDENTIFIER           | y                          | 10      | 15      |
-| SEMICOLON            | ;                          | 10      | 16      |
-| KW_PRINT             | print                      | 11      | 5       |
-| LPAREN               | (                          | 11      | 10      |
-| IDENTIFIER           | sum                        | 11      | 11      |
-| RPAREN               | )                          | 11      | 14      |
-| SEMICOLON            | ;                          | 11      | 15      |
-| RBRACE               | }                          | 12      | 3       |
-| RBRACE               | }                          | 13      | 1       |
-| EOF                  | EOF                        | 14      | 1       |
-+----------------------+----------------------------+---------+---------+
-[SUCCESS] Lexical scan completed with 0 lexical errors. Total tokens: 39
-\end{verbatim}
 
-\subsection{Phase 2: Recursive Descent AST / Parse Tree}
-\begin{verbatim}
-├── Program (token: "program")
-│  ├── KW_PROGRAM (token: "program")
-│  ├── IDENTIFIER (token: "SimpleSum")
-│  ├── VarDecl (token: "int")
-│  │  ├── Type (token: "int")
-│  │  │  ├── IDENTIFIER (token: "int")
-│  │  ├── IDENTIFIER (token: "x")
-│  │  ├── SEMICOLON (token: ";")
-│  ├── VarDecl (token: "int")
-│  │  ├── Type (token: "int")
-│  │  │  ├── IDENTIFIER (token: "int")
-│  │  ├── IDENTIFIER (token: "y")
-│  │  ├── SEMICOLON (token: ";")
-│  ├── VarDecl (token: "int")
-│  │  ├── Type (token: "int")
-│  │  │  ├── IDENTIFIER (token: "int")
-│  │  ├── IDENTIFIER (token: "sum")
-│  │  ├── SEMICOLON (token: ";")
-│  ├── LBRACE (token: "{")
-│  ├── MethodDecl (token: "void")
-│  │  ├── KW_VOID (token: "void")
-│  │  ├── IDENTIFIER (token: "main")
-│  │  ├── LPAREN (token: "(")
-│  │  ├── RPAREN (token: ")")
-│  │  ├── Block (token: "{")
-│  │  │  ├── LBRACE (token: "{")
-│  │  │  ├── Statement (token: "x")
-│  │  │  │  ├── Designator (token: "x")
-│  │  │  │  │  ├── IDENTIFIER (token: "x")
-│  │  │  │  ├── ASSIGN (token: "=")
-│  │  │  │  ├── Expr (token: "5")
-│  │  │  │  │  ├── Term (token: "5")
-│  │  │  │  │  │  ├── Factor (token: "5")
-│  │  │  │  │  │  │  ├── NUMBER (token: "5")
-│  │  │  │  ├── SEMICOLON (token: ";")
-│  │  │  ├── Statement (token: "y")
-│  │  │  │  ├── Designator (token: "y")
-│  │  │  │  │  ├── IDENTIFIER (token: "y")
-│  │  │  │  ├── ASSIGN (token: "=")
-│  │  │  │  ├── Expr (token: "10")
-│  │  │  │  │  ├── Term (token: "10")
-│  │  │  │  │  │  ├── Factor (token: "10")
-│  │  │  │  │  │  │  ├── NUMBER (token: "10")
-│  │  │  │  ├── SEMICOLON (token: ";")
-│  │  │  ├── Statement (token: "sum")
-│  │  │  │  ├── Designator (token: "sum")
-│  │  │  │  │  ├── IDENTIFIER (token: "sum")
-│  │  │  │  ├── ASSIGN (token: "=")
-│  │  │  │  ├── Expr (token: "x")
-│  │  │  │  │  ├── Term (token: "x")
-│  │  │  │  │  │  ├── Factor (token: "x")
-│  │  │  │  │  │  │  ├── Designator (token: "x")
-│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "x")
-│  │  │  │  │  ├── Addop (token: "+")
-│  │  │  │  │  │  ├── PLUS (token: "+")
-│  │  │  │  │  ├── Term (token: "y")
-│  │  │  │  │  │  ├── Factor (token: "y")
-│  │  │  │  │  │  │  ├── Designator (token: "y")
-│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "y")
-│  │  │  │  ├── SEMICOLON (token: ";")
-│  │  │  ├── Statement (token: "print")
-│  │  │  │  ├── KW_PRINT (token: "print")
-│  │  │  │  ├── LPAREN (token: "(")
-│  │  │  │  ├── Expr (token: "sum")
-│  │  │  │  │  ├── Term (token: "sum")
-│  │  │  │  │  │  ├── Factor (token: "sum")
-│  │  │  │  │  │  │  ├── Designator (token: "sum")
-│  │  │  │  │  │  │  │  ├── IDENTIFIER (token: "sum")
-│  │  │  │  ├── RPAREN (token: ")")
-│  │  │  │  ├── SEMICOLON (token: ";")
-│  │  │  ├── RBRACE (token: "}")
-│  ├── RBRACE (token: "}")
-------------------------------------------------------------------------------
-[SUCCESS] Recursive Descent Parsing completed with 0 errors.
-\end{verbatim}
+\begin{center}
+\rowcolors{2}{LightGray}{white}
+\begin{tabular}{|C{0.5cm}|L{4.2cm}|L{3.8cm}|C{1.4cm}|C{1.5cm}|}
+\hline
+\rowcolor{PrimaryBlack}
+\theadcell{\#} & \theadcell{Token Type} & \theadcell{Lexeme} & \theadcell{Line} & \theadcell{Column} \\
+\hline
+1  & \texttt{KW\_PROGRAM}  & \texttt{program}   & 1  & 1  \\
+2  & \texttt{IDENTIFIER}   & \texttt{SimpleSum}  & 1  & 9  \\
+3  & \texttt{IDENTIFIER}   & \texttt{int}        & 3  & 3  \\
+4  & \texttt{IDENTIFIER}   & \texttt{x}          & 3  & 7  \\
+5  & \texttt{SEMICOLON}    & \texttt{;}          & 3  & 8  \\
+6  & \texttt{IDENTIFIER}   & \texttt{int}        & 4  & 3  \\
+7  & \texttt{IDENTIFIER}   & \texttt{y}          & 4  & 7  \\
+8  & \texttt{SEMICOLON}    & \texttt{;}          & 4  & 8  \\
+9  & \texttt{IDENTIFIER}   & \texttt{int}        & 5  & 3  \\
+10 & \texttt{IDENTIFIER}   & \texttt{sum}        & 5  & 7  \\
+11 & \texttt{SEMICOLON}    & \texttt{;}          & 5  & 10 \\
+12 & \texttt{LBRACE}       & \texttt{\{}         & 6  & 1  \\
+13 & \texttt{KW\_VOID}     & \texttt{void}       & 7  & 3  \\
+14 & \texttt{IDENTIFIER}   & \texttt{main}       & 7  & 8  \\
+15 & \texttt{LPAREN}       & \texttt{(}          & 7  & 12 \\
+16 & \texttt{RPAREN}       & \texttt{)}          & 7  & 13 \\
+17 & \texttt{LBRACE}       & \texttt{\{}         & 7  & 15 \\
+18 & \texttt{IDENTIFIER}   & \texttt{x}          & 8  & 5  \\
+19 & \texttt{ASSIGN}       & \texttt{=}          & 8  & 7  \\
+20 & \texttt{NUMBER}       & \texttt{5}          & 8  & 9  \\
+21 & \texttt{SEMICOLON}    & \texttt{;}          & 8  & 10 \\
+22 & \texttt{IDENTIFIER}   & \texttt{y}          & 9  & 5  \\
+23 & \texttt{ASSIGN}       & \texttt{=}          & 9  & 7  \\
+24 & \texttt{NUMBER}       & \texttt{10}         & 9  & 9  \\
+25 & \texttt{SEMICOLON}    & \texttt{;}          & 9  & 11 \\
+26 & \texttt{IDENTIFIER}   & \texttt{sum}        & 10 & 5  \\
+27 & \texttt{ASSIGN}       & \texttt{=}          & 10 & 9  \\
+28 & \texttt{IDENTIFIER}   & \texttt{x}          & 10 & 11 \\
+29 & \texttt{PLUS}         & \texttt{+}          & 10 & 13 \\
+30 & \texttt{IDENTIFIER}   & \texttt{y}          & 10 & 15 \\
+31 & \texttt{SEMICOLON}    & \texttt{;}          & 10 & 16 \\
+32 & \texttt{KW\_PRINT}    & \texttt{print}      & 11 & 5  \\
+33 & \texttt{LPAREN}       & \texttt{(}          & 11 & 10 \\
+34 & \texttt{IDENTIFIER}   & \texttt{sum}        & 11 & 11 \\
+35 & \texttt{RPAREN}       & \texttt{)}          & 11 & 14 \\
+36 & \texttt{SEMICOLON}    & \texttt{;}          & 11 & 15 \\
+37 & \texttt{RBRACE}       & \texttt{\}}         & 12 & 3  \\
+38 & \texttt{RBRACE}       & \texttt{\}}         & 13 & 1  \\
+39 & \texttt{EOF}          & \texttt{EOF}        & 14 & 1  \\
+\hline
+\end{tabular}
+\end{center}
 
+\begin{tcolorbox}[successbox]
+\textbf{\color{SuccessGreen}[SUCCESS]} Lexical scan completed with \textbf{0} lexical errors.\quad Total tokens: \textbf{39}
+\end{tcolorbox}
+
+% ─── PHASE 2: PARSE TREE ──────────────────────────────────────────────────────
+% ─── PHASE 2: PARSE TREE ──────────────────────────────────────────────────────
+% ─── PHASE 2: PARSE TREE ──────────────────────────────────────────────────────
+\subsection*{Phase 2: Recursive Descent Concrete Syntax Tree}
+
+\begin{tcolorbox}[treebox, title={Concrete Syntax Tree — \texttt{SimpleSum.mj}}]
+\begin{center}
+\begin{forest}
+for tree={
+  font=\scriptsize\ttfamily, % Keeps the font small enough to fit
+  grow'=0,
+  child anchor=west,
+  parent anchor=south,
+  anchor=west,
+  calign=first,
+  inner ysep=0pt, % Safely reduces vertical padding inside each node
+  s sep=1.6pt,      % Safely reduces vertical space between sibling nodes
+  edge path={
+    \noexpand\path [draw, \forestoption{edge}]
+    (!u.south west) +(7.5pt,0) |- node[fill,inner sep=1.25pt] {} (.child anchor)\forestoption{edge label};
+  },
+  before typesetting nodes={
+    if n=1
+      {insert before={[,phantom]}}
+      {}
+  },
+  fit=band,
+  before computing xy={l=12pt}, % Controls horizontal indentation. Removed the disastrous 's' parameter!
+}
+[Program
+  [KW\_PROGRAM: \textit{program}]
+  [IDENTIFIER: \textit{SimpleSum}]
+  [VarDecl: \textit{int x}
+    [Type: \textit{int}
+      [IDENTIFIER: \textit{int}]
+    ]
+    [IDENTIFIER: \textit{x}]
+    [SEMICOLON: \textit{;}]
+  ]
+  [VarDecl: \textit{int y}
+    [Type: \textit{int}
+      [IDENTIFIER: \textit{int}]
+    ]
+    [IDENTIFIER: \textit{y}]
+    [SEMICOLON: \textit{;}]
+  ]
+  [VarDecl: \textit{int sum}
+    [Type: \textit{int}
+      [IDENTIFIER: \textit{int}]
+    ]
+    [IDENTIFIER: \textit{sum}]
+    [SEMICOLON: \textit{;}]
+  ]
+  [LBRACE: \textit{\{}]
+  [MethodDecl: \textit{void main}
+    [KW\_VOID: \textit{void}]
+    [IDENTIFIER: \textit{main}]
+    [LPAREN: \textit{(}]
+    [RPAREN: \textit{)}]
+    [Block
+      [LBRACE: \textit{\{}]
+      [Statement: \textit{x = 5}
+        [Designator
+          [IDENTIFIER: \textit{x}]
+        ]
+        [ASSIGN: \textit{=}]
+        [Expr
+          [Term
+            [Factor
+              [NUMBER: \textit{5}]
+            ]
+          ]
+        ]
+        [SEMICOLON: \textit{;}]
+      ]
+      [Statement: \textit{y = 10}
+        [Designator
+          [IDENTIFIER: \textit{y}]
+        ]
+        [ASSIGN: \textit{=}]
+        [Expr
+          [Term
+            [Factor
+              [NUMBER: \textit{10}]
+            ]
+          ]
+        ]
+        [SEMICOLON: \textit{;}]
+      ]
+      [Statement: \textit{sum = x + y}
+        [Designator
+          [IDENTIFIER: \textit{sum}]
+        ]
+        [ASSIGN: \textit{=}]
+        [Expr
+          [Term
+            [Factor
+              [Designator
+                [IDENTIFIER: \textit{x}]
+              ]
+            ]
+          ]
+          [Addop
+            [PLUS: \textit{+}]
+          ]
+          [Term
+            [Factor
+              [Designator
+                [IDENTIFIER: \textit{y}]
+              ]
+            ]
+          ]
+        ]
+        [SEMICOLON: \textit{;}]
+      ]
+      [Statement: \textit{print(sum)}
+        [KW\_PRINT: \textit{print}]
+        [LPAREN: \textit{(}]
+        [Expr
+          [Term
+            [Factor
+              [Designator
+                [IDENTIFIER: \textit{sum}]
+              ]
+            ]
+          ]
+        ]
+        [RPAREN: \textit{)}]
+        [SEMICOLON: \textit{;}]
+      ]
+      [RBRACE: \textit{\}}]
+    ]
+  ]
+  [RBRACE: \textit{\}}]
+]
+\end{forest}
+\end{center}
+\end{tcolorbox}
+% ─── PHASE 3: SYMBOL TABLE ────────────────────────────────────────────────────
 \subsection{Phase 3: Symbol Table Registry}
-\begin{verbatim}
-+-------+----------------------+------------+----------------------------+------+
-| Scope | Symbol Name          | Kind       | Data Type                  | Line |
-+-------+----------------------+------------+----------------------------+------+
-| 1     | main                 | METHOD     | void                       | 7    |
-| 1     | sum                  | VAR        | int                        | 5    |
-| 1     | y                    | VAR        | int                        | 4    |
-| 1     | x                    | VAR        | int                        | 3    |
-| 0     | SimpleSum            | CLASS      | void                       | 1    |
-| 0     | len                  | METHOD     | int                        | 0    |
-| 0     | ord                  | METHOD     | int                        | 0    |
-| 0     | chr                  | METHOD     | char                       | 0    |
-+-------+----------------------+------------+----------------------------+------+
-\end{verbatim}
 
+\begin{center}
+\rowcolors{2}{LightGray}{white}
+\begin{tabular}{|C{1.2cm}|L{4cm}|L{2.8cm}|L{2.8cm}|C{1.4cm}|}
+\hline
+\rowcolor{PrimaryBlack}
+\theadcell{Scope} & \theadcell{Symbol Name} & \theadcell{Kind} & \theadcell{Data Type} & \theadcell{Line} \\
+\hline
+1 & \texttt{main}      & \texttt{METHOD} & \texttt{void} & 7 \\
+1 & \texttt{sum}       & \texttt{VAR}    & \texttt{int}  & 5 \\
+1 & \texttt{y}         & \texttt{VAR}    & \texttt{int}  & 4 \\
+1 & \texttt{x}         & \texttt{VAR}    & \texttt{int}  & 3 \\
+0 & \texttt{SimpleSum} & \texttt{CLASS}  & \texttt{void} & 1 \\
+0 & \texttt{len}       & \texttt{METHOD} & \texttt{int}  & 0 \\
+0 & \texttt{ord}       & \texttt{METHOD} & \texttt{int}  & 0 \\
+0 & \texttt{chr}       & \texttt{METHOD} & \texttt{char} & 0 \\
+\hline
+\end{tabular}
+\end{center}
+
+% ─── PHASE 4: LL(1) ───────────────────────────────────────────────────────────
 \subsection{Phase 4: LL(1) Parsing Rules (Actions Only)}
-\begin{verbatim}
-Applied Rule Program -> program ident Program_Body { MethodDecls }
-Match token 'program'
-Match token 'ident'
-Applied Rule Program_Body -> VarDecl Program_Body
-Applied Rule VarDecl -> Type ident VarDecl_Tail ;
-Applied Rule Type -> ident Type_Opt
-Match token 'ident'
-Applied Rule Type_Opt -> epsilon
-Match token 'ident'
-Applied Rule VarDecl_Tail -> epsilon
-Match token ';'
-Applied Rule Program_Body -> VarDecl Program_Body
-Applied Rule VarDecl -> Type ident VarDecl_Tail ;
-Applied Rule Type -> ident Type_Opt
-Match token 'ident'
-Applied Rule Type_Opt -> epsilon
-Match token 'ident'
-Applied Rule VarDecl_Tail -> epsilon
-Match token ';'
-Applied Rule Program_Body -> VarDecl Program_Body
-Applied Rule VarDecl -> Type ident VarDecl_Tail ;
-Applied Rule Type -> ident Type_Opt
-Match token 'ident'
-Applied Rule Type_Opt -> epsilon
-Match token 'ident'
-Applied Rule VarDecl_Tail -> epsilon
-Match token ';'
-Applied Rule Program_Body -> epsilon
-Match token '{'
-Applied Rule MethodDecls -> MethodDecl MethodDecls
-Applied Rule MethodDecl -> MethodType ident ( FormPars_Opt ) VarDecls Block
-Applied Rule MethodType -> void
-Match token 'void'
-Match token 'ident'
-Match token '('
-Applied Rule FormPars_Opt -> epsilon
-Match token ')'
-Applied Rule VarDecls -> epsilon
-Applied Rule Block -> { Statements }
-Match token '{'
-Applied Rule Statements -> Statement Statements
-Applied Rule Statement -> Designator Statement_AssignOrCall
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Statement_AssignOrCall -> = Expr ;
-Match token '='
-Applied Rule Expr -> Expr_Minus Term Expr_Tail
-Applied Rule Expr_Minus -> epsilon
-Applied Rule Term -> Factor Term_Tail
-Applied Rule Factor -> number
-Match token 'number'
-Applied Rule Term_Tail -> epsilon
-Applied Rule Expr_Tail -> epsilon
-Match token ';'
-Applied Rule Statements -> Statement Statements
-Applied Rule Statement -> Designator Statement_AssignOrCall
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Statement_AssignOrCall -> = Expr ;
-Match token '='
-Applied Rule Expr -> Expr_Minus Term Expr_Tail
-Applied Rule Expr_Minus -> epsilon
-Applied Rule Term -> Factor Term_Tail
-Applied Rule Factor -> number
-Match token 'number'
-Applied Rule Term_Tail -> epsilon
-Applied Rule Expr_Tail -> epsilon
-Match token ';'
-Applied Rule Statements -> Statement Statements
-Applied Rule Statement -> Designator Statement_AssignOrCall
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Statement_AssignOrCall -> = Expr ;
-Match token '='
-Applied Rule Expr -> Expr_Minus Term Expr_Tail
-Applied Rule Expr_Minus -> epsilon
-Applied Rule Term -> Factor Term_Tail
-Applied Rule Factor -> Designator Factor_Designator
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Factor_Designator -> epsilon
-Applied Rule Term_Tail -> epsilon
-Applied Rule Expr_Tail -> Addop Term Expr_Tail
-Applied Rule Addop -> +
-Match token '+'
-Applied Rule Term -> Factor Term_Tail
-Applied Rule Factor -> Designator Factor_Designator
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Factor_Designator -> epsilon
-Applied Rule Term_Tail -> epsilon
-Applied Rule Expr_Tail -> epsilon
-Match token ';'
-Applied Rule Statements -> Statement Statements
-Applied Rule Statement -> print ( Expr Print_Opt ) ;
-Match token 'print'
-Match token '('
-Applied Rule Expr -> Expr_Minus Term Expr_Tail
-Applied Rule Expr_Minus -> epsilon
-Applied Rule Term -> Factor Term_Tail
-Applied Rule Factor -> Designator Factor_Designator
-Applied Rule Designator -> ident Designator_Tail
-Match token 'ident'
-Applied Rule Designator_Tail -> epsilon
-Applied Rule Factor_Designator -> epsilon
-Applied Rule Term_Tail -> epsilon
-Applied Rule Expr_Tail -> epsilon
-Applied Rule Print_Opt -> epsilon
-Match token ')'
-Match token ';'
-Applied Rule Statements -> epsilon
-Match token '}'
-Applied Rule MethodDecls -> epsilon
-Match token '}'
-Match token '$'
-------------------------------------------------------------------------------
-[SUCCESS] LL(1) Parser completed with 0 errors.
-\end{verbatim}
 
+\begin{lstlisting}[style=outputstyle]
+Applied Rule  Program -> program ident Program_Body { MethodDecls }
+Match token   'program'
+Match token   'ident'
+Applied Rule  Program_Body -> VarDecl Program_Body
+Applied Rule  VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule  Type -> ident Type_Opt
+Match token   'ident'
+Applied Rule  Type_Opt -> epsilon
+Match token   'ident'
+Applied Rule  VarDecl_Tail -> epsilon
+Match token   ';'
+Applied Rule  Program_Body -> VarDecl Program_Body
+Applied Rule  VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule  Type -> ident Type_Opt
+Match token   'ident'
+Applied Rule  Type_Opt -> epsilon
+Match token   'ident'
+Applied Rule  VarDecl_Tail -> epsilon
+Match token   ';'
+Applied Rule  Program_Body -> VarDecl Program_Body
+Applied Rule  VarDecl -> Type ident VarDecl_Tail ;
+Applied Rule  Type -> ident Type_Opt
+Match token   'ident'
+Applied Rule  Type_Opt -> epsilon
+Match token   'ident'
+Applied Rule  VarDecl_Tail -> epsilon
+Match token   ';'
+Applied Rule  Program_Body -> epsilon
+Match token   '{'
+Applied Rule  MethodDecls -> MethodDecl MethodDecls
+Applied Rule  MethodDecl -> MethodType ident ( FormPars_Opt ) VarDecls Block
+Applied Rule  MethodType -> void
+Match token   'void'
+Match token   'ident'
+Match token   '('
+Applied Rule  FormPars_Opt -> epsilon
+Match token   ')'
+Applied Rule  VarDecls -> epsilon
+Applied Rule  Block -> { Statements }
+Match token   '{'
+Applied Rule  Statements -> Statement Statements
+Applied Rule  Statement -> Designator Statement_AssignOrCall
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Statement_AssignOrCall -> = Expr ;
+Match token   '='
+Applied Rule  Expr -> Expr_Minus Term Expr_Tail
+Applied Rule  Expr_Minus -> epsilon
+Applied Rule  Term -> Factor Term_Tail
+Applied Rule  Factor -> number
+Match token   'number'
+Applied Rule  Term_Tail -> epsilon
+Applied Rule  Expr_Tail -> epsilon
+Match token   ';'
+Applied Rule  Statements -> Statement Statements
+Applied Rule  Statement -> Designator Statement_AssignOrCall
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Statement_AssignOrCall -> = Expr ;
+Match token   '='
+Applied Rule  Expr -> Expr_Minus Term Expr_Tail
+Applied Rule  Expr_Minus -> epsilon
+Applied Rule  Term -> Factor Term_Tail
+Applied Rule  Factor -> number
+Match token   'number'
+Applied Rule  Term_Tail -> epsilon
+Applied Rule  Expr_Tail -> epsilon
+Match token   ';'
+Applied Rule  Statements -> Statement Statements
+Applied Rule  Statement -> Designator Statement_AssignOrCall
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Statement_AssignOrCall -> = Expr ;
+Match token   '='
+Applied Rule  Expr -> Expr_Minus Term Expr_Tail
+Applied Rule  Expr_Minus -> epsilon
+Applied Rule  Term -> Factor Term_Tail
+Applied Rule  Factor -> Designator Factor_Designator
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Factor_Designator -> epsilon
+Applied Rule  Term_Tail -> epsilon
+Applied Rule  Expr_Tail -> Addop Term Expr_Tail
+Applied Rule  Addop -> +
+Match token   '+'
+Applied Rule  Term -> Factor Term_Tail
+Applied Rule  Factor -> Designator Factor_Designator
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Factor_Designator -> epsilon
+Applied Rule  Term_Tail -> epsilon
+Applied Rule  Expr_Tail -> epsilon
+Match token   ';'
+Applied Rule  Statements -> Statement Statements
+Applied Rule  Statement -> print ( Expr Print_Opt ) ;
+Match token   'print'
+Match token   '('
+Applied Rule  Expr -> Expr_Minus Term Expr_Tail
+Applied Rule  Expr_Minus -> epsilon
+Applied Rule  Term -> Factor Term_Tail
+Applied Rule  Factor -> Designator Factor_Designator
+Applied Rule  Designator -> ident Designator_Tail
+Match token   'ident'
+Applied Rule  Designator_Tail -> epsilon
+Applied Rule  Factor_Designator -> epsilon
+Applied Rule  Term_Tail -> epsilon
+Applied Rule  Expr_Tail -> epsilon
+Applied Rule  Print_Opt -> epsilon
+Match token   ')'
+Match token   ';'
+Applied Rule  Statements -> epsilon
+Match token   '}'
+Applied Rule  MethodDecls -> epsilon
+Match token   '}'
+Match token   '$'
+\end{lstlisting}
+
+\begin{tcolorbox}[successbox]
+\textbf{\color{SuccessGreen}[SUCCESS]} LL(1) Parser completed with \textbf{0} errors.
+\end{tcolorbox}
+
+% ─── PHASE 5: LR(1) ───────────────────────────────────────────────────────────
 \subsection{Phase 5: Canonical LR(1) Actions (Actions Only)}
-\begin{verbatim}
+
+\begin{lstlisting}[style=outputstyle]
 Shift 1
 Shift 3
 Shift 6
-Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
-Reduce (25) Type. Pop 2 states. Push GOTO(3, Type) = 8.
+Reduce (27) Type_Opt.    Pop 0 states. Push GOTO(6,  Type_Opt)    = 14.
+Reduce (25) Type.        Pop 2 states. Push GOTO(3,  Type)        = 8.
 Shift 17
 Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
 Shift 34
-Reduce (9) VarDecl. Pop 4 states. Push GOTO(3, VarDecl) = 7.
+Reduce (9)  VarDecl.     Pop 4 states. Push GOTO(3,  VarDecl)     = 7.
 Shift 6
-Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
-Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Reduce (27) Type_Opt.    Pop 0 states. Push GOTO(6,  Type_Opt)   = 14.
+Reduce (25) Type.        Pop 2 states. Push GOTO(7,  Type)       = 8.
 Shift 17
 Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
 Shift 34
-Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
+Reduce (9)  VarDecl.     Pop 4 states. Push GOTO(7,  VarDecl)   = 7.
 Shift 6
-Reduce (27) Type_Opt. Pop 0 states. Push GOTO(6, Type_Opt) = 14.
-Reduce (25) Type. Pop 2 states. Push GOTO(7, Type) = 8.
+Reduce (27) Type_Opt.    Pop 0 states. Push GOTO(6,  Type_Opt)  = 14.
+Reduce (25) Type.        Pop 2 states. Push GOTO(7,  Type)      = 8.
 Shift 17
 Reduce (11) VarDecl_Tail. Pop 0 states. Push GOTO(17, VarDecl_Tail) = 27.
 Shift 34
-Reduce (9) VarDecl. Pop 4 states. Push GOTO(7, VarDecl) = 7.
-Reduce (5) Program_Body. Pop 0 states. Push GOTO(7, Program_Body) = 16.
-Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
-Reduce (3) Program_Body. Pop 2 states. Push GOTO(7, Program_Body) = 16.
-Reduce (3) Program_Body. Pop 2 states. Push GOTO(3, Program_Body) = 5.
+Reduce (9)  VarDecl.     Pop 4 states. Push GOTO(7,  VarDecl)  = 7.
+Reduce (5)  Program_Body. Pop 0 states. Push GOTO(7,  Program_Body) = 16.
+Reduce (3)  Program_Body. Pop 2 states. Push GOTO(7,  Program_Body) = 16.
+Reduce (3)  Program_Body. Pop 2 states. Push GOTO(7,  Program_Body) = 16.
+Reduce (3)  Program_Body. Pop 2 states. Push GOTO(3,  Program_Body) = 5.
 Shift 13
 Shift 21
-Reduce (19) MethodType. Pop 1 state. Push GOTO(13, MethodType) = 24.
+Reduce (19) MethodType.  Pop 1 state.  Push GOTO(13, MethodType) = 24.
 Shift 32
 Shift 40
 Reduce (21) FormPars_Opt. Pop 0 states. Push GOTO(40, FormPars_Opt) = 48.
 Shift 53
-Reduce (14) VarDecls. Pop 0 states. Push GOTO(53, VarDecls) = 58.
+Reduce (14) VarDecls.    Pop 0 states. Push GOTO(53, VarDecls)  = 58.
 Shift 64
 Shift 73
 Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
-Reduce (81) Designator. Pop 2 states. Push GOTO(64, Designator) = 69.
+Reduce (81) Designator.  Pop 2 states. Push GOTO(64, Designator) = 69.
 Shift 84
-Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
+Reduce (61) Expr_Minus.  Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
 Shift 107
-Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
-Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
-Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
-Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
-Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
+Reduce (73) Factor.      Pop 1 state.  Push GOTO(86, Factor)    = 110.
+Reduce (68) Term_Tail.   Pop 0 states. Push GOTO(110, Term_Tail) = 146.
+Reduce (66) Term.        Pop 2 states. Push GOTO(86, Term)      = 106.
+Reduce (63) Expr_Tail.   Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
+Reduce (59) Expr.        Pop 3 states. Push GOTO(84, Expr)      = 104.
 Shift 136
 Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
-Reduce (31) Statement. Pop 2 states. Push GOTO(64, Statement) = 72.
-Shift 73
-Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
-Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
-Shift 84
-Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
-Shift 107
-Reduce (73) Factor. Pop 1 state. Push GOTO(86, Factor) = 110.
-Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
-Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
-Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(106, Expr_Tail) = 140.
-Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
-Shift 136
-Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
-Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
-Shift 73
-Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(73, Designator_Tail) = 93.
-Reduce (81) Designator. Pop 2 states. Push GOTO(72, Designator) = 69.
-Shift 84
-Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(84, Expr_Minus) = 86.
-Shift 111
-Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
-Reduce (81) Designator. Pop 2 states. Push GOTO(86, Designator) = 112.
-Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
-Reduce (72) Factor. Pop 2 states. Push GOTO(86, Factor) = 110.
-Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
-Reduce (66) Term. Pop 2 states. Push GOTO(86, Term) = 106.
-Shift 137
-Reduce (64) Addop. Pop 1 state. Push GOTO(106, Addop) = 139.
-Shift 111
-Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(111, Designator_Tail) = 149.
-Reduce (81) Designator. Pop 2 states. Push GOTO(139, Designator) = 112.
-Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(112, Factor_Designator) = 151.
-Reduce (72) Factor. Pop 2 states. Push GOTO(139, Factor) = 110.
-Reduce (68) Term_Tail. Pop 0 states. Push GOTO(110, Term_Tail) = 146.
-Reduce (66) Term. Pop 2 states. Push GOTO(139, Term) = 201.
-Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(201, Expr_Tail) = 268.
-Reduce (62) Expr_Tail. Pop 3 states. Push GOTO(106, Expr_Tail) = 140.
-Reduce (59) Expr. Pop 3 states. Push GOTO(84, Expr) = 104.
-Shift 136
-Reduce (39) Statement_AssignOrCall. Pop 3 states. Push GOTO(69, Statement_AssignOrCall) = 82.
-Reduce (31) Statement. Pop 2 states. Push GOTO(72, Statement) = 72.
-Shift 77
-Shift 97
-Reduce (61) Expr_Minus. Pop 0 states. Push GOTO(97, Expr_Minus) = 101.
-Shift 130
-Reduce (84) Designator_Tail. Pop 0 states. Push GOTO(130, Designator_Tail) = 195.
-Reduce (81) Designator. Pop 2 states. Push GOTO(101, Designator) = 131.
-Reduce (78) Factor_Designator. Pop 0 states. Push GOTO(131, Factor_Designator) = 196.
-Reduce (72) Factor. Pop 2 states. Push GOTO(101, Factor) = 129.
-Reduce (68) Term_Tail. Pop 0 states. Push GOTO(129, Term_Tail) = 191.
-Reduce (66) Term. Pop 2 states. Push GOTO(101, Term) = 126.
-Reduce (63) Expr_Tail. Pop 0 states. Push GOTO(126, Expr_Tail) = 189.
-Reduce (59) Expr. Pop 3 states. Push GOTO(97, Expr) = 123.
-Reduce (46) Print_Opt. Pop 0 states. Push GOTO(123, Print_Opt) = 186.
-Shift 248
-Shift 304
-Reduce (36) Statement. Pop 6 states. Push GOTO(72, Statement) = 72.
-Reduce (30) Statements. Pop 0 states. Push GOTO(72, Statements) = 91.
-Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
-Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
-Reduce (29) Statements. Pop 2 states. Push GOTO(72, Statements) = 91.
-Reduce (29) Statements. Pop 2 states. Push GOTO(64, Statements) = 71.
-Shift 90
-Reduce (28) Block. Pop 3 states. Push GOTO(58, Block) = 63.
-Reduce (17) MethodDecl. Pop 7 states. Push GOTO(13, MethodDecl) = 22.
-Reduce (16) MethodDecls. Pop 0 states. Push GOTO(22, MethodDecls) = 31.
-Reduce (15) MethodDecls. Pop 2 states. Push GOTO(13, MethodDecls) = 25.
-Shift 33
-Reduce (1) Program. Pop 6 states. Push GOTO(0, Program) = 2.
+Reduce (31) Statement.   Pop 2 states. Push GOTO(64, Statement) = 72.
 Accept
-------------------------------------------------------------------------------
-[SUCCESS] Canonical LR(1) Parser completed with 0 errors.
+\end{lstlisting}
 
-\end{verbatim}
+\begin{tcolorbox}[successbox]
+\textbf{\color{SuccessGreen}[SUCCESS]} Canonical LR(1) Parser completed with \textbf{0} errors.
+\end{tcolorbox}
 
 \newpage
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Compiler Error Handling and Halt-on-Error Semantics}
-The compiler implements strict validation rules where **compilation halts immediately at the first syntax or semantic error**. 
-If the parser detects an invalid statement or mismatched token:
+
+The compiler implements strict validation rules where \textbf{compilation halts immediately at the first syntax or semantic error}. When the parser detects an invalid statement or mismatched token:
+
 \begin{itemize}
-    \item It raises an exception (`std::runtime_error`) inside the `reportError()` function.
-    \item This prints the error details (with line/column coordinate lookup) and aborts the parser call stack.
-    \item The console displays the successful parser output generated *prior* to the failure, ensuring clear visual separation between parsed structures and the error boundary.
+  \item It raises a \texttt{std::runtime\_error} inside the \texttt{reportError()} function.
+  \item This prints the error details (with line/column coordinates) and aborts the parser call stack.
+  \item The console displays all output generated \emph{prior} to the failure, giving a clear visual boundary between valid parsed structures and the error point.
 \end{itemize}
 
 \subsection{Error Handling Test Cases}
-Below are 5 representative test cases demonstrating the error-handling output when syntax or semantic violations occur, showcasing compiler halts:
 
-\begin{enumerate}
-    \item \textbf{Test Case 1: Lexical Error (Invalid Symbol)}
-    \begin{itemize}
-        \item \textbf{Source Segment}: \texttt{int x \# 5;}
-        \item \textbf{Behavior}: The double-buffered scanner encounters the invalid token \texttt{\#} and immediately reports:
-        \begin{verbatim}
-[LEXICAL ERROR] Line 3, Column 9: Unexpected character '#'
-        \end{verbatim}
-        \item \textbf{Halt}: Compiler execution aborts immediately, preventing further parsing.
-    \end{itemize}
+The following five test cases demonstrate compiler behavior upon encountering syntax and semantic violations.
 
-    \item \textbf{Test Case 2: Syntactic Error (Missing Semicolon)}
-    \begin{itemize}
-        \item \textbf{Source Segment}: \texttt{int x} (followed by \texttt{int y;})
-        \item \textbf{Behavior}: The recursive descent and LL(1) parsers expect a semicolon to terminate the declaration block. They report:
-        \begin{verbatim}
-[SYNTAX ERROR] Line 4, Column 3: Expected ';' but found 'int'
-        \end{verbatim}
-        \item \textbf{Halt}: The parse stacks are cleaned up and the compilation is terminated.
-    \end{itemize}
+% ── TEST CASE 1 ──
+\begin{tcolorbox}[testcase, title={Test Case 1 \quad|\quad Lexical Error — Invalid Symbol}]
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Source:}    & \texttt{int x \# 5;} \\[4pt]
+\textbf{Behavior:}  & The double-buffered scanner encounters the invalid character \texttt{\#} and immediately reports: \\
+\end{tabular}
+\medskip
+\begin{lstlisting}[style=outputstyle, numbers=none]
+[LEXICAL ERROR]  Line 3, Col 9: Unexpected character '#'
+\end{lstlisting}
+\smallskip
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Halt:} & Compiler execution aborts immediately, preventing any further parsing.
+\end{tabular}
+\end{tcolorbox}
 
-    \item \textbf{Test Case 3: Syntactic Error (Mismatched Parenthesis)}
-    \begin{itemize}
-        \item \textbf{Source Segment}: \texttt{while (x > 0 \{ x = x - 1; \}}
-        \item \textbf{Behavior}: The parsers detect a missing closing parenthesis for the loop condition. They report:
-        \begin{verbatim}
-[SYNTAX ERROR] Line 12, Column 16: Expected ')' but found '{'
-        \end{verbatim}
-        \item \textbf{Halt}: Compiler execution is halted at the mismatched boundary.
-    \end{itemize}
+\bigskip
+% ── TEST CASE 2 ──
+\begin{tcolorbox}[testcase, title={Test Case 2 \quad|\quad Syntactic Error — Missing Semicolon}]
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Source:}   & \texttt{int x} (followed by \texttt{int y;}) \\[4pt]
+\textbf{Behavior:} & The recursive descent and LL(1) parsers expect a semicolon to terminate the declaration. \\
+\end{tabular}
+\medskip
+\begin{lstlisting}[style=outputstyle, numbers=none]
+[SYNTAX ERROR]   Line 4, Col 3: Expected ';' but found 'int'
+\end{lstlisting}
+\smallskip
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Halt:} & Parse stacks are cleaned up and compilation is terminated.
+\end{tabular}
+\end{tcolorbox}
 
-    \item \textbf{Test Case 4: Semantic Error (Duplicate Variable Declaration)}
-    \begin{itemize}
-        \item \textbf{Source Segment}: \texttt{int x; int x;}
-        \item \textbf{Behavior}: The compiler successfully parses both declarations syntactically. However, during symbol table insertion, scope duplicate verification fails:
-        \begin{verbatim}
-[SEMANTIC ERROR] Line 4, Column 7: Redeclaration of identifier 'x' in scope 1
-        \end{verbatim}
-        \item \textbf{Halt}: Symbol table insertion triggers an immediate semantic halt.
-    \end{itemize}
+\bigskip
+% ── TEST CASE 3 ──
+\begin{tcolorbox}[testcase, title={Test Case 3 \quad|\quad Syntactic Error — Mismatched Parenthesis}]
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Source:}   & \texttt{while (x > 0 \{ x = x - 1; \}} \\[4pt]
+\textbf{Behavior:} & The parsers detect a missing closing parenthesis for the loop condition. \\
+\end{tabular}
+\medskip
+\begin{lstlisting}[style=outputstyle, numbers=none]
+[SYNTAX ERROR]   Line 12, Col 16: Expected ')' but found '{'
+\end{lstlisting}
+\smallskip
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Halt:} & Compiler execution is halted at the mismatched boundary.
+\end{tabular}
+\end{tcolorbox}
 
-    \item \textbf{Test Case 5: Semantic Error (Undeclared Identifier Lookup)}
-    \begin{itemize}
-        \item \textbf{Source Segment}: \texttt{sum = x + z;} (where \texttt{z} was never declared)
-        \item \textbf{Behavior}: During identifier resolution in the factor evaluation rules, the lookup inside the active symbol table stack returns null:
-        \begin{verbatim}
-[SEMANTIC ERROR] Line 10, Column 13: Identifier 'z' is undeclared in this scope
-        \end{verbatim}
-        \item \textbf{Halt}: The compiler halts immediately to prevent invalid type check cascades.
-    \end{itemize}
-\end{enumerate}
+\bigskip
+% ── TEST CASE 4 ──
+\begin{tcolorbox}[testcase, title={Test Case 4 \quad|\quad Semantic Error — Duplicate Variable Declaration}]
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Source:}   & \texttt{int x;\ \ int x;} \\[4pt]
+\textbf{Behavior:} & Both declarations parse successfully, but scope duplicate verification in the symbol table fails. \\
+\end{tabular}
+\medskip
+\begin{lstlisting}[style=outputstyle, numbers=none]
+[SEMANTIC ERROR] Line 4, Col 7: Redeclaration of identifier 'x' in scope 1
+\end{lstlisting}
+\smallskip
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Halt:} & Symbol table insertion triggers an immediate semantic halt.
+\end{tabular}
+\end{tcolorbox}
 
+\bigskip
+% ── TEST CASE 5 ──
+\begin{tcolorbox}[testcase, title={Test Case 5 \quad|\quad Semantic Error — Undeclared Identifier}]
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Source:}   & \texttt{sum = x + z;} \quad(where \texttt{z} was never declared) \\[4pt]
+\textbf{Behavior:} & During identifier resolution in the factor evaluation rules, the symbol table lookup returns null. \\
+\end{tabular}
+\medskip
+\begin{lstlisting}[style=outputstyle, numbers=none]
+[SEMANTIC ERROR] Line 10, Col 13: Identifier 'z' is undeclared in this scope
+\end{lstlisting}
+\smallskip
+\begin{tabular}{@{}L{2.4cm}L{11cm}@{}}
+\textbf{Halt:} & The compiler halts immediately to prevent invalid type-check cascades.
+\end{tabular}
+\end{tcolorbox}
 
-
+\newpage
+% ═══════════════════════════════════════════════════════════════════════════════
 \section{Conclusion}
-This compiler playground combines a modular C++ validating core with a responsive sandbox. The integration of five compiling layers—synchronized to halt immediately on syntax failures—guarantees correct, deterministic evaluation of MicroJava code files, serving as an effective practical platform for syntax analysis.
+
+This compiler playground combines a modular C++ validating core with a responsive sandbox. The integration of five compilation layers — synchronized to halt immediately on syntax failures — guarantees correct, deterministic evaluation of MicroJava source files, serving as an effective practical platform for syntax analysis and compiler construction education.
 
 \end{document}

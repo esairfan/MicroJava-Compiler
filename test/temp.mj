@@ -1,31 +1,23 @@
- program ArrayMax
-  int[] numbers;
-  int size;
+program FifteenPrints
 {
-  void main()
-    int i, max, val;
-  {
-    size = 5;
-    numbers = new int[size];
-    
-    // Read 5 numbers from user input
-    i = 0;
-    while (i < size) {
-      read(val);
-      numbers[i] = val;
-      i = i + 1;
+    void main() {
+        // Printing numbers 1 through 15 using 15 separate statements
+        print(1);
+        print(2)
+        print(3);
+        print(4);
+        print(5);
+        
+        print(6);
+        print(7);
+        print(8);
+        print(9);
+        print(10);
+        
+        print(11);
+        print(12);
+        print(13);
+        print(14);
+        print(15);
     }
-    
-    // Find maximum element
-    max = numbers[0];
-    i = 1;
-    while (i < size) {
-      if (numbers[i] > max) {
-        max = numbers[i];
-      }
-      i = i + 1;
-    }
-    
-    print(max);
-  }
 }
