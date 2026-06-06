@@ -85,6 +85,10 @@
 
                     <!-- RD Tree Tab -->
                     <div class="tab-pane" id="tab-rd-tree">
+                        <div class="tree-controls" style="display: flex; gap: 0.5rem; margin-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.8rem;">
+                            <button id="tree-cst-btn" class="btn btn-secondary active-toggle" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">CST (Parse Tree)</button>
+                            <button id="tree-ast-btn" class="btn btn-secondary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">AST (Abstract Tree)</button>
+                        </div>
                         <div class="tree-container" id="rd-tree-content">
                             <div class="empty-state">No parse tree generated. Click compile.</div>
                         </div>
