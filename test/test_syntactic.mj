@@ -1,0 +1,7 @@
+program SyntacticErrorTest
+    int x // Missing semicolon (syntax error)
+{
+    void main() {
+        x = 5;
+    }
+}

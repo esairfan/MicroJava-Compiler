@@ -1,0 +1,36 @@
+program ValidCompleteProgram
+    final int LIMIT = 5;
+    class Point {
+        int x;
+        int y;
+    }
+    Point p;
+    int[] numbers;
+{
+    void printPoint(Point pt) {
+        print(pt.x);
+        print(pt.y);
+    }
+
+    void main()
+        int i;
+    {
+        p = new Point;
+        p.x = 10;
+        p.y = 20;
+        printPoint(p);
+
+        numbers = new int[LIMIT];
+        i = 0;
+        while (i < LIMIT) {
+            numbers[i] = i * 2;
+            i = i + 1;
+        }
+
+        i = 0;
+        while (i < LIMIT) {
+            print(numbers[i]);
+            i = i + 1;
+        }
+    }
+}

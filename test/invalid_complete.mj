@@ -1,0 +1,24 @@
+program InvalidCompleteProgram
+    final int LIMIT = 5;
+    class Point {
+        int x;
+        int y;
+    }
+    Point p;
+{
+    void main()
+        int i;
+    {
+        p = new Point;
+        p.x = 10;
+        
+        // 1. Semantic Error: Undeclared variable 'z'
+        z = 20; 
+        
+        // 2. Syntax Error: Missing semicolon
+        p.y = 30
+        
+        // 3. Lexical Error: Invalid character '@'
+        i = 5;
+    }
+}

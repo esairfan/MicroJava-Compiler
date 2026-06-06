@@ -1,0 +1,7 @@
+program LexicalErrorTest
+    int x!; // Invalid character '!' (lexical error)
+{
+    void main() {
+        x = 5;
+    }
+}

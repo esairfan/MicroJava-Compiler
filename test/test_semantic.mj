@@ -1,0 +1,7 @@
+program SemanticErrorTest
+    int x;
+{
+    void main() {
+        y = 5; // y is not declared (semantic error)
+    }
+}
